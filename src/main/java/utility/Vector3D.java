@@ -48,9 +48,10 @@ public class Vector3D {
         as 'this' and 'normal' so that angle from 'this' to
         'normal' is the same as the angle from 'normal' to
         that 'R'.
+        Returns a normalised vector.
     */
     public Vector3D reflected(Vector3D normal){
-        return normal.scaled(2 * this.scalarProduct(normal)).added(normal.negated());
+        return normal.scaled(2 * this.scalarProduct(normal)).added(normal.negated()).normalised();
     }
 
     /** Getters

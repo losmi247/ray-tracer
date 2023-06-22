@@ -33,11 +33,13 @@ public class Ray {
         return this.origin.added(this.direction.scaled(s));
     }
     /*
-        Returns this ray reflected against a point on a
-        surface with local unit normal vector 'normal'.
+        Returns a new ray obtained from reflecting this ray
+        against the given 'point' on a surface with local
+        unit normal vector 'normal'.
     */
-    public Vector3D reflectedRay(Vector3D normal, Vector3D point){
-        Vector3D perfectReflectionDirection = this.direction.
+    public Ray reflectedRay(Vector3D point, Vector3D normal){
+        Vector3D perfectReflectionDirection = this.direction.negated().reflected(normal);
+        return new Ray(point, perfectReflectionDirection);
     }
 
     /**
@@ -49,5 +51,4 @@ public class Ray {
     public Vector3D getDirection(){
         return this.direction;
     }
-    public
 }
