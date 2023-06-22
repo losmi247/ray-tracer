@@ -46,9 +46,9 @@ public class Ray {
      * Getters
      */
     public Vector3D getOrigin(){
-        return this.origin;
+        return new Vector3D(this.origin);
     }
     public Vector3D getDirection(){
-        return this.direction;
+        return new Vector3D(this.direction);
     }
 }

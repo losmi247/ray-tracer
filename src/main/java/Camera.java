@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
+import java.awt.Color;
+
 /**
  * Class to encapsulate a camera at the origin (0,0,0),
  * pointing in the positive direction of z-axis,
@@ -37,13 +39,6 @@ public class Camera {
         this.digitalImage.setRGB(x, y, colorValue);
     }
     /*
-       Method to put individual 'a' (opacity), 'r' (red), 'g' (green)
-       and 'b' (blue) color values together into argb format (32 bits)
-     */
-    public static int colorValuesToARGB(int a, int r, int g, int b) {
-        return (a<<24) | (r<<16) | (g<<8) | b;
-    }
-    /*
        The main method for rendering a scene description into a
        digital image.
        Creates a 'result.png' file in the CWD (main project directory).
@@ -52,7 +47,8 @@ public class Camera {
         Camera c = new Camera();
         for(int y = 0; y < c.screenPlaneHeightInPixels; y++){
             for(int x = 0; x < c.getScreenPlaneWidthInPixels(); x++){
-                c.setPixel(x,y,Camera.colorValuesToARGB(255, 255,255,255));
+                Color col = new Color(255, 0, 255, 255);
+                c.setPixel(x,y, col.getRGB());
             }
         }
 
