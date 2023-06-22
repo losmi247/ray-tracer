@@ -4,6 +4,9 @@ import jdk.jshell.spi.ExecutionControl;
 import tracing.Ray;
 import utility.Vector3D;
 
+/**
+ * A sphere object.
+ */
 public class Sphere implements Shape {
     private Vector3D center;
     private double radius;
