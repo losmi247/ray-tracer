@@ -27,4 +27,4 @@ replay_pid*
 .idea/
 
 # unit tests
-src/main/test/
+src/test/
