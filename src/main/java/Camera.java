@@ -45,6 +45,7 @@ public class Camera {
      */
     public static void render(){
         Camera c = new Camera();
+
         for(int y = 0; y < c.screenPlaneHeightInPixels; y++){
             for(int x = 0; x < c.getScreenPlaneWidthInPixels(); x++){
                 Color col = new Color(255, 0, 255, 255);
@@ -52,6 +53,7 @@ public class Camera {
             }
         }
 
+        /// output the rendered image
         try{
             File f = new File("./result.png");
             ImageIO.write(c.digitalImage, "png", f);
