@@ -4,6 +4,10 @@ public class Camera {
     private final double widthToHeightRatio = 2;
 
     public Camera(){
-        
+
+    }
+
+    public static void main(String[] args) {
+
     }
 }
