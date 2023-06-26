@@ -1,14 +1,22 @@
-<objects>
-    <sphere>
-        <center>(0,0,0)</center>
-        <radius>5</radius>
-        <color>(0,255,255,255)</color>
-    </sphere>
+<elements>
+    <shapes>
+        <sphere>
+            <center>(0,0,0)</center>
+            <radius>5</radius>
+            <color>(0,255,255,255)</color>
+        </sphere>
+        <sphere>
+            <center>(10,10,10)</center>
+            <radius>1</radius>
+            <color>(56,200,47,255)</color>
+        </sphere>
+    </shapes>
 
-    <light>
-        <position>(10,10,10)</position>
-        <color>(0,0,255,255)</color>
-        <intensity>5</intensity>
-    </light>
-</objects>
-
+    <lights>
+        <light>
+            <position>(10,10,10)</position>
+            <color>(0,0,255,255)</color>
+            <intensity>0.8</intensity>
+        </light>
+    </lights>
+</elements>
