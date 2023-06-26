@@ -13,5 +13,5 @@ public interface Shape {
      * or throws the checked exception NoIntersection
      * if there is no intersection.
      */
-    Vector3D intersect(Ray r) throws NoIntersection;
+    Vector3D intersect(Ray r);
 }

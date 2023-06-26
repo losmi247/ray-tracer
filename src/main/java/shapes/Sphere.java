@@ -1,6 +1,5 @@
 package shapes;
 
-import jdk.jshell.spi.ExecutionControl;
 import tracing.Ray;
 import utility.Vector3D;
 import java.awt.Color;
@@ -25,9 +24,12 @@ public class Sphere implements Shape {
     /*
        Method that intersects a ray with the sphere. It
        gives the closest intersection (minimum value of
-       parameter s in P = O + s * D ray equation)
+       parameter s in P = O + s * D ray equation) if an
+       intersection exists, or 'null' if no intersection
+       exists (don't want to use exceptions for control
+       flow when rendering).
      */
-    public Vector3D intersect(Ray r) throws NoIntersection {
+    public Vector3D intersect(Ray r) {
         throw new RuntimeException();
     }
 }
