@@ -5,6 +5,10 @@ import tracing.Ray;
 /**
  * Interface for a shape that can be included in
  * the XML scene description.
+ *
+ * Apart from the methods in this interface, each shape
+ * should have a unique String identifier same as its
+ * corresponding XML element name.
  */
 public interface Shape {
     /**

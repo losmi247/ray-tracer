@@ -8,6 +8,7 @@ import java.awt.Color;
  * A sphere object.
  */
 public class Sphere implements Shape {
+    private static final String shapeID = "sphere";
     private Vector3D center;
     private double radius;
     private Color diffuseColor;
