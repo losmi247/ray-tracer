@@ -16,4 +16,17 @@ public class Light {
         this.lightSpecularColor = lightSpecularColor;
         this.intensity = intensity;
     }
+
+    /**
+     * Getters
+     */
+    public Vector3D getPosition() {
+        return this.position;
+    }
+    public Color getColor() {
+        return this.lightSpecularColor;
+    }
+    public double getIntensity() {
+        return this.intensity;
+    }
 }

@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import shapes.RTShape;
 import tracing.Light;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,7 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class to parse the XML description of the scene.
@@ -101,17 +103,17 @@ public class SceneDescriptionParser {
     /*
        Method to parse the XML node containing shape descriptions.
      */
-    public ArrayList<Shape> parseShapes() throws IncorrectSceneDescriptionXMLStructureException {
+    public ArrayList<RTShape> parseShapes() throws IncorrectSceneDescriptionXMLStructureException {
         NodeList shapesNodeList = this.getShapesNode().getChildNodes();
 
         /// iterate through shapes
         int shapesNodeListLength = shapesNodeList.getLength();
-        ArrayList<Shape> shapes = new ArrayList<>();
+        ArrayList<RTShape> shapes = new ArrayList<>();
         Node currentNode;
         for (int i = 0; i < shapesNodeListLength; i++) {
             currentNode = shapesNodeList.item(i);
             if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                shapes.add(parseShape(currentNode));
+                shapes.add(SceneDescriptionParser.parseShape(currentNode));
             }
         }
 
@@ -130,7 +132,7 @@ public class SceneDescriptionParser {
         for (int i = 0; i < lightsNodeListLength; i++) {
             currentNode = lightsNodeList.item(i);
             if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                lights.add(parseLight(currentNode));
+                lights.add(SceneDescriptionParser.parseLight(currentNode));
             }
         }
 
@@ -142,13 +144,24 @@ public class SceneDescriptionParser {
      */
     /*
        Method to parse a given XML node for a shape, and create
-       an appropriate Shape object.
+       an appropriate RTShape object.
      */
-    private static Shape parseShape(Node shapeNode) {
-        /// TODO
-        return null;
+    private static RTShape parseShape(Node shapeNode) throws IncorrectSceneDescriptionXMLStructureException {
+        NodeList attributeNodes = shapeNode.getChildNodes();
+        int n = attributeNodes.getLength();
+        Node current;
+        Map<String,String> attributes = new HashMap<>();
+        for(int i = 0; i < n; i++) {
+            current = attributeNodes.item(i);
+            if(current.getNodeType() == Node.ELEMENT_NODE) {
+                attributes.put(current.getNodeName(),current.getTextContent());
+            }
+        }
+
+        return ShapeMapper.mapParseShapeMethod(attributes, shapeNode.getNodeName());
     }
-    /* Method to parse a given XML node for a light, and create
+    /*
+       Method to parse a given XML node for a light, and create
        an appropriate Light object.
      */
     private static Light parseLight(Node lightNode) throws IncorrectSceneDescriptionXMLStructureException {
@@ -176,15 +189,15 @@ public class SceneDescriptionParser {
         }
 
         /// parse light position
-        String positionStr = positionNode.getNodeValue();
-        Vector3D position = parseVector3D(positionStr);
+        String positionStr = positionNode.getTextContent();
+        Vector3D position = SceneDescriptionParser.parseVector3D(positionStr);
 
         /// parse light specular color
-        String colorStr = positionNode.getNodeValue();
-        Color color = parseColor(colorStr);
+        String colorStr = colorNode.getTextContent();
+        Color color = SceneDescriptionParser.parseColor(colorStr);
 
         /// parse light intensity
-        String intensityStr = intensityNode.getNodeValue();
+        String intensityStr = intensityNode.getTextContent();
         double intensity = Double.parseDouble(intensityStr);
 
         return new Light(position, color, intensity);
@@ -193,7 +206,7 @@ public class SceneDescriptionParser {
        Method to parse a Vector3D object represented as a string
        in the form "(x,y,z)".
      */
-    private static Vector3D parseVector3D(String s) throws IncorrectSceneDescriptionXMLStructureException {
+    public static Vector3D parseVector3D(String s) throws IncorrectSceneDescriptionXMLStructureException {
         String[] components = s.substring(1, s.length()-1).split(",");
         if(components.length != 3) {
             throw new IncorrectSceneDescriptionXMLStructureException();
@@ -204,11 +217,11 @@ public class SceneDescriptionParser {
        Method to parse a Color object (java.awt) represented as a string
        in the form (r,g,b,a) where r,g,b,a are integers from 0 to 255 inclusive.
      */
-    private static Color parseColor(String s) throws IncorrectSceneDescriptionXMLStructureException {
+    public static Color parseColor(String s) throws IncorrectSceneDescriptionXMLStructureException {
         String[] components = s.substring(1, s.length()-1).split(",");
         if(components.length != 4) {
             throw new IncorrectSceneDescriptionXMLStructureException();
         }
-        return new Color(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2], Integer.parseInt(components[3])));
+        return new Color(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]), Integer.parseInt(components[3]));
     }
 }
