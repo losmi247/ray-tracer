@@ -58,4 +58,20 @@ public class Scene {
         this.ambientColor = ambientColor;
         this.ambientComponentIntensity = ambientIntensity;
     }
+
+    /**
+     * Getters
+     */
+    public ArrayList<RTShape> getShapes() {
+        return this.shapes;
+    }
+    public ArrayList<Light> getLights() {
+        return lights;
+    }
+    public Color getAmbientColor() {
+        return this.ambientColor;
+    }
+    public double getAmbientComponentIntensity() {
+        return this.ambientComponentIntensity;
+    }
 }

@@ -1,9 +1,11 @@
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import tracing.Ray;
 import tracing.Scene;
 import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.SceneDescriptionParser;
+import utility.Vector3D;
 
 import java.awt.*;
 import java.io.File;
@@ -17,6 +19,8 @@ import javax.xml.parsers.ParserConfigurationException;
  * pointing in the positive direction of z-axis.
  * along with a screen plane at z=depth, with specified
  * height and screen ratio.
+ *
+ * The coordinate system is right-handed.
  *
  * The camera position and orientation can not be customised,
  * but screen plane depth (z coordinate of the plane),
@@ -67,10 +71,25 @@ public class Camera {
         Scene scene = new Scene(sceneDescriptionPath, Color.YELLOW, 0.05);
 
         BufferedImage digitalImage = new BufferedImage(this.getScreenPlaneWidthInPixels(), this.screenPlaneHeightInPixels, BufferedImage.TYPE_INT_ARGB);
-        for(int y = 0; y < this.screenPlaneHeightInPixels; y++){
-            for(int x = 0; x < this.getScreenPlaneWidthInPixels(); x++){
-                Color col = new Color(227, 4, 49, 255);
-                digitalImage.setRGB(x,y, col.getRGB());
+        double pixelWidth = this.getPixelWidth();
+        double pixelHeight = this.getPixelHeight();
+        for(int y = 0; y < this.screenPlaneHeightInPixels; y++) {
+            for (int x = 0; x < this.getScreenPlaneWidthInPixels(); x++) {
+                /*Color col = new Color(227, 4, 49, 255);
+                digitalImage.setRGB(x,y, col.getRGB());*/
+
+                /// x,y coordinates of pixel from image origin (top left)
+                double pixelCenterX = x * pixelWidth + 0.5 * pixelWidth;
+                double pixelCenterY = y * pixelHeight + 0.5 * pixelHeight;
+                /// transform to x,y coordinates where both x,y axes are in
+                /// opposite directions from the standard image axes
+                pixelCenterX = this.getScreenPlaneWidth() / 2 - pixelCenterX;
+                pixelCenterY = this.screenPlaneHeight / 2 - pixelCenterY;
+
+                /// create a ray to be cast from the camera through the center of the current pixel
+                Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
+                Color rayColorValue = r.trace(scene);
+                digitalImage.setRGB(x, y, rayColorValue.getRGB());
             }
         }
 
@@ -85,6 +104,20 @@ public class Camera {
     }
     public double getScreenPlaneWidth() {
         return this.screenPlaneHeight * this.screenPlaneWidthToHeightRatio;
+    }
+    /*
+       Getter to compute the height of a single pixel from
+       the height of the screen plane and its height in pixels.
+     */
+    public double getPixelHeight() {
+        return this.screenPlaneHeight / this.screenPlaneHeightInPixels;
+    }
+    /*
+       Getter to compute the width of a single pixel from the width
+       of the screen plane and its width in pixels.
+     */
+    public double getPixelWidth() {
+        return this.getScreenPlaneWidth() / this.getScreenPlaneWidthInPixels();
     }
 
     /**

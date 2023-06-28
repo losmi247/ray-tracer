@@ -1,6 +1,12 @@
 package tracing;
 
+import jdk.swing.interop.LightweightContentWrapper;
+import shapes.RTShape;
 import utility.Vector3D;
+
+import java.awt.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Class to encapsulate a ray in the
@@ -26,20 +32,58 @@ public class Ray {
      * Methods
      */
     /*
-        Returns the point on this ray P = O + s * D for
-        the given value of the non-negative parameter s.
+       Method to cast and trace a ray, and find resulting color
+       value contribution of this ray, given a scene.
+     */
+    public Color trace(Scene scene) {
+        ArrayList<RTShape> shapes = scene.getShapes();
+        ArrayList<Light> lights = scene.getLights();
+
+        /// first find the first intersection of this ray with a shape
+        Vector3D firstIntersection = null;
+        double minDistanceSoFar = -1;
+        RTShape intersectedShape = null;
+        for (RTShape shape : shapes) {
+            /// find the first intersection of this ray and this shape
+            Vector3D intersection = shape.intersect(this);
+            if(intersection != null) {
+                if(firstIntersection == null || this.distance(intersection) < minDistanceSoFar) {
+                    firstIntersection = intersection;
+                    minDistanceSoFar = this.distance(intersection);
+                    intersectedShape = shape;
+                }
+            }
+        }
+
+        if(firstIntersection == null) {
+            return Color.BLACK;
+        }
+
+        /// no recursive tracing reflections/refractions for now
+        return Shader.evaluateModel(firstIntersection, intersectedShape);
+    }
+    /*
+       Method to return the point on this ray P = O + s * D for
+       the given value of the non-negative parameter s.
      */
     public Vector3D pointAt(double s){
         return this.origin.added(this.direction.scaled(s));
     }
     /*
-        Returns a new ray obtained from reflecting this ray
-        against the given 'point' on a surface with local
-        unit normal vector 'normal'.
+       Method to return a new ray obtained by reflecting this ray
+       against the given 'point' on a surface with local
+       unit normal vector 'normal'.
     */
     public Ray reflectedRay(Vector3D point, Vector3D normal){
         Vector3D perfectReflectionDirection = this.direction.negated().reflected(normal);
         return new Ray(point, perfectReflectionDirection);
+    }
+    /*
+       Method to get the distance from the origin of the ray
+       to a particular point (as a Vector3D).
+     */
+    public double distance(Vector3D point) {
+        return point.added(this.origin.negated()).magnitude();
     }
 
     /**
