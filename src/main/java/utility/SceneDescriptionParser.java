@@ -13,7 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +25,8 @@ import java.util.Map;
  * shapes are enclosed in a 'shapes' element within it, and all
  * lights are enclosed in a 'lights' element within it.
  *
- * Checked exceptions from used libraries are always passed up, and if
- * incorrect structure of the XML scene description is detected,
+ * Checked exceptions from used libraries are always passed up.
+ * If incorrect structure of the XML scene description is detected,
  * IncorrectSceneDescriptionXMLStructureException is thrown.
  */
 public class SceneDescriptionParser {
