@@ -91,7 +91,7 @@ public class Camera {
 
                 /// create a ray to be cast from the camera through the center of the current pixel
                 Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
-                Color rayColorValue = r.trace(scene);
+                Color rayColorValue = r.trace(scene, shader);
                 digitalImage.setRGB(x, y, rayColorValue.getRGB());
             }
         }
