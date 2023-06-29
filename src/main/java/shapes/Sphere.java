@@ -70,6 +70,24 @@ public class Sphere implements RTShape {
         }
     }
     /*
+       Method that returns the unit normal at a given point on
+       the surface of the sphere.
+
+       The unit normal must point outwards by convention.
+
+       If the precondition (point must be on the surface of
+       the shape) is violated, behaviour is undefined.
+     */
+    public Vector3D getUnitNormalAt(Vector3D point) {
+        /// vector from center of the sphere to the given point
+        /// is exactly the normal vector to surface of the sphere
+        return point.added(this.center.negated()).normalised();
+    }
+
+    /**
+     * Static Utility Methods
+     */
+    /*
        Method that parses a sphere from a map mapping attribute names
        to their values.
      */

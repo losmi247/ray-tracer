@@ -23,4 +23,15 @@ public interface RTShape {
        if there is no intersection.
      */
     Vector3D intersect(Ray ray);
+    /*
+       Method that returns the unit normal to the surface
+       of the shape at the given point on the surface of
+       the shape.
+
+       The unit normal must point outwards by convention.
+
+       If the precondition (point must be on the surface of
+       the shape) is violated, behaviour is undefined.
+     */
+    Vector3D getUnitNormalAt(Vector3D point);
 }
