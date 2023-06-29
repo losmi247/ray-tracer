@@ -55,6 +55,12 @@ public class Vector3D {
         Vector3D unitNormal = normal.normalised();
         return unitNormal.scaled(2 * this.scalarProduct(unitNormal)).added(this.negated()).normalised();
     }
+    public double magnitude(){
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+    public double magnitudeSquared() {
+        return this.scalarProduct(this);
+    }
 
     /** Getters
      */
@@ -66,8 +72,5 @@ public class Vector3D {
     }
     public double getZ(){
         return this.z;
-    }
-    public double magnitude(){
-        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 }

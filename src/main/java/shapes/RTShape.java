@@ -22,5 +22,5 @@ public interface RTShape {
        or throws the checked exception NoIntersection
        if there is no intersection.
      */
-    Vector3D intersect(Ray r);
+    Vector3D intersect(Ray ray);
 }
