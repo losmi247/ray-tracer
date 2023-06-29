@@ -1,6 +1,8 @@
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import shading.PhongShader;
+import shading.Shader;
 import tracing.Ray;
 import tracing.Scene;
 import utility.IncorrectSceneDescriptionXMLStructureException;
@@ -68,7 +70,8 @@ public class Camera {
        , and creates a 'result.png' file in the project root directory.
      */
     public BufferedImage render(String sceneDescriptionPath) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
-        Scene scene = new Scene(sceneDescriptionPath, Color.YELLOW, 0.05);
+        Scene scene = new Scene(sceneDescriptionPath);
+        Shader shader = new PhongShader(scene);
 
         BufferedImage digitalImage = new BufferedImage(this.getScreenPlaneWidthInPixels(), this.screenPlaneHeightInPixels, BufferedImage.TYPE_INT_ARGB);
         double pixelWidth = this.getPixelWidth();

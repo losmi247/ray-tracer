@@ -12,10 +12,8 @@ import java.util.ArrayList;
 
 /**
  * A class to encapsulate a scene described by
- * an XML file. It contains a list of all shapes, a
- * list of all lights, and the color of the ambient
- * component of the Phong's shading model, as well as
- * ambient component intensity.
+ * an XML file. It contains a list of all shapes
+ * and a list of all lights.
  *
  * The scene is immutable.
  */
@@ -23,8 +21,6 @@ import java.util.ArrayList;
 public class Scene {
     private final ArrayList<RTShape> shapes;
     private final ArrayList<Light> lights;
-    private final Color ambientColor;
-    private final double ambientComponentIntensity;
 
     /**
      * Constructors
@@ -33,30 +29,11 @@ public class Scene {
        Constructor from a path from the project root folder
        to the scene description XML. Uses the SceneDescriptionParser
        to parse the shapes and lights.
-
-       Sets the ambient color to default black (no ambient component) and
-       intensity to 0.
      */
     public Scene(String sceneDescriptionPath) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         SceneDescriptionParser descriptionParser = new SceneDescriptionParser(sceneDescriptionPath);
         this.shapes = descriptionParser.parseShapes();
         this.lights = descriptionParser.parseLights();
-
-        this.ambientColor = Color.BLACK;
-        this.ambientComponentIntensity = 0;
-    }
-    /*
-       Constructor from a path from the project root folder
-       to the scene description XML. Uses the SceneDescriptionParser
-       to parse the shapes and lights.
-     */
-    public Scene(String sceneDescriptionPath, Color ambientColor, double ambientIntensity) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
-        SceneDescriptionParser descriptionParser = new SceneDescriptionParser(sceneDescriptionPath);
-        this.shapes = descriptionParser.parseShapes();
-        this.lights = descriptionParser.parseLights();
-
-        this.ambientColor = ambientColor;
-        this.ambientComponentIntensity = ambientIntensity;
     }
 
     /**
@@ -67,11 +44,5 @@ public class Scene {
     }
     public ArrayList<Light> getLights() {
         return lights;
-    }
-    public Color getAmbientColor() {
-        return this.ambientColor;
-    }
-    public double getAmbientComponentIntensity() {
-        return this.ambientComponentIntensity;
     }
 }

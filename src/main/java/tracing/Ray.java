@@ -1,11 +1,10 @@
 package tracing;
 
-import jdk.swing.interop.LightweightContentWrapper;
+import shading.Shader;
 import shapes.RTShape;
 import utility.Vector3D;
 
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -35,7 +34,7 @@ public class Ray {
        Method to cast and trace a ray, and find resulting color
        value contribution of this ray, given a scene.
      */
-    public Color trace(Scene scene) {
+    public Color trace(Scene scene, Shader shader) {
         ArrayList<RTShape> shapes = scene.getShapes();
         ArrayList<Light> lights = scene.getLights();
 
@@ -59,8 +58,8 @@ public class Ray {
             return Color.BLACK;
         }
 
-        /// no recursive tracing reflections/refractions for now
-        return Shader.evaluateModel(firstIntersection, intersectedShape);
+        /// no recursive tracing reflections/refractions for now TODO
+        return shader.evaluateShadingModel(intersectedShape, firstIntersection);
     }
     /*
        Method to return the point on this ray P = O + s * D for
