@@ -41,8 +41,8 @@ public class PhongShader implements Shader {
      */
     public PhongShader(Scene scene) {
         this.lights = scene.getLights();
-        this.ambientColor = Color.BLACK;
-        this.ambientComponentCoefficient = 0.05;
+        this.ambientColor = Color.orange;
+        this.ambientComponentCoefficient = 0.01;
         this.diffuseComponentCoefficient = 0.8;
         this.specularComponentCoefficient = 0.2;
     }
@@ -60,6 +60,15 @@ public class PhongShader implements Shader {
 
     /**
      * Methods
+     */
+    /*
+       Method that evaluates the Phong's shading model at a given point
+       on the surface of the given shape.
+
+       Phong's shading model consists of three components:
+            Ambient component (models indirect illumination)
+            Diffuse component (models Lambertian illumination)
+            Specular component (models imperfect specular illumination)
      */
     public Color evaluateShadingModel(RTShape shape, Vector3D point) {
         /// TODO
