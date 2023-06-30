@@ -39,6 +39,8 @@ public class RTColor {
     public static final RTColor magenta   = new RTColor(1.0, 0, 1.0);
     public static final RTColor yellow    = new RTColor(1.0, 1.0, 0);
 
+    public static final RTColor backgroundColor = new RTColor(168, 204, 224, 210);
+
     /**
      * Constructors
      *

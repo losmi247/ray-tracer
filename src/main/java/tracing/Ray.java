@@ -55,7 +55,8 @@ public class Ray {
         }
 
         if(firstIntersection == null) {
-            return RTColor.blank;
+            /// TODO - decide what background to return if no intersection
+            return RTColor.backgroundColor;
         }
 
         /// TODO - recursive tracing (reflections/refractions)
