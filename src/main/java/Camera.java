@@ -53,7 +53,7 @@ public class Camera {
         this.screenPlaneHeight = 4;
         this.screenPlaneDepth = 2;
         this.screenPlaneWidthToHeightRatio = 1;
-        this.screenPlaneHeightInPixels = 1000;
+        this.screenPlaneHeightInPixels = 1200;
     }
     /*
        Constructor to customise screen plane parameters.
