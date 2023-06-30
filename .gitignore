@@ -29,6 +29,3 @@ replay_pid*
 
 # unit tests
 src/test/
-
-# rendered image output
-result.png
