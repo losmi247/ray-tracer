@@ -10,7 +10,6 @@ import tracing.Light;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -193,7 +192,7 @@ public class SceneDescriptionParser {
 
         /// parse light specular color
         String colorStr = colorNode.getTextContent();
-        Color color = SceneDescriptionParser.parseColor(colorStr);
+        RTColor color = SceneDescriptionParser.parseColor(colorStr);
 
         /// parse light intensity
         String intensityStr = intensityNode.getTextContent();
@@ -213,14 +212,14 @@ public class SceneDescriptionParser {
         return new Vector3D(Double.parseDouble(components[0]), Double.parseDouble(components[1]), Double.parseDouble(components[2]));
     }
     /*
-       Method to parse a Color object (java.awt) represented as a string
+       Method to parse a RTColor object represented as a string
        in the form (r,g,b,a) where r,g,b,a are integers from 0 to 255 inclusive.
      */
-    public static Color parseColor(String s) throws IncorrectSceneDescriptionXMLStructureException {
+    public static RTColor parseColor(String s) throws IncorrectSceneDescriptionXMLStructureException {
         String[] components = s.substring(1, s.length()-1).split(",");
         if(components.length != 4) {
             throw new IncorrectSceneDescriptionXMLStructureException();
         }
-        return new Color(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]), Integer.parseInt(components[3]));
+        return new RTColor(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]), Integer.parseInt(components[3]));
     }
 }

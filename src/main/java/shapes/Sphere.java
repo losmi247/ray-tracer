@@ -2,9 +2,9 @@ package shapes;
 
 import tracing.Ray;
 import utility.IncorrectSceneDescriptionXMLStructureException;
+import utility.RTColor;
 import utility.SceneDescriptionParser;
 import utility.Vector3D;
-import java.awt.Color;
 import java.util.Map;
 
 /**
@@ -14,9 +14,9 @@ public class Sphere implements RTShape {
     private static final String shapeID = "sphere";
     private Vector3D center;
     private double radius;
-    private Color diffuseColor;
+    private RTColor diffuseColor;
 
-    public Sphere(Vector3D center, double radius, Color diffuseColor) {
+    public Sphere(Vector3D center, double radius, RTColor diffuseColor) {
         this.center = center;
         this.radius = radius;
         this.diffuseColor = diffuseColor;
@@ -94,7 +94,7 @@ public class Sphere implements RTShape {
     public static Sphere parseShape(Map<String, String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D center = null;
         double radius = -1;
-        Color color = null;
+        RTColor color = null;
         for(Map.Entry<String, String> entry : attributes.entrySet()) {
             String attributeName = entry.getKey();
             String attributeValue = entry.getValue();
@@ -126,7 +126,7 @@ public class Sphere implements RTShape {
     public double getRadius() {
         return this.radius;
     }
-    public Color getColor() {
+    public RTColor getColor() {
         return this.diffuseColor;
     }
 }

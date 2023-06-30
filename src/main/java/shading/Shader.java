@@ -1,11 +1,8 @@
 package shading;
 
 import shapes.RTShape;
-import tracing.Light;
+import utility.RTColor;
 import utility.Vector3D;
-
-import java.awt.Color;
-import java.util.ArrayList;
 
 /**
  * An interface for a shader - any class that encapsulates
@@ -29,5 +26,5 @@ public interface Shader {
        Method that evaluates the specific shading model
        at the given point on the surface of the given shape.
      */
-    Color evaluateShadingModel(RTShape shape, Vector3D point);
+    RTColor evaluateShadingModel(RTShape shape, Vector3D point);
 }

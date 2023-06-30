@@ -84,7 +84,7 @@ public class RTColor {
        Method to scale color values by a given coefficient.
      */
     public RTColor scaled(double scalingCoefficient) {
-        return new RTColor(this.r * scalingCoefficient, this.g * scalingCoefficient, this.b * scalingCoefficient);
+        return new RTColor(this.r * scalingCoefficient, this.g * scalingCoefficient, this.b * scalingCoefficient, this.a * scalingCoefficient);
     }
     /*
        Method to add another RTColor to this color, used for

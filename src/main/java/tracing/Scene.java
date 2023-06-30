@@ -6,7 +6,6 @@ import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.SceneDescriptionParser;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 

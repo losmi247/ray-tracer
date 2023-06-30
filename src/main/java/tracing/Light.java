@@ -1,6 +1,6 @@
 package tracing;
 
-import java.awt.Color;
+import utility.RTColor;
 import utility.Vector3D;
 
 /**
@@ -8,10 +8,10 @@ import utility.Vector3D;
  */
 public class Light {
     private Vector3D position;
-    private Color lightSpecularColor;
+    private RTColor lightSpecularColor;
     private double intensity;
 
-    public Light(Vector3D position, Color lightSpecularColor, double intensity){
+    public Light(Vector3D position, RTColor lightSpecularColor, double intensity){
         this.position = position;
         this.lightSpecularColor = lightSpecularColor;
         this.intensity = intensity;
@@ -23,7 +23,7 @@ public class Light {
     public Vector3D getPosition() {
         return this.position;
     }
-    public Color getColor() {
+    public RTColor getColor() {
         return this.lightSpecularColor;
     }
     public double getIntensity() {

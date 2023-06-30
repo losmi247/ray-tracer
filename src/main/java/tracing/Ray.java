@@ -2,9 +2,9 @@ package tracing;
 
 import shading.Shader;
 import shapes.RTShape;
+import utility.RTColor;
 import utility.Vector3D;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +34,7 @@ public class Ray {
        Method to cast and trace a ray, and find resulting color
        value contribution of this ray, given a scene.
      */
-    public Color trace(Scene scene, Shader shader) {
+    public RTColor trace(Scene scene, Shader shader) {
         ArrayList<RTShape> shapes = scene.getShapes();
         ArrayList<Light> lights = scene.getLights();
 
@@ -55,7 +55,7 @@ public class Ray {
         }
 
         if(firstIntersection == null) {
-            return Color.BLACK;
+            return RTColor.black;
         }
 
         /// no recursive tracing reflections/refractions for now TODO

@@ -7,7 +7,6 @@ import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.RTColor;
 import utility.Vector3D;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
@@ -92,7 +91,7 @@ public class Camera {
 
                 /// create a ray to be cast from the camera through the center of the current pixel
                 Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
-                Color rayColorValue = r.trace(scene, shader);
+                RTColor rayColorValue = r.trace(scene, shader);
                 digitalImage.setRGB(x, y, rayColorValue.getRGB());
             }
         }

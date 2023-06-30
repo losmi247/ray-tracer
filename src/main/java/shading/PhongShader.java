@@ -3,9 +3,9 @@ package shading;
 import shapes.RTShape;
 import tracing.Light;
 import tracing.Scene;
+import utility.RTColor;
 import utility.Vector3D;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public class PhongShader implements Shader {
     private final ArrayList<Light> lights;
-    private final Color ambientColor;
+    private final RTColor ambientColor;
     private final double ambientComponentCoefficient;
     private final double diffuseComponentCoefficient;
     private final double specularComponentCoefficient;
@@ -41,7 +41,7 @@ public class PhongShader implements Shader {
      */
     public PhongShader(Scene scene) {
         this.lights = scene.getLights();
-        this.ambientColor = Color.orange;
+        this.ambientColor = RTColor.yellow;
         this.ambientComponentCoefficient = 0.01;
         this.diffuseComponentCoefficient = 0.8;
         this.specularComponentCoefficient = 0.2;
@@ -50,9 +50,9 @@ public class PhongShader implements Shader {
        Constructor from a Scene, that customises the ambient
        color and the three coefficients.
      */
-    public PhongShader(Scene scene, Color ambientColor, double ka, double kd, double ks) {
+    public PhongShader(Scene scene, RTColor ambientColor, double ka, double kd, double ks) {
         this.lights = scene.getLights();
-        this.ambientColor = Color.BLACK;
+        this.ambientColor = RTColor.black;
         this.ambientComponentCoefficient = ka;
         this.diffuseComponentCoefficient = kd;
         this.specularComponentCoefficient = ks;
@@ -70,7 +70,7 @@ public class PhongShader implements Shader {
             Diffuse component (models Lambertian illumination)
             Specular component (models imperfect specular illumination)
      */
-    public Color evaluateShadingModel(RTShape shape, Vector3D point) {
+    public RTColor evaluateShadingModel(RTShape shape, Vector3D point) {
         /// TODO
         return null;
     }
