@@ -23,6 +23,8 @@ import javax.xml.parsers.ParserConfigurationException;
  * effectively projecting all shapes onto the screen plane,
  * which may cause distortions.
  *
+ * TODO - finite aperture camera in a separate class
+ *
  * The coordinate system is right-handed.
  *
  * The camera position and orientation can not be customised,
