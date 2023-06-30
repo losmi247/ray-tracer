@@ -7,6 +7,7 @@ import utility.RTColor;
 import utility.Vector3D;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * A class that implements
@@ -38,13 +39,18 @@ public class PhongShader implements Shader {
     /*
        Constructor from a Scene, that sets the ambient color
        and the three coefficients to default values.
+
+       The values of the coefficients have been experimented
+       with to minimise the chance of color values leaving
+       the range 0.0 to 1.0, so it is recommended to use this
+       default constructor.
      */
     public PhongShader(Scene scene) {
         this.lights = scene.getLights();
-        this.ambientColor = RTColor.yellow;
-        this.ambientComponentCoefficient = 0.01;
-        this.diffuseComponentCoefficient = 0.8;
-        this.specularComponentCoefficient = 0.2;
+        this.ambientColor = new RTColor(0.0, 1.0, 0.0, 1.0);
+        this.ambientComponentCoefficient = 0.05;
+        this.diffuseComponentCoefficient = 0.9;
+        this.specularComponentCoefficient = 0.5;
     }
     /*
        Constructor from a Scene, that customises the ambient
@@ -71,7 +77,42 @@ public class PhongShader implements Shader {
             Specular component (models imperfect specular illumination)
      */
     public RTColor evaluateShadingModel(RTShape shape, Vector3D point) {
-        /// TODO
-        return null;
+        /// ambient illumination
+        RTColor ambientComponent = this.getAmbientComponent();
+
+        /// diffuse illumination
+        RTColor diffuseComponent = RTColor.blank;
+        for (Light light : this.lights) {
+            /// TODO - check if light is occluded by another object (cast and trace a shadow ray)
+            /// TODO - check if light is occluded by this object itself (self shadowing)
+            RTColor lightContribution = this.getDiffuseComponent(shape, point, light);
+            diffuseComponent = diffuseComponent.added(lightContribution);
+        }
+
+        /// TODO - specular illumination
+        RTColor specularComponent = RTColor.blank;
+
+        return ambientComponent.added(diffuseComponent).added(specularComponent);
+    }
+    /*
+       Method to evaluate the ambient illumination component.
+     */
+    private RTColor getAmbientComponent() {
+        return this.ambientColor.scaled(this.ambientComponentCoefficient);
+    }
+    /*
+       Method to evaluate the diffuse illumination component,
+       for a given Light object.
+     */
+    private RTColor getDiffuseComponent(RTShape shape, Vector3D point, Light light) {
+        /// unit vector from the given point to this light
+        Vector3D lightDirection = light.getPosition().added(point.negated()).normalised();
+        /// unit normal to surface of the shape at the given point
+        Vector3D unitNormal = shape.getUnitNormalAt(point);
+
+        /// take max with 0, so that only the side of the surface facing the light is illuminated
+        double diffuseCoefficient = this.diffuseComponentCoefficient * light.getIntensity() * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
+
+        return shape.getColorAt(point).scaled(diffuseCoefficient);
     }
 }

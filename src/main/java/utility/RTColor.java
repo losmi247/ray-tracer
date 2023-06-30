@@ -20,6 +20,11 @@ public class RTColor {
     private final double a;
 
     /**
+     * Blank/empty color - starting point
+     * for evaluation of a shading model.
+     */
+    public static final RTColor blank = new RTColor(0.0, 0.0, 0.0, 0.0);
+    /**
      * Predefined colors with max opacity 1.0
      */
     public static final RTColor white     = new RTColor(1.0, 1.0, 1.0);

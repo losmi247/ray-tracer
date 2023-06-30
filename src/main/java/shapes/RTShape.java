@@ -1,4 +1,5 @@
 package shapes;
+import utility.RTColor;
 import utility.Vector3D;
 import tracing.Ray;
 
@@ -34,4 +35,15 @@ public interface RTShape {
        the shape) is violated, behaviour is undefined.
      */
     Vector3D getUnitNormalAt(Vector3D point);
+    /*
+       Method that returns the (diffuse) color of the shape
+       at a given point on its surface.
+
+       In other words, each RTShape must define its diffuse
+       color at each point on its surface.
+
+       If the precondition (point must be on the surface of
+       the shape) is violated, behaviour is undefined.
+     */
+    RTColor getColorAt(Vector3D point);
 }

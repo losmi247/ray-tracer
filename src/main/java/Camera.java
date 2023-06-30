@@ -19,6 +19,10 @@ import javax.xml.parsers.ParserConfigurationException;
  * along with a screen plane at z=depth, with specified
  * height and screen ratio.
  *
+ * This is a PINHOLE CAMERA, meaning that we are
+ * effectively projecting all shapes onto the screen plane,
+ * which may cause distortions.
+ *
  * The coordinate system is right-handed.
  *
  * The camera position and orientation can not be customised,
@@ -38,12 +42,18 @@ public class Camera {
      */
     /*
        Default constructor.
+
+       Puts the screen plane at z = 2, and makes FOV angles
+       equal to 45 degrees in each direction to minimise
+       distortion due to a pinhole camera (we're basically
+       perspective-projecting shapes onto the screen plane
+       which can cause distortions)
      */
     public Camera() {
-        this.screenPlaneHeight = 100;
-        this.screenPlaneDepth = 10;
-        this.screenPlaneWidthToHeightRatio = 1.5;
-        this.screenPlaneHeightInPixels = 320;
+        this.screenPlaneHeight = 4;
+        this.screenPlaneDepth = 2;
+        this.screenPlaneWidthToHeightRatio = 1;
+        this.screenPlaneHeightInPixels = 1000;
     }
     /*
        Constructor to customise screen plane parameters.
@@ -92,7 +102,10 @@ public class Camera {
                 /// create a ray to be cast from the camera through the center of the current pixel
                 Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
                 RTColor rayColorValue = r.trace(scene, shader);
-                digitalImage.setRGB(x, y, rayColorValue.getRGB());
+
+                /// clip the color values to 0.0 to 1.0 range, and store it
+                RTColor rayColorValueNormed = rayColorValue.normalised();
+                digitalImage.setRGB(x, y, rayColorValueNormed.getRGB());
             }
         }
 

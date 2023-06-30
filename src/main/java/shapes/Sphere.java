@@ -8,7 +8,8 @@ import utility.Vector3D;
 import java.util.Map;
 
 /**
- * A sphere object.
+ * A sphere object, with the same color at each point
+ * on its surface.
  */
 public class Sphere implements RTShape {
     private static final String shapeID = "sphere";
@@ -83,6 +84,19 @@ public class Sphere implements RTShape {
         /// is exactly the normal vector to surface of the sphere
         return point.added(this.center.negated()).normalised();
     }
+    /*
+       Method that returns the diffuse color of the sphere at
+       a given point on its surface.
+
+       This sphere has the same diffuse color everywhere.
+
+       If the precondition (point must be on the surface of
+       the shape) is violated, behaviour is undefined.
+     */
+    public RTColor getColorAt(Vector3D point) {
+        return this.diffuseColor;
+    }
+
 
     /**
      * Static Utility Methods

@@ -1,27 +1,47 @@
 <elements>
     <shapes>
         <sphere>
-            <center>(0,0,0)</center>
-            <radius>5</radius>
+            <center>(2,2,8)</center>
+            <radius>3</radius>
+            <color>(255,0,0,255)</color>
+        </sphere>
+        <sphere>
+            <center>(-1,-1,5)</center>
+            <radius>2</radius>
+            <color>(255,255,0,255)</color>
+        </sphere>
+        <sphere>
+            <center>(2,-2,6)</center>
+            <radius>2</radius>
             <color>(0,255,255,255)</color>
         </sphere>
         <sphere>
-            <center>(10,10,10)</center>
-            <radius>1</radius>
-            <color>(56,200,47,255)</color>
+            <center>(-3,4,10)</center>
+            <radius>4</radius>
+            <color>(255,0,255,255)</color>
+        </sphere>
+        <sphere>
+            <center>(0.4,-1,2)</center>
+            <radius>0.2</radius>
+            <color>(252,3,148,255)</color>
+        </sphere>
+        <sphere>
+            <center>(-1.4,1,3)</center>
+            <radius>0.3</radius>
+            <color>(3,98,252,255)</color>
         </sphere>
     </shapes>
 
     <lights>
         <light>
-            <position>(10,10,10)</position>
-            <color>(0,0,255,255)</color>
-            <intensity>0.8</intensity>
+            <position>(-10,10,-5)</position>
+            <color>(255,255,0,255)</color>
+            <intensity>1</intensity>
         </light>
         <light>
-            <position>(20,0,0)</position>
-            <color>(255,0,255,255)</color>
-            <intensity>0.5</intensity>
+            <position>(10,-10,-5)</position>
+            <color>(0,255,255,255)</color>
+            <intensity>0.1</intensity>
         </light>
     </lights>
 </elements>

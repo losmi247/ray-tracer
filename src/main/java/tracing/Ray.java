@@ -55,10 +55,10 @@ public class Ray {
         }
 
         if(firstIntersection == null) {
-            return RTColor.black;
+            return RTColor.blank;
         }
 
-        /// no recursive tracing reflections/refractions for now TODO
+        /// TODO - recursive tracing (reflections/refractions)
         return shader.evaluateShadingModel(intersectedShape, firstIntersection);
     }
     /*
