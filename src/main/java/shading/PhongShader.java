@@ -32,6 +32,7 @@ public class PhongShader implements Shader {
     private final double ambientComponentCoefficient;
     private final double diffuseComponentCoefficient;
     private final double specularComponentCoefficient;
+    private final double phongRoughnessCoefficient;
 
     /**
      * Constructors
@@ -51,17 +52,21 @@ public class PhongShader implements Shader {
         this.ambientComponentCoefficient = 0.05;
         this.diffuseComponentCoefficient = 0.9;
         this.specularComponentCoefficient = 0.5;
+
+        this.phongRoughnessCoefficient = 8;
     }
     /*
        Constructor from a Scene, that customises the ambient
        color and the three coefficients.
      */
-    public PhongShader(Scene scene, RTColor ambientColor, double ka, double kd, double ks) {
+    public PhongShader(Scene scene, RTColor ambientColor, double ka, double kd, double ks, double n) {
         this.lights = scene.getLights();
         this.ambientColor = RTColor.black;
         this.ambientComponentCoefficient = ka;
         this.diffuseComponentCoefficient = kd;
         this.specularComponentCoefficient = ks;
+
+        this.phongRoughnessCoefficient = n;
     }
 
     /**
@@ -91,6 +96,12 @@ public class PhongShader implements Shader {
 
         /// TODO - specular illumination
         RTColor specularComponent = RTColor.blank;
+        for(Light light : this.lights) {
+            /// TODO - check if light is occluded by another object (cast and trace a shadow ray)
+            /// TODO - check if light is occluded by this object itself (self shadowing)
+            RTColor lightContribution = this.getSpecularComponent(shape, point, light);
+            specularComponent = specularComponent.added(lightContribution);
+        }
 
         return ambientComponent.added(diffuseComponent).added(specularComponent);
     }
@@ -103,6 +114,9 @@ public class PhongShader implements Shader {
     /*
        Method to evaluate the diffuse illumination component,
        for a given Light object.
+
+       Diffuse component is view independent, i.e. does not depend
+       on the position of the camera.
      */
     private RTColor getDiffuseComponent(RTShape shape, Vector3D point, Light light) {
         /// unit vector from the given point to this light
@@ -114,5 +128,33 @@ public class PhongShader implements Shader {
         double diffuseCoefficient = this.diffuseComponentCoefficient * light.getIntensity() * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
 
         return shape.getColorAt(point).scaled(diffuseCoefficient);
+    }
+    /*
+       Method to evaluate the specular illumination component,
+       for a given Light object.
+
+       Specular component is view-dependent, it creates shininess due to
+       imperfect specular reflections.
+
+       The specular component uses the (specular) color of the light source,
+       not the (diffuse) color of the shape itself.
+
+       TODO - The camera is currently fixed at (0,0,0) - think about being able to change camera position
+     */
+    private RTColor getSpecularComponent(RTShape shape, Vector3D point, Light light) {
+        /// unit vector from the given point to this light
+        Vector3D lightDirection = light.getPosition().added(point.negated()).normalised();
+        /// unit normal to surface of the shape at the given point
+        Vector3D unitNormal = shape.getUnitNormalAt(point);
+        /// unit vector from the given point to the camera
+        Vector3D viewDirection = (new Vector3D(0,0,0)).added(point.negated()).normalised();
+        /// perfect specular reflection direction of the light at this point
+        Vector3D reflectionDirection = lightDirection.reflected(unitNormal);
+
+        /// take max with 0, so that only the side of the surface facing the light is illuminated
+        double phongCoefficient = Math.pow(Math.max(0.0, reflectionDirection.scalarProduct(viewDirection)), this.phongRoughnessCoefficient);
+        double specularCoefficient = this.specularComponentCoefficient * light.getIntensity() * phongCoefficient;
+
+        return light.getColor().scaled(specularCoefficient);
     }
 }
