@@ -1,12 +1,10 @@
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import shading.PhongShader;
 import shading.Shader;
 import tracing.Ray;
 import tracing.Scene;
 import utility.IncorrectSceneDescriptionXMLStructureException;
-import utility.SceneDescriptionParser;
+import utility.RTColor;
 import utility.Vector3D;
 
 import java.awt.*;
@@ -79,6 +77,9 @@ public class Camera {
         for(int y = 0; y < this.screenPlaneHeightInPixels; y++) {
             for (int x = 0; x < this.getScreenPlaneWidthInPixels(); x++) {
                 /*Color col = new Color(227, 4, 49, 255);
+                digitalImage.setRGB(x,y, col.getRGB());*/
+
+                /*RTColor col = RTColor.cyan;
                 digitalImage.setRGB(x,y, col.getRGB());*/
 
                 /// x,y coordinates of pixel from image origin (top left)
