@@ -38,7 +38,7 @@ public class Ray {
         ArrayList<RTShape> shapes = scene.getShapes();
         ArrayList<Light> lights = scene.getLights();
 
-        /// first find the first intersection of this ray with a shape
+        /// find the first intersection of this ray with a shape
         Vector3D firstIntersection = null;
         double minDistanceSoFar = -1;
         RTShape intersectedShape = null;

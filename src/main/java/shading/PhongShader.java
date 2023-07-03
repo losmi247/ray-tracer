@@ -3,31 +3,29 @@ package shading;
 import shapes.RTShape;
 import tracing.Light;
 import tracing.Scene;
+import tracing.ShadowRay;
 import utility.RTColor;
 import utility.Vector3D;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 /**
- * A class that implements
- * the Phong's shading model.
+ * A class that implements Phong's shading model.
  *
- * Each shader has a list of lights in the scene
- * that does not change throughout rendering.
- * Shaders are immutable.
+ * This shader is created exclusively from a specific Scene object,
+ * so each instance has a scene that it is intended for, so that
+ * it always refers to a specific list of lights from that scene
+ * (which it needs for calculating the diffuse and specular
+ * illumination components) and a specific list of RTShape's
+ * from that scene (which it needs for checking if shadow rays
+ * intersect a shape before reaching the light source).
  *
- * Shaders are created exclusively from a specific Scene object,
- * so each shader has a scene that it is intended for, so that
- * it can contain the specific list of lights from that scene
- * (instead of having to pass the list of lights as an argument
- * each time, you just instantiate a separate Shader using one
- * list of lights) and hopefully evaluate the model faster
- * during rendering.
+ * This shader is immutable - the scene it refers to and its
+ * parameters are never changed.
  */
 
 public class PhongShader implements Shader {
-    private final ArrayList<Light> lights;
+    private final Scene scene;
     private final RTColor ambientColor;
     private final double ambientComponentCoefficient;
     private final double diffuseComponentCoefficient;
@@ -47,7 +45,7 @@ public class PhongShader implements Shader {
        default constructor.
      */
     public PhongShader(Scene scene) {
-        this.lights = scene.getLights();
+        this.scene = scene;
         this.ambientColor = new RTColor(0.0, 1.0, 0.0, 1.0);
         this.ambientComponentCoefficient = 0.05;
         this.diffuseComponentCoefficient = 0.9;
@@ -60,8 +58,8 @@ public class PhongShader implements Shader {
        color and the three coefficients.
      */
     public PhongShader(Scene scene, RTColor ambientColor, double ka, double kd, double ks, double n) {
-        this.lights = scene.getLights();
-        this.ambientColor = RTColor.black;
+        this.scene = scene;
+        this.ambientColor = ambientColor;
         this.ambientComponentCoefficient = ka;
         this.diffuseComponentCoefficient = kd;
         this.specularComponentCoefficient = ks;
@@ -81,25 +79,27 @@ public class PhongShader implements Shader {
             Diffuse component (models Lambertian illumination)
             Specular component (models imperfect specular illumination)
      */
-    public RTColor evaluateShadingModel(RTShape shape, Vector3D point) {
+    public RTColor evaluateShadingModel(RTShape intersectedShape, Vector3D intersectionPoint) {
+        ArrayList<Light> lights = this.scene.getLights();
+
         /// ambient illumination
         RTColor ambientComponent = this.getAmbientComponent();
 
         /// diffuse illumination
         RTColor diffuseComponent = RTColor.blank;
-        for (Light light : this.lights) {
+        for (Light light : lights) {
             /// TODO - check if light is occluded by another object (cast and trace a shadow ray)
             /// TODO - check if light is occluded by this object itself (self shadowing)
-            RTColor lightContribution = this.getDiffuseComponent(shape, point, light);
+            RTColor lightContribution = this.getDiffuseComponent(intersectedShape, intersectionPoint, light);
             diffuseComponent = diffuseComponent.added(lightContribution);
         }
 
         /// TODO - specular illumination
         RTColor specularComponent = RTColor.blank;
-        for(Light light : this.lights) {
+        for(Light light : lights) {
             /// TODO - check if light is occluded by another object (cast and trace a shadow ray)
             /// TODO - check if light is occluded by this object itself (self shadowing)
-            RTColor lightContribution = this.getSpecularComponent(shape, point, light);
+            RTColor lightContribution = this.getSpecularComponent(intersectedShape, intersectionPoint, light);
             specularComponent = specularComponent.added(lightContribution);
         }
 
