@@ -47,7 +47,7 @@ public class PhongShader implements Shader {
     public PhongShader(Scene scene) {
         this.scene = scene;
         this.ambientColor = new RTColor(0.0, 1.0, 0.0, 1.0);
-        this.ambientComponentCoefficient = 0.05;
+        this.ambientComponentCoefficient = 0.1;
         this.diffuseComponentCoefficient = 0.9;
         this.specularComponentCoefficient = 0.5;
 
@@ -87,20 +87,19 @@ public class PhongShader implements Shader {
 
         /// diffuse illumination
         RTColor diffuseComponent = RTColor.blank;
-        for (Light light : lights) {
-            /// TODO - check if light is occluded by another object (cast and trace a shadow ray)
-            /// TODO - check if light is occluded by this object itself (self shadowing)
-            RTColor lightContribution = this.getDiffuseComponent(intersectedShape, intersectionPoint, light);
-            diffuseComponent = diffuseComponent.added(lightContribution);
-        }
-
-        /// TODO - specular illumination
+        /// specular illumination
         RTColor specularComponent = RTColor.blank;
-        for(Light light : lights) {
-            /// TODO - check if light is occluded by another object (cast and trace a shadow ray)
-            /// TODO - check if light is occluded by this object itself (self shadowing)
-            RTColor lightContribution = this.getSpecularComponent(intersectedShape, intersectionPoint, light);
-            specularComponent = specularComponent.added(lightContribution);
+        for (Light light : lights) {
+            ShadowRay shadowRay = new ShadowRay(intersectionPoint, intersectedShape, light);
+            if(!shadowRay.lightSourceOccluded(this.scene)) {
+                /// diffuse illumination
+                RTColor lightDiffuseContribution = this.getDiffuseComponent(intersectedShape, intersectionPoint, light);
+                diffuseComponent = diffuseComponent.added(lightDiffuseContribution);
+
+                /// specular illumination
+                RTColor lightSpecularContribution = this.getSpecularComponent(intersectedShape, intersectionPoint, light);
+                specularComponent = specularComponent.added(lightSpecularContribution);
+            }
         }
 
         return ambientComponent.added(diffuseComponent).added(specularComponent);

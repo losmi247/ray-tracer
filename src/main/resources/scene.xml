@@ -21,7 +21,7 @@
             <color>(255,0,255,255)</color>
         </sphere>
         <sphere>
-            <center>(0.4,-1,2)</center>
+            <center>(1,-1.5,2.5)</center>
             <radius>0.2</radius>
             <color>(252,3,148,255)</color>
         </sphere>
