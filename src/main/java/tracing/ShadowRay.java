@@ -18,6 +18,8 @@ import java.util.ArrayList;
 
 public class ShadowRay extends Ray {
     private final Vector3D target;
+    /// coefficient controlling how much the origins of
+    /// shadow rays are lifted from surface of the shape
     private static final double liftingCoefficient = 1e-6;
 
     /**
@@ -86,8 +88,16 @@ public class ShadowRay extends Ray {
 
             /// if the intersection point is closer to ray origin than
             /// target, the light source is occluded
-            if(intersection != null && super.distance(intersection) < super.distance(target)) {
-                return true;
+            if(intersection != null) {
+                double distanceHit = super.distance(intersection);
+                double distanceTarget = super.distance(target);
+                /// also say the light source is occluded if the intersection
+                /// point is sufficiently (1e-12) close to the target, to avoid
+                /// "pointy" shadow artifacts due to precision errors (similar
+                /// to why we lift origins of shadow rays up from the surface)
+                if (distanceHit < distanceTarget || Math.abs(distanceHit - distanceTarget) < 1e-12) {
+                    return true;
+                }
             }
         }
 
