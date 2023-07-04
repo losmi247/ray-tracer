@@ -15,6 +15,9 @@ import tracing.Ray;
  *      public static RTShape parseShape(Map<String,String> attributes){}
  * TO PARSE THE SHAPE FROM A MAP MAPPING ITS ATTRIBUTES NAMES
  * TO THEIR VALUES.
+ *
+ * TODO - each shape should have an instance variable that controls the
+ *        material properties (coefficients for Phong shading)
  */
 public interface RTShape {
     /*

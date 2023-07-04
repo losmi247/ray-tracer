@@ -26,7 +26,6 @@ import java.util.ArrayList;
 
 public class PhongShader implements Shader {
     private final Scene scene;
-    private final RTColor ambientColor;
     private final double ambientComponentCoefficient;
     private final double diffuseComponentCoefficient;
     private final double specularComponentCoefficient;
@@ -36,8 +35,8 @@ public class PhongShader implements Shader {
      * Constructors
      */
     /*
-       Constructor from a Scene, that sets the ambient color
-       and the three coefficients to default values.
+       Constructor from a Scene, that sets the four coefficients
+       to default values.
 
        The values of the coefficients have been experimented
        with to minimise the chance of color values leaving
@@ -46,20 +45,18 @@ public class PhongShader implements Shader {
      */
     public PhongShader(Scene scene) {
         this.scene = scene;
-        this.ambientColor = new RTColor(0.0, 1.0, 0.0, 1.0);
-        this.ambientComponentCoefficient = 0.1;
-        this.diffuseComponentCoefficient = 0.9;
+        this.ambientComponentCoefficient = 0.4;
+        this.diffuseComponentCoefficient = 0.6;
         this.specularComponentCoefficient = 0.5;
 
-        this.phongRoughnessCoefficient = 8;
+        this.phongRoughnessCoefficient = 40;
     }
     /*
-       Constructor from a Scene, that customises the ambient
-       color and the three coefficients.
+       Constructor from a Scene, that allows
+       customisation of the four coefficients.
      */
-    public PhongShader(Scene scene, RTColor ambientColor, double ka, double kd, double ks, double n) {
+    public PhongShader(Scene scene, double ka, double kd, double ks, double n) {
         this.scene = scene;
-        this.ambientColor = ambientColor;
         this.ambientComponentCoefficient = ka;
         this.diffuseComponentCoefficient = kd;
         this.specularComponentCoefficient = ks;
@@ -83,7 +80,7 @@ public class PhongShader implements Shader {
         ArrayList<Light> lights = this.scene.getLights();
 
         /// ambient illumination
-        RTColor ambientComponent = this.getAmbientComponent();
+        RTColor ambientComponent = this.getAmbientComponent(intersectedShape, intersectionPoint);
 
         /// diffuse illumination
         RTColor diffuseComponent = RTColor.blank;
@@ -105,10 +102,11 @@ public class PhongShader implements Shader {
         return ambientComponent.added(diffuseComponent).added(specularComponent);
     }
     /*
-       Method to evaluate the ambient illumination component.
+       Method to evaluate the ambient illumination component,
+       for a given RTShape.
      */
-    private RTColor getAmbientComponent() {
-        return this.ambientColor.scaled(this.ambientComponentCoefficient);
+    private RTColor getAmbientComponent(RTShape intersectedShape, Vector3D intersectionPoint) {
+        return intersectedShape.getColorAt(intersectionPoint).scaled(this.ambientComponentCoefficient);
     }
     /*
        Method to evaluate the diffuse illumination component,
@@ -117,16 +115,16 @@ public class PhongShader implements Shader {
        Diffuse component is view independent, i.e. does not depend
        on the position of the camera.
      */
-    private RTColor getDiffuseComponent(RTShape shape, Vector3D point, Light light) {
+    private RTColor getDiffuseComponent(RTShape intersectedShape, Vector3D intersectionPoint, Light light) {
         /// unit vector from the given point to this light
-        Vector3D lightDirection = light.getPosition().added(point.negated()).normalised();
+        Vector3D lightDirection = light.getPosition().added(intersectionPoint.negated()).normalised();
         /// unit normal to surface of the shape at the given point
-        Vector3D unitNormal = shape.getUnitNormalAt(point);
+        Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersectionPoint);
 
         /// take max with 0, so that only the side of the surface facing the light is illuminated
         double diffuseCoefficient = this.diffuseComponentCoefficient * light.getIntensity() * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
 
-        return shape.getColorAt(point).scaled(diffuseCoefficient);
+        return intersectedShape.getColorAt(intersectionPoint).scaled(diffuseCoefficient);
     }
     /*
        Method to evaluate the specular illumination component,
@@ -140,13 +138,13 @@ public class PhongShader implements Shader {
 
        TODO - The camera is currently fixed at (0,0,0) - think about being able to change camera position
      */
-    private RTColor getSpecularComponent(RTShape shape, Vector3D point, Light light) {
+    private RTColor getSpecularComponent(RTShape intersectedShape, Vector3D intersectionPoint, Light light) {
         /// unit vector from the given point to this light
-        Vector3D lightDirection = light.getPosition().added(point.negated()).normalised();
+        Vector3D lightDirection = light.getPosition().added(intersectionPoint.negated()).normalised();
         /// unit normal to surface of the shape at the given point
-        Vector3D unitNormal = shape.getUnitNormalAt(point);
+        Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersectionPoint);
         /// unit vector from the given point to the camera
-        Vector3D viewDirection = (new Vector3D(0,0,0)).added(point.negated()).normalised();
+        Vector3D viewDirection = (new Vector3D(0,0,0)).added(intersectionPoint.negated()).normalised();
         /// perfect specular reflection direction of the light at this point
         Vector3D reflectionDirection = lightDirection.reflected(unitNormal);
 
