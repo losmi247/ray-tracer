@@ -8,11 +8,12 @@ import utility.Vector3D;
 import java.util.Map;
 
 /**
- * A sphere object, with the same color at each point
- * on its surface.
+ * Class for a sphere defined by its center and
+ * radius, with the same color at each point on
+ * its surface.
  */
 public class Sphere implements RTShape {
-    private static final String shapeID = "sphere";
+    public static final String shapeID = "sphere";
     private Vector3D center;
     private double radius;
     private RTColor diffuseColor;
@@ -102,8 +103,11 @@ public class Sphere implements RTShape {
      * Static Utility Methods
      */
     /*
-       Method that parses a sphere from a map mapping attribute names
-       to their values.
+       Method that parses a sphere from a Map<String,String>
+       mapping attribute names to their values.
+
+       Each sphere is defined by a "center", "radius", and
+       a "color" attribute.
      */
     public static Sphere parseShape(Map<String, String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D center = null;
@@ -113,14 +117,11 @@ public class Sphere implements RTShape {
             String attributeName = entry.getKey();
             String attributeValue = entry.getValue();
 
-            if(attributeName.equals("center")) {
-                center = SceneDescriptionParser.parseVector3D(attributeValue);
-            }
-            if(attributeName.equals("radius")) {
-                radius = Double.parseDouble(attributeValue);
-            }
-            if(attributeName.equals("color")){
-                color = SceneDescriptionParser.parseColor(attributeValue);
+            switch (attributeName) {
+                case "center" -> center = SceneDescriptionParser.parseVector3D(attributeValue);
+                case "radius" -> radius = Double.parseDouble(attributeValue);
+                case "color" -> color = SceneDescriptionParser.parseColor(attributeValue);
+                default -> throw new IncorrectSceneDescriptionXMLStructureException();
             }
         }
 

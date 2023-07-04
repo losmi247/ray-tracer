@@ -1,5 +1,6 @@
 package utility;
 
+import shapes.Plane;
 import shapes.RTShape;
 import shapes.Sphere;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  * version of its class name.
  */
 public class ShapeMapper {
-    private static final List<String> allExistingShapeIDs = List.of("sphere");
+    private static final List<String> allExistingShapeIDs = List.of("sphere", "plane");
 
     /**
      * Methods
@@ -31,6 +32,11 @@ public class ShapeMapper {
         if(shapeID.equals("sphere")) {
             return Sphere.parseShape(attributes);
         }
-        throw new IncorrectSceneDescriptionXMLStructureException();
+        else if(shapeID.equals("plane")) {
+            return Plane.parseShape(attributes);
+        }
+        else {
+            throw new IncorrectSceneDescriptionXMLStructureException();
+        }
     }
 }

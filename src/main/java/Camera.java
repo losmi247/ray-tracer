@@ -17,15 +17,19 @@ import javax.xml.parsers.ParserConfigurationException;
  * Class to encapsulate a camera at the origin (0,0,0),
  * pointing in the positive direction of z-axis.
  * along with a screen plane at z=depth, with specified
- * height and screen ratio.
+ * height and screen ratio. The 'camera up' direction is
+ * positive direction of y axis, and the coordinate
+ * system is right-handed (so x axis is "to the left").
+ *
+ *                        y
+ *                        ^
+ *                    x < X z (z is into plane)
  *
  * This is a PINHOLE CAMERA, meaning that we are
  * effectively projecting all shapes onto the screen plane,
  * which may cause distortions.
  *
  * TODO - finite aperture camera in a separate class
- *
- * The coordinate system is right-handed.
  *
  * The camera position and orientation can not be customised,
  * but screen plane depth (z coordinate of the plane),
