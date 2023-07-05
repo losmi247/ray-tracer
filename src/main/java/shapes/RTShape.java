@@ -17,7 +17,8 @@ import tracing.Ray;
  * TO THEIR VALUES.
  *
  * TODO - each shape should have an instance variable that controls the
- *        material properties (coefficients for Phong shading)
+ *        material properties (coefficients for Phong shading, i.e.
+ *        ambient, diffuse, specular, reflectivity)
  */
 public interface RTShape {
     /*

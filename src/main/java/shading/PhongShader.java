@@ -1,6 +1,7 @@
 package shading;
 
 import shapes.RTShape;
+import tracing.Intersection;
 import tracing.Light;
 import tracing.Scene;
 import tracing.ShadowRay;
@@ -69,32 +70,35 @@ public class PhongShader implements Shader {
      */
     /*
        Method that evaluates the Phong's shading model at a given point
-       on the surface of the given shape.
+       on the surface of the given shape, i.e. a given Intersection
+       object.
 
        Phong's shading model consists of three components:
             Ambient component (models indirect illumination)
             Diffuse component (models Lambertian illumination)
             Specular component (models imperfect specular illumination)
      */
-    public RTColor evaluateShadingModel(RTShape intersectedShape, Vector3D intersectionPoint) {
+    public RTColor evaluateShadingModel(Intersection intersection) {
+        RTShape intersectedShape = intersection.getIntersectedShape();
+        Vector3D intersectionPoint = intersection.getIntersectionPoint();
         ArrayList<Light> lights = this.scene.getLights();
 
         /// ambient illumination
-        RTColor ambientComponent = this.getAmbientComponent(intersectedShape, intersectionPoint);
+        RTColor ambientComponent = this.getAmbientComponent(intersection);
 
         /// diffuse illumination
         RTColor diffuseComponent = RTColor.blank;
         /// specular illumination
         RTColor specularComponent = RTColor.blank;
         for (Light light : lights) {
-            ShadowRay shadowRay = new ShadowRay(intersectionPoint, intersectedShape, light);
+            ShadowRay shadowRay = new ShadowRay(intersection, light);
             if(!shadowRay.lightSourceOccluded(this.scene)) {
                 /// diffuse illumination
-                RTColor lightDiffuseContribution = this.getDiffuseComponent(intersectedShape, intersectionPoint, light);
+                RTColor lightDiffuseContribution = this.getDiffuseComponent(intersection, light);
                 diffuseComponent = diffuseComponent.added(lightDiffuseContribution);
 
                 /// specular illumination
-                RTColor lightSpecularContribution = this.getSpecularComponent(intersectedShape, intersectionPoint, light);
+                RTColor lightSpecularContribution = this.getSpecularComponent(intersection, light);
                 specularComponent = specularComponent.added(lightSpecularContribution);
             }
         }
@@ -105,7 +109,9 @@ public class PhongShader implements Shader {
        Method to evaluate the ambient illumination component,
        for a given RTShape.
      */
-    private RTColor getAmbientComponent(RTShape intersectedShape, Vector3D intersectionPoint) {
+    private RTColor getAmbientComponent(Intersection intersection) {
+        RTShape intersectedShape = intersection.getIntersectedShape();
+        Vector3D intersectionPoint = intersection.getIntersectionPoint();
         return intersectedShape.getColorAt(intersectionPoint).scaled(this.ambientComponentCoefficient);
     }
     /*
@@ -115,7 +121,10 @@ public class PhongShader implements Shader {
        Diffuse component is view independent, i.e. does not depend
        on the position of the camera.
      */
-    private RTColor getDiffuseComponent(RTShape intersectedShape, Vector3D intersectionPoint, Light light) {
+    private RTColor getDiffuseComponent(Intersection intersection, Light light) {
+        RTShape intersectedShape = intersection.getIntersectedShape();
+        Vector3D intersectionPoint = intersection.getIntersectionPoint();
+
         /// unit vector from the given point to this light
         Vector3D lightDirection = light.getPosition().added(intersectionPoint.negated()).normalised();
         /// unit normal to surface of the shape at the given point
@@ -138,7 +147,10 @@ public class PhongShader implements Shader {
 
        TODO - The camera is currently fixed at (0,0,0) - think about being able to change camera position
      */
-    private RTColor getSpecularComponent(RTShape intersectedShape, Vector3D intersectionPoint, Light light) {
+    private RTColor getSpecularComponent(Intersection intersection, Light light) {
+        RTShape intersectedShape = intersection.getIntersectedShape();
+        Vector3D intersectionPoint = intersection.getIntersectionPoint();
+
         /// unit vector from the given point to this light
         Vector3D lightDirection = light.getPosition().added(intersectionPoint.negated()).normalised();
         /// unit normal to surface of the shape at the given point

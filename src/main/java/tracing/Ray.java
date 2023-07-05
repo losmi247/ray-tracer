@@ -33,34 +33,48 @@ public class Ray {
     /*
        Method to cast and trace a ray, and find resulting color
        value contribution of this ray, given a scene.
+
+       No further tracing is done in this method (e.g. no
+       reflections).
      */
     public RTColor trace(Scene scene, Shader shader) {
+        /// first find the first intersection of this ray and this scene
+        Intersection firstIntersection = this.findFirstIntersection(scene);
+
+        /// the ray does not intersect any RTShape
+        if(!firstIntersection.intersectionExists()) {
+            /// TODO - decide what background to return if no intersection
+            return RTColor.backgroundColor;
+        }
+
+        /// TODO - recursive tracing (reflections/refractions)
+        return shader.evaluateShadingModel(firstIntersection);
+    }
+    /*
+       Method to find the first intersection of this ray with a RTShape from
+       the given Scene object. Returns an Intersection object.
+     */
+    public Intersection findFirstIntersection(Scene scene) {
         ArrayList<RTShape> shapes = scene.getShapes();
         ArrayList<Light> lights = scene.getLights();
 
         /// find the first intersection of this ray with a shape
-        Vector3D firstIntersection = null;
+        Vector3D intersectionPoint = null;
         double minDistanceSoFar = -1;
         RTShape intersectedShape = null;
         for (RTShape shape : shapes) {
             /// find the first intersection of this ray and this shape
             Vector3D intersection = shape.intersect(this);
             if(intersection != null) {
-                if(firstIntersection == null || this.distance(intersection) < minDistanceSoFar) {
-                    firstIntersection = intersection;
+                if(intersectionPoint == null || this.distance(intersection) < minDistanceSoFar) {
+                    intersectionPoint = intersection;
                     minDistanceSoFar = this.distance(intersection);
                     intersectedShape = shape;
                 }
             }
         }
 
-        if(firstIntersection == null) {
-            /// TODO - decide what background to return if no intersection
-            return RTColor.backgroundColor;
-        }
-
-        /// TODO - recursive tracing (reflections/refractions)
-        return shader.evaluateShadingModel(intersectedShape, firstIntersection);
+        return new Intersection(intersectedShape, intersectionPoint);
     }
     /*
        Method to return the point on this ray P = O + s * D for

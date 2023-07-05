@@ -1,8 +1,7 @@
 package shading;
 
-import shapes.RTShape;
+import tracing.Intersection;
 import utility.RTColor;
-import utility.Vector3D;
 
 /**
  * An interface for a shader - any class that encapsulates
@@ -24,7 +23,8 @@ import utility.Vector3D;
 public interface Shader {
     /*
        Method that evaluates the specific shading model
-       at the given point on the surface of the given shape.
+       at the given point on the surface of the given shape,
+       i.e. a given Intersection object.
      */
-    RTColor evaluateShadingModel(RTShape shape, Vector3D point);
+    RTColor evaluateShadingModel(Intersection intersection);
 }

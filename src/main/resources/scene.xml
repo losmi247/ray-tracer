@@ -1,32 +1,32 @@
 <elements>
     <shapes>
         <sphere>
-            <center>(2,2,8)</center>
+            <center>(2,2,10)</center>
             <radius>3</radius>
             <color>(255,0,0,255)</color>
         </sphere>
         <sphere>
-            <center>(-1,-1,5)</center>
+            <center>(-1,-1,7)</center>
             <radius>2</radius>
             <color>(255,255,0,255)</color>
         </sphere>
         <sphere>
-            <center>(2,-2,6)</center>
+            <center>(2,-2,8)</center>
             <radius>2</radius>
             <color>(0,255,255,255)</color>
         </sphere>
         <sphere>
-            <center>(-3,4,10)</center>
+            <center>(-3,4,12)</center>
             <radius>4</radius>
             <color>(255,0,255,255)</color>
         </sphere>
         <sphere>
-            <center>(1,-1.5,2.5)</center>
+            <center>(1,-1.5,4.5)</center>
             <radius>0.2</radius>
             <color>(252,3,148,255)</color>
         </sphere>
         <sphere>
-            <center>(-1.4,1,3)</center>
+            <center>(-1.4,1,5)</center>
             <radius>0.3</radius>
             <color>(3,98,252,255)</color>
         </sphere>
@@ -38,7 +38,7 @@
         </plane>
         <plane>
             <normal>(-1,0,0)</normal>
-            <point>(30,0,0)</point>
+            <point>(40,0,0)</point>
             <color>(250,130,0,255)</color>
         </plane>
         <plane>

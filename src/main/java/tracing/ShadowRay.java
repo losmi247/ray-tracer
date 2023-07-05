@@ -27,10 +27,11 @@ public class ShadowRay extends Ray {
      */
     /*
        Constructor from a point on the surface of a
-       RTShape, and a light to which the shadow ray
+       RTShape (i.e. a given Intersection object),
+       and a light to which the shadow ray
        is to be cast.
 
-       It also takes the intersected shape so that it
+       It uses the intersected shape so that it
        can lift the intersection point up, away from
        the surface in the direction of the local unit
        normal to prevent the shadow ray from intersecting
@@ -40,16 +41,17 @@ public class ShadowRay extends Ray {
        Used for basic shadow rendering - the target
        point is the position of the light source.
      */
-    public ShadowRay(Vector3D intersectionPoint, RTShape intersectedShape, Light light) {
-        super(ShadowRay.liftOrigin(intersectionPoint, intersectedShape), light.getPosition().added(ShadowRay.liftOrigin(intersectionPoint, intersectedShape).negated()).normalised());
+    public ShadowRay(Intersection intersection, Light light) {
+        super(ShadowRay.liftOrigin(intersection), light.getPosition().added(ShadowRay.liftOrigin(intersection).negated()).normalised());
         this.target = light.getPosition();
     }
     /*
        Constructor from a point on the surface of a
-       RTShape, and any other given point to which the
-       shadow ray is to be cast.
+       RTShape (i.e. a given Intersection object),
+       and a light to which the shadow ray
+       is to be cast.
 
-       It also takes the intersected shape so that it
+       It uses the intersected shape so that it
        can lift the intersection point up, away from
        the surface in the direction of the local unit
        normal to prevent the shadow ray from intersecting
@@ -63,8 +65,8 @@ public class ShadowRay extends Ray {
        to the proportion of occluded shadow rays, to
        render soft shadows.
      */
-    public ShadowRay(Vector3D intersectionPoint, RTShape intersectedShape, Vector3D target) {
-        super(ShadowRay.liftOrigin(intersectionPoint, intersectedShape), target.added(ShadowRay.liftOrigin(intersectionPoint, intersectedShape).negated().normalised()));
+    public ShadowRay(Intersection intersection, Vector3D target) {
+        super(ShadowRay.liftOrigin(intersection), target.added(ShadowRay.liftOrigin(intersection).negated().normalised()));
         this.target = target;
     }
 
@@ -84,12 +86,12 @@ public class ShadowRay extends Ray {
         /// check intersections of this ray with each shape
         for (RTShape shape : shapes) {
             /// find the first intersection of this ray and this shape
-            Vector3D intersection = shape.intersect(this);
+            Vector3D intersectionPoint = shape.intersect(this);
 
             /// if the intersection point is closer to ray origin than
             /// target, the light source is occluded
-            if(intersection != null) {
-                double distanceHit = super.distance(intersection);
+            if(intersectionPoint != null) {
+                double distanceHit = super.distance(intersectionPoint);
                 double distanceTarget = super.distance(target);
                 /// also say the light source is occluded if the intersection
                 /// point is sufficiently (1e-12) close to the target, to avoid
@@ -108,20 +110,29 @@ public class ShadowRay extends Ray {
      * Static Utility Methods
      */
     /*
-       Method that takes the point on the surface of the given shape, and lifts it
-       up in the direction of the local unit normal to surface by a small amount
+       Method that takes the intersection point on the surface of a shape, and lifts
+       it up in the direction of the local unit normal to surface by a small amount
        defined by the liftingCoefficient class variable.
 
        It is used to move the origin of the shadow ray away from the surface so that
        it does not intersect 'another' object immediately and hence make the light
        source always occluded.
      */
-    public static Vector3D liftOrigin(Vector3D intersectionPoint, RTShape intersectedShape) {
+    public static Vector3D liftOrigin(Intersection intersection) {
+        RTShape intersectedShape = intersection.getIntersectedShape();
+        Vector3D intersectionPoint = intersection.getIntersectionPoint();
         return intersectionPoint.added(intersectedShape.getUnitNormalAt(intersectionPoint).scaled(ShadowRay.liftingCoefficient));
     }
 
     /**
      * Getters
+     */
+    /*
+       Gets the point that the shadow ray is
+       supposed to reach before hitting some
+       RTShape so that the origin of the
+       shadow ray is illuminated by given light
+       source.
      */
     public Vector3D getTarget() {
         return this.target;
