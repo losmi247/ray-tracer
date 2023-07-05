@@ -18,9 +18,6 @@ import java.util.ArrayList;
 
 public class ShadowRay extends Ray {
     private final Vector3D target;
-    /// coefficient controlling how much the origins of
-    /// shadow rays are lifted from surface of the shape
-    private static final double liftingCoefficient = 1e-6;
 
     /**
      * Constructors
@@ -42,7 +39,7 @@ public class ShadowRay extends Ray {
        point is the position of the light source.
      */
     public ShadowRay(Intersection intersection, Light light) {
-        super(ShadowRay.liftOrigin(intersection), light.getPosition().added(ShadowRay.liftOrigin(intersection).negated()).normalised());
+        super(Ray.liftOrigin(intersection), light.getPosition().added(Ray.liftOrigin(intersection).negated()).normalised());
         this.target = light.getPosition();
     }
     /*
@@ -66,7 +63,7 @@ public class ShadowRay extends Ray {
        render soft shadows.
      */
     public ShadowRay(Intersection intersection, Vector3D target) {
-        super(ShadowRay.liftOrigin(intersection), target.added(ShadowRay.liftOrigin(intersection).negated().normalised()));
+        super(Ray.liftOrigin(intersection), target.added(Ray.liftOrigin(intersection).negated().normalised()));
         this.target = target;
     }
 
@@ -104,24 +101,6 @@ public class ShadowRay extends Ray {
         }
 
         return false;
-    }
-
-    /**
-     * Static Utility Methods
-     */
-    /*
-       Method that takes the intersection point on the surface of a shape, and lifts
-       it up in the direction of the local unit normal to surface by a small amount
-       defined by the liftingCoefficient class variable.
-
-       It is used to move the origin of the shadow ray away from the surface so that
-       it does not intersect 'another' object immediately and hence make the light
-       source always occluded.
-     */
-    public static Vector3D liftOrigin(Intersection intersection) {
-        RTShape intersectedShape = intersection.getIntersectedShape();
-        Vector3D intersectionPoint = intersection.getIntersectionPoint();
-        return intersectionPoint.added(intersectedShape.getUnitNormalAt(intersectionPoint).scaled(ShadowRay.liftingCoefficient));
     }
 
     /**

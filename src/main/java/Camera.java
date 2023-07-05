@@ -107,7 +107,8 @@ public class Camera {
 
                 /// create a ray to be cast from the camera through the center of the current pixel
                 Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
-                RTColor rayColorValue = r.trace(scene, shader);
+                //RTColor rayColorValue = r.trace(scene, shader);
+                RTColor rayColorValue = r.traceWithReflections(scene, shader, 2);
 
                 /// clip the color values to 0.0 to 1.0 range, and store it
                 RTColor rayColorValueNormed = rayColorValue.normalised();
@@ -162,7 +163,7 @@ public class Camera {
 
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
-        BufferedImage b = c.render("src/main/resources/scene.xml");
+        BufferedImage b = c.render("src/main/resources/scene1.xml");
         Camera.saveImage(b);
     }
 }

@@ -144,4 +144,7 @@ public class Plane implements RTShape {
     public RTColor getDiffuseColor() {
         return this.diffuseColor;
     }
+    public String getShapeID() {
+        return Plane.shapeID;
+    }
 }

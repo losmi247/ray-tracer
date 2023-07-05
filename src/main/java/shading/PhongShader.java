@@ -32,6 +32,8 @@ public class PhongShader implements Shader {
     private final double specularComponentCoefficient;
     private final double phongRoughnessCoefficient;
 
+    private final double reflectionCoefficient;
+
     /**
      * Constructors
      */
@@ -51,18 +53,22 @@ public class PhongShader implements Shader {
         this.specularComponentCoefficient = 0.5;
 
         this.phongRoughnessCoefficient = 40;
+
+        this.reflectionCoefficient = 0.4;
     }
     /*
        Constructor from a Scene, that allows
        customisation of the four coefficients.
      */
-    public PhongShader(Scene scene, double ka, double kd, double ks, double n) {
+    public PhongShader(Scene scene, double ka, double kd, double ks, double n, double r) {
         this.scene = scene;
         this.ambientComponentCoefficient = ka;
         this.diffuseComponentCoefficient = kd;
         this.specularComponentCoefficient = ks;
 
         this.phongRoughnessCoefficient = n;
+
+        this.reflectionCoefficient = r;
     }
 
     /**
@@ -165,5 +171,18 @@ public class PhongShader implements Shader {
         double specularCoefficient = this.specularComponentCoefficient * light.getIntensity() * phongCoefficient;
 
         return light.getColor().scaled(specularCoefficient);
+    }
+    /*
+       Method that mixes the color value obtained by shading
+       the intersection point (intersectionColor)
+       with the color value obtained by tracing the
+       reflected ray (reflectionColor).
+
+       It uses this shader's reflectionCoefficient, and simply
+       adds the 'reflectionColor' scaled by that coefficient
+       (dims it) to the original 'intersectionColor.
+     */
+    public RTColor mixReflectedColor(RTColor intersectionColor, RTColor reflectionColor) {
+        return intersectionColor.scaled(1 - this.reflectionCoefficient).added(reflectionColor.scaled(this.reflectionCoefficient));
     }
 }

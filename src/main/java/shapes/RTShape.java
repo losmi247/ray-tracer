@@ -50,4 +50,12 @@ public interface RTShape {
        the shape) is violated, behaviour is undefined.
      */
     RTColor getColorAt(Vector3D point);
+    /*
+       Method to get the String shapeID of the particular
+       implementation of the RTShape interface.
+
+       It must be consistent, i.e. return the same string
+       on every invocation.
+     */
+    String getShapeID();
 }

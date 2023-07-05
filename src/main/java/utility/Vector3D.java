@@ -48,8 +48,9 @@ public class Vector3D {
         as 'this' and 'normal' so that angle from 'this' to
         'normal' is the same as the angle from 'normal' to
         that 'R'.
-        'normal' isn't necessarily normalised at input.
-        Normalises the vector.
+
+        The argument 'normal' isn't necessarily normalised.
+        This method normalises the returned vector.
     */
     public Vector3D reflected(Vector3D normal){
         Vector3D unitNormal = normal.normalised();

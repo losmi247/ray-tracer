@@ -27,4 +27,11 @@ public interface Shader {
        i.e. a given Intersection object.
      */
     RTColor evaluateShadingModel(Intersection intersection);
+    /*
+       Method that mixes the color value obtained by shading
+       the intersection point (intersectionColor)
+       with the color value obtained by tracing the
+       reflected ray (reflectionColor).
+     */
+    RTColor mixReflectedColor(RTColor intersectionColor, RTColor reflectionColor);
 }

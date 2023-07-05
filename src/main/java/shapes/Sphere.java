@@ -144,4 +144,7 @@ public class Sphere implements RTShape {
     public RTColor getColor() {
         return this.diffuseColor;
     }
+    public String getShapeID() {
+        return Sphere.shapeID;
+    }
 }
