@@ -14,7 +14,7 @@
     <plane>
         <normal>(0,1,0)</normal>
         <point>(0,-10,0)</point>
-        <color>(255,255,255,255)</color>
+        <color>(103,1,85,210)</color>
     </plane>
     <plane>
         <normal>(-1,0,0)</normal>
@@ -35,6 +35,11 @@
         <normal>(1,0,0)</normal>
         <point>(-40,0,0)</point>
         <color>(0,255,255,255)</color>
+    </plane>
+    <plane>
+        <normal>(0,-1,0)</normal>
+        <point>(0,100,0)</point>
+        <color>(255,141,0,255)</color>
     </plane>
 </shapes>
 <lights>

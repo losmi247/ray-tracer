@@ -49,8 +49,8 @@ public class PhongShader implements Shader {
     public PhongShader(Scene scene) {
         this.scene = scene;
         this.ambientComponentCoefficient = 0.4;
-        this.diffuseComponentCoefficient = 0.6;
-        this.specularComponentCoefficient = 0.5;
+        this.diffuseComponentCoefficient = 0.9;
+        this.specularComponentCoefficient = 0.6;
 
         this.phongRoughnessCoefficient = 40;
 
@@ -180,7 +180,7 @@ public class PhongShader implements Shader {
 
        It uses this shader's reflectionCoefficient, and simply
        adds the 'reflectionColor' scaled by that coefficient
-       (dims it) to the original 'intersectionColor.
+       (dims it) to the original 'intersectionColor'.
      */
     public RTColor mixReflectedColor(RTColor intersectionColor, RTColor reflectionColor) {
         return intersectionColor.scaled(1 - this.reflectionCoefficient).added(reflectionColor.scaled(this.reflectionCoefficient));
