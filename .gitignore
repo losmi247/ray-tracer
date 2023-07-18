@@ -31,4 +31,4 @@ replay_pid*
 src/test/
 
 # test scene
-src/main/java/resources/testScene.xml
+src/main/resources/testScene.xml
