@@ -3,49 +3,49 @@
     <sphere>
         <center>(3,1,8)</center>
         <radius>3</radius>
-        <color>(255,0,0,255)</color>
+        <color>(255,0,0)</color>
     </sphere>
     <sphere>
         <center>(-6,1,12)</center>
         <radius>2</radius>
-        <color>(255,255,255,255)</color>
+        <color>(255,255,255)</color>
     </sphere>
 
     <plane>
         <normal>(0,1,0)</normal>
         <point>(0,-10,0)</point>
-        <color>(103,1,85,210)</color>
+        <color>(103,1,85)</color>
     </plane>
     <plane>
         <normal>(-1,0,0)</normal>
         <point>(40,0,0)</point>
-        <color>(255,255,0,255)</color>
+        <color>(255,255,0)</color>
     </plane>
     <plane>
         <normal>(0,0,1)</normal>
         <point>(0,0,-100)</point>
-        <color>(0,0,255,255)</color>
+        <color>(0,0,255)</color>
     </plane>
     <plane>
         <normal>(0,0,-1)</normal>
         <point>(0,0,100)</point>
-        <color>(0,255,0,255)</color>
+        <color>(0,255,0)</color>
     </plane>
     <plane>
         <normal>(1,0,0)</normal>
         <point>(-40,0,0)</point>
-        <color>(0,255,255,255)</color>
+        <color>(0,255,255)</color>
     </plane>
     <plane>
         <normal>(0,-1,0)</normal>
         <point>(0,100,0)</point>
-        <color>(255,141,0,255)</color>
+        <color>(255,141,0)</color>
     </plane>
 </shapes>
 <lights>
     <light>
         <position>(-12,15,0)</position>
-        <color>(255,255,255,255)</color>
+        <color>(255,255,255)</color>
         <intensity>1</intensity>
     </light>
 </lights>

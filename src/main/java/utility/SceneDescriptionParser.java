@@ -213,13 +213,13 @@ public class SceneDescriptionParser {
     }
     /*
        Method to parse a RTColor object represented as a string
-       in the form (r,g,b,a) where r,g,b,a are integers from 0 to 255 inclusive.
+       in the form (r,g,b) where r,g,b,a are integers from 0 to 255 inclusive.
      */
     public static RTColor parseColor(String s) throws IncorrectSceneDescriptionXMLStructureException {
         String[] components = s.substring(1, s.length()-1).split(",");
-        if(components.length != 4) {
+        if(components.length != 3) {
             throw new IncorrectSceneDescriptionXMLStructureException();
         }
-        return new RTColor(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]), Integer.parseInt(components[3]));
+        return new RTColor(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]));
     }
 }

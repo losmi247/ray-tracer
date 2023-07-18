@@ -86,7 +86,7 @@ public class Camera {
         Scene scene = new Scene(sceneDescriptionPath);
         Shader shader = new PhongShader(scene);
 
-        BufferedImage digitalImage = new BufferedImage(this.getScreenPlaneWidthInPixels(), this.screenPlaneHeightInPixels, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage digitalImage = new BufferedImage(this.getScreenPlaneWidthInPixels(), this.screenPlaneHeightInPixels, BufferedImage.TYPE_INT_RGB);
         double pixelWidth = this.getPixelWidth();
         double pixelHeight = this.getPixelHeight();
         for(int y = 0; y < this.screenPlaneHeightInPixels; y++) {
@@ -141,6 +141,18 @@ public class Camera {
      */
     public double getPixelWidth() {
         return this.getScreenPlaneWidth() / this.getScreenPlaneWidthInPixels();
+    }
+    /*
+       Getter for the screen plane width to height ratio.
+     */
+    public double getScreenPlaneWidthToHeightRatio() {
+        return this.screenPlaneWidthToHeightRatio;
+    }
+    /*
+       Getter for the screen plane height.
+     */
+    public double getScreenPlaneHeight() {
+        return this.screenPlaneHeight;
     }
 
     /**
