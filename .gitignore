@@ -29,3 +29,6 @@ replay_pid*
 
 # unit tests
 src/test/
+
+# test scene
+src/main/java/resources/testScene.xml
