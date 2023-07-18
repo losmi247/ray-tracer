@@ -24,7 +24,7 @@ public class RTColor {
      */
     public static final RTColor blank = new RTColor(0.0, 0.0, 0.0);
     /**
-     * Predefined colors with max opacity 1.0
+     * Predefined colors
      */
     public static final RTColor white     = new RTColor(1.0, 1.0, 1.0);
     public static final RTColor gray      = new RTColor(0.5, 0.5, 0.5);
@@ -42,7 +42,6 @@ public class RTColor {
 
     /**
      * Constructors
-     *
      */
     /*
        Constructor from three decimal values in
@@ -67,10 +66,20 @@ public class RTColor {
      * Methods
      */
     /*
-       Method to scale color values by a given coefficient.
+       Method to scale all 3 color values by
+       a given coefficient.
      */
     public RTColor scaled(double scalingCoefficient) {
         return new RTColor(this.r * scalingCoefficient, this.g * scalingCoefficient, this.b * scalingCoefficient);
+    }
+    /*
+       Method to scale the 3 color values by 3 given
+       coefficients, given as a Vector3D. In other words,
+       this is a component wise product of a Vector3D and
+       a RTColor.
+     */
+    public RTColor scaledVector3D(Vector3D scalingCoefficients) {
+        return new RTColor(this.r * scalingCoefficients.getX(), this.g * scalingCoefficients.getY(), this.b * scalingCoefficients.getZ());
     }
     /*
        Method to add another RTColor to this color, used for

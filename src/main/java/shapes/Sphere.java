@@ -1,5 +1,6 @@
 package shapes;
 
+import shading.Material;
 import tracing.Ray;
 import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.RTColor;
@@ -9,19 +10,21 @@ import java.util.Map;
 
 /**
  * Class for a sphere defined by its center and
- * radius, with the same color at each point on
- * its surface.
+ * radius, with the same color and material at
+ * each point on its surface.
  */
 public class Sphere implements RTShape {
     public static final String shapeID = "sphere";
     private Vector3D center;
     private double radius;
     private RTColor diffuseColor;
+    private Material material;
 
-    public Sphere(Vector3D center, double radius, RTColor diffuseColor) {
+    public Sphere(Vector3D center, double radius, RTColor diffuseColor, Material material) {
         this.center = center;
         this.radius = radius;
         this.diffuseColor = diffuseColor;
+        this.material = material;
     }
 
     /**
@@ -97,6 +100,17 @@ public class Sphere implements RTShape {
     public RTColor getColorAt(Vector3D point) {
         return this.diffuseColor;
     }
+    /*
+       Method that returns the material (shading
+       coefficients) at a given point on the surface of
+       the RTShape.
+
+       If the precondition (point must be on the surface of
+       the shape) is violated, behaviour is undefined.
+     */
+    public Material getMaterialAt(Vector3D point) {
+        return this.material;
+    }
 
 
     /**
@@ -106,13 +120,18 @@ public class Sphere implements RTShape {
        Method that parses a sphere from a Map<String,String>
        mapping attribute names to their values.
 
-       Each sphere is defined by a "center", "radius", and
-       a "color" attribute.
+       Each sphere is defined by a "center", "radius", "color",
+       and a "material" attribute.
+
+       If the material attribute is missing from the XML
+       description of the RTShape, Material.defaultNonReflectiveMaterial
+       is set.
      */
     public static Sphere parseShape(Map<String, String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D center = null;
         double radius = -1;
         RTColor color = null;
+        Material material = null;
         for(Map.Entry<String, String> entry : attributes.entrySet()) {
             String attributeName = entry.getKey();
             String attributeValue = entry.getValue();
@@ -121,6 +140,16 @@ public class Sphere implements RTShape {
                 case "center" -> center = SceneDescriptionParser.parseVector3D(attributeValue);
                 case "radius" -> radius = Double.parseDouble(attributeValue);
                 case "color" -> color = SceneDescriptionParser.parseColor(attributeValue);
+                case "material" ->
+                    {
+                        /// first try to parse the material from name, then try to parse from description
+                        try {
+                            material = Material.parseMaterialFromName(attributeValue);
+                        }
+                        catch (IncorrectSceneDescriptionXMLStructureException e) {
+                            material = Material.parseMaterial(attributeValue);
+                        }
+                    }
                 default -> throw new IncorrectSceneDescriptionXMLStructureException();
             }
         }
@@ -129,7 +158,12 @@ public class Sphere implements RTShape {
             throw new IncorrectSceneDescriptionXMLStructureException();
         }
 
-        return new Sphere(center, radius, color);
+        /// if missing material in XML, set default
+        if(material == null) {
+            material = Material.defaultNonReflectiveMaterial;
+        }
+
+        return new Sphere(center, radius, color, material);
     }
 
     /**

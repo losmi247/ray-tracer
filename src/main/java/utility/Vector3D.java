@@ -22,6 +22,15 @@ public class Vector3D {
         this.y = v.y;
         this.z = v.z;
     }
+    /*
+       Constructor that sets all three components
+       to the given real value.
+     */
+    public Vector3D(double a) {
+        this.x = a;
+        this.y = a;
+        this.z = a;
+    }
 
     /**
      * Methods

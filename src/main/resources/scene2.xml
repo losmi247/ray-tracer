@@ -52,12 +52,12 @@
         <light>
             <position>(-10,10,-5)</position>
             <color>(255,255,0)</color>
-            <intensity>1</intensity>
+            <intensity>0.6</intensity>
         </light>
         <light>
             <position>(10,-10,-5)</position>
             <color>(0,255,255)</color>
-            <intensity>0.8</intensity>
+            <intensity>0.6</intensity>
         </light>
     </lights>
 </elements>

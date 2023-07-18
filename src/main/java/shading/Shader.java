@@ -33,5 +33,5 @@ public interface Shader {
        with the color value obtained by tracing the
        reflected ray (reflectionColor).
      */
-    RTColor mixReflectedColor(RTColor intersectionColor, RTColor reflectionColor);
+    RTColor mixReflectedColor(RTColor intersectionColor, RTColor reflectionColor, double reflectionCoefficient);
 }

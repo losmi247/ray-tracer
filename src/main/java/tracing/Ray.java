@@ -1,5 +1,6 @@
 package tracing;
 
+import shading.Material;
 import shading.Shader;
 import shapes.RTShape;
 import utility.RTColor;
@@ -77,22 +78,15 @@ public class Ray {
         /// calculate contribution of this intersection point
         RTColor intersectionContribution = shader.evaluateShadingModel(firstIntersection);
 
-        /* TODO - make planes less reflective so that I don't have to do this
-                  do this by making each RTShape contain info about all of its
-                  coefficients (e.g. a Material class), see in RTShape
-         */
-        if(firstIntersection.getIntersectedShape().getShapeID().equals("plane")) {
-            return intersectionContribution;
-        }
-
         /// reflect the ray
         Vector3D normal = firstIntersection.getIntersectedShape().getUnitNormalAt(firstIntersection.getIntersectionPoint());
         Ray reflectedRay = this.reflectedRay(firstIntersection);
         /// calculate contribution of the reflected ray
         RTColor reflectionContribution = reflectedRay.traceWithReflections(scene, shader, tracingLimit - 1);
 
-        /// mix the two contributions using the coefficient from the shader
-        return shader.mixReflectedColor(intersectionContribution, reflectionContribution);
+        /// mix the two contributions using the reflection coefficient of the intersected RTShape
+        Material material = firstIntersection.getIntersectedShape().getMaterialAt(firstIntersection.getIntersectionPoint());
+        return shader.mixReflectedColor(intersectionContribution, reflectionContribution, material.getReflectionCoefficient());
     }
     /*
        Method to find the first intersection of this ray with a RTShape from

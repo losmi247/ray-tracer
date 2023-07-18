@@ -21,54 +21,21 @@ import java.util.ArrayList;
  * from that scene (which it needs for checking if shadow rays
  * intersect a shape before reaching the light source).
  *
- * This shader is immutable - the scene it refers to and its
- * parameters are never changed.
+ * This shader is immutable - the scene it refers to
+ * is never changed.
  */
 
 public class PhongShader implements Shader {
     private final Scene scene;
-    private final double ambientComponentCoefficient;
-    private final double diffuseComponentCoefficient;
-    private final double specularComponentCoefficient;
-    private final double phongRoughnessCoefficient;
-
-    private final double reflectionCoefficient;
 
     /**
      * Constructors
      */
     /*
-       Constructor from a Scene, that sets the four coefficients
-       to default values.
-
-       The values of the coefficients have been experimented
-       with to minimise the chance of color values leaving
-       the range 0.0 to 1.0, so it is recommended to use this
-       default constructor.
+       Constructor from a Scene.
      */
     public PhongShader(Scene scene) {
         this.scene = scene;
-        this.ambientComponentCoefficient = 0.4;
-        this.diffuseComponentCoefficient = 0.9;
-        this.specularComponentCoefficient = 0.6;
-
-        this.phongRoughnessCoefficient = 40;
-
-        this.reflectionCoefficient = 0.4;
-    }
-    /*
-       Constructor from a Scene, that allows
-       customisation of the four coefficients.
-     */
-    public PhongShader(Scene scene, double ka, double kd, double ks, double n, double r) {
-        this.scene = scene;
-        this.ambientComponentCoefficient = ka;
-        this.diffuseComponentCoefficient = kd;
-        this.specularComponentCoefficient = ks;
-
-        this.phongRoughnessCoefficient = n;
-
-        this.reflectionCoefficient = r;
     }
 
     /**
@@ -118,7 +85,8 @@ public class PhongShader implements Shader {
     private RTColor getAmbientComponent(Intersection intersection) {
         RTShape intersectedShape = intersection.getIntersectedShape();
         Vector3D intersectionPoint = intersection.getIntersectionPoint();
-        return intersectedShape.getColorAt(intersectionPoint).scaled(this.ambientComponentCoefficient);
+        /// scale each channel of the ambient color by the Vector3D ambient coefficient
+        return intersectedShape.getColorAt(intersectionPoint).scaledVector3D(intersectedShape.getMaterialAt(intersectionPoint).getAmbientCoefficient());
     }
     /*
        Method to evaluate the diffuse illumination component,
@@ -137,9 +105,11 @@ public class PhongShader implements Shader {
         Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersectionPoint);
 
         /// take max with 0, so that only the side of the surface facing the light is illuminated
-        double diffuseCoefficient = this.diffuseComponentCoefficient * light.getIntensity() * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
+        double diffuseMultiplier = light.getIntensity() * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
 
-        return intersectedShape.getColorAt(intersectionPoint).scaled(diffuseCoefficient);
+        /// scale the diffuse color by the multiplier, and scale each color channel by diffuse coefficient
+        return intersectedShape.getColorAt(intersectionPoint).scaled(diffuseMultiplier)
+                .scaledVector3D(intersectedShape.getMaterialAt(intersectionPoint).getDiffuseCoefficient());
     }
     /*
        Method to evaluate the specular illumination component,
@@ -166,11 +136,14 @@ public class PhongShader implements Shader {
         /// perfect specular reflection direction of the light at this point
         Vector3D reflectionDirection = lightDirection.reflected(unitNormal);
 
-        /// take max with 0, so that only the side of the surface facing the light is illuminated
-        double phongCoefficient = Math.pow(Math.max(0.0, reflectionDirection.scalarProduct(viewDirection)), this.phongRoughnessCoefficient);
-        double specularCoefficient = this.specularComponentCoefficient * light.getIntensity() * phongCoefficient;
+        Material material = intersectedShape.getMaterialAt(intersectionPoint);
 
-        return light.getColor().scaled(specularCoefficient);
+        /// take max with 0, so that only the side of the surface facing the light is illuminated
+        double phongMultiplier = Math.pow(Math.max(0.0, reflectionDirection.scalarProduct(viewDirection)), material.getPhongRoughnessCoefficient());
+        double specularMultiplier = light.getIntensity() * phongMultiplier;
+
+        return light.getColor().scaled(specularMultiplier)
+                .scaledVector3D(material.getSpecularCoefficient());
     }
     /*
        Method that mixes the color value obtained by shading
@@ -182,7 +155,7 @@ public class PhongShader implements Shader {
        adds the 'reflectionColor' scaled by that coefficient
        (dims it) to the original 'intersectionColor'.
      */
-    public RTColor mixReflectedColor(RTColor intersectionColor, RTColor reflectionColor) {
-        return intersectionColor.scaled(1 - this.reflectionCoefficient).added(reflectionColor.scaled(this.reflectionCoefficient));
+    public RTColor mixReflectedColor(RTColor intersectionColor, RTColor reflectionColor, double reflectionCoefficient) {
+        return intersectionColor.scaled(1 - reflectionCoefficient).added(reflectionColor.scaled(reflectionCoefficient));
     }
 }

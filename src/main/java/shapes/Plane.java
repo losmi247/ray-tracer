@@ -1,5 +1,6 @@
 package shapes;
 
+import shading.Material;
 import tracing.Ray;
 import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.RTColor;
@@ -11,7 +12,8 @@ import java.util.Map;
 /**
  * Class for a plane defined by a unit normal to it,
  * and a single point that belongs to the plane, with
- * the same color at each point on its surface.
+ * the same color and material at each point on
+ * its surface.
  */
 
 public class Plane implements RTShape {
@@ -19,6 +21,7 @@ public class Plane implements RTShape {
     private Vector3D unitNormal;
     private Vector3D pointInPlane;
     private RTColor diffuseColor;
+    private Material material;
 
     /**
      * Constructors
@@ -28,10 +31,11 @@ public class Plane implements RTShape {
        necessarily normalised), a point that belongs to it,
        and its diffuse color.
      */
-    public Plane(Vector3D normal, Vector3D point, RTColor color) {
+    public Plane(Vector3D normal, Vector3D point, RTColor color, Material material) {
         this.unitNormal = normal.normalised();
         this.pointInPlane = point;
         this.diffuseColor = color;
+        this.material = material;
     }
 
     /**
@@ -97,6 +101,17 @@ public class Plane implements RTShape {
     public RTColor getColorAt(Vector3D point) {
         return this.diffuseColor;
     }
+    /*
+       Method that returns the material (shading
+       coefficients) at a given point on the surface of
+       the RTShape.
+
+       If the precondition (point must be on the surface of
+       the shape) is violated, behaviour is undefined.
+     */
+    public Material getMaterialAt(Vector3D point) {
+        return this.material;
+    }
 
     /**
      * Static Utility Methods
@@ -107,11 +122,16 @@ public class Plane implements RTShape {
 
        Each plane is defined by a "normal", a "point", and
        a "color" attribute.
+
+       If the material attribute is missing from the XML
+       description of the RTShape, Material.defaultNonReflectiveMaterial
+       is set.
      */
     public static Plane parseShape(Map<String,String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D normal = null;
         Vector3D point = null;
         RTColor color = null;
+        Material material = null;
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
             String attributeName = entry.getKey();
@@ -121,6 +141,16 @@ public class Plane implements RTShape {
                 case "normal" -> normal = SceneDescriptionParser.parseVector3D(attributeValue);
                 case "point" -> point = SceneDescriptionParser.parseVector3D(attributeValue);
                 case "color" -> color = SceneDescriptionParser.parseColor(attributeValue);
+                case "material" ->
+                    {
+                        /// first try to parse the material from name, then try to parse from description
+                        try {
+                            material = Material.parseMaterialFromName(attributeValue);
+                        }
+                        catch (IncorrectSceneDescriptionXMLStructureException e) {
+                            material = Material.parseMaterial(attributeValue);
+                        }
+                    }
                 default -> throw new IncorrectSceneDescriptionXMLStructureException();
             }
         }
@@ -129,7 +159,12 @@ public class Plane implements RTShape {
             throw new IncorrectSceneDescriptionXMLStructureException();
         }
 
-        return new Plane(normal, point, color);
+        /// if missing material in XML, set default
+        if(material == null) {
+            material = Material.defaultNonReflectiveMaterial;
+        }
+
+        return new Plane(normal, point, color, material);
     }
 
     /**
