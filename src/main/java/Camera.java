@@ -43,6 +43,8 @@ public class Camera {
     private final double screenPlaneWidthToHeightRatio;
     private final int screenPlaneHeightInPixels;
 
+    private final int reflectionTracingLimit;
+
     /**
      * Constructors
      */
@@ -53,22 +55,26 @@ public class Camera {
        equal to 45 degrees in each direction to minimise
        distortion due to a pinhole camera (we're basically
        perspective-projecting shapes onto the screen plane
-       which can cause distortions)
+       which can cause distortions).
      */
     public Camera() {
         this.screenPlaneHeight = 4;
         this.screenPlaneDepth = 2;
         this.screenPlaneWidthToHeightRatio = 1;
         this.screenPlaneHeightInPixels = 1200;
+
+        this.reflectionTracingLimit = 4;
     }
     /*
        Constructor to customise screen plane parameters.
      */
-    public Camera(double height, double depth, double widthToHeightRatio, int heightInPixels) {
+    public Camera(double height, double depth, double widthToHeightRatio, int heightInPixels, int reflectionTracingLimit) {
         this.screenPlaneHeight = height;
         this.screenPlaneDepth = depth;
         this.screenPlaneWidthToHeightRatio = widthToHeightRatio;
         this.screenPlaneHeightInPixels = heightInPixels;
+
+        this.reflectionTracingLimit = reflectionTracingLimit;
     }
 
     /**
@@ -107,8 +113,8 @@ public class Camera {
 
                 /// create a ray to be cast from the camera through the center of the current pixel
                 Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
-                //RTColor rayColorValue = r.trace(scene, shader);
-                RTColor rayColorValue = r.traceWithReflections(scene, shader, 4);
+                //RTColor rayColorValue = r.trace(scene, shader);  <- tracing without reflections
+                RTColor rayColorValue = r.traceWithReflections(scene, shader, this.reflectionTracingLimit);
 
                 /// clip the color values to 0.0 to 1.0 range, and store it
                 RTColor rayColorValueNormed = rayColorValue.normalised();

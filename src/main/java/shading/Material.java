@@ -49,10 +49,10 @@ public class Material {
     public static final Material obsidian     = new Material(new Vector3D(0.05375, 0.05, 0.06625), new Vector3D(0.18275, 0.17, 0.22525), new Vector3D(0.332741, 0.328634, 0.346435), 0.3, 0.01);
     public static final Material ruby         = new Material(new Vector3D(0.1745, 0.01175, 0.01175), new Vector3D(0.61424, 0.04136, 0.04136), new Vector3D(0.727811, 0.626959, 0.626959), 0.6, 0.01);
 
-    public static final Material brass        = new Material(new Vector3D(0.329412, 0.223529, 0.027451), new Vector3D(0.780392, 0.568627, 0.113725), new Vector3D(0.992157, 0.941176, 0.807843), 0.21794872, 0.03);
-    public static final Material gold         = new Material(new Vector3D(0.24725, 0.1995, 0.0745), new Vector3D(0.75164, 0.60648, 0.22648), new Vector3D(0.628281, 0.555802, 0.366065), 0.4, 0.03);
-    public static final Material silver       = new Material(new Vector3D(0.19225, 0.19225, 0.19225), new Vector3D(0.50754, 0.50754, 0.50754), new Vector3D(0.508273, 0.508273, 0.508273), 0.4, 0.03);
-    public static final Material copper       = new Material(new Vector3D(0.19125, 0.0735, 0.0225), new Vector3D(0.7038, 0.27048, 0.0828), new Vector3D(0.256777, 0.137622, 0.086014), 0.1, 0.03);
+    public static final Material brass        = new Material(new Vector3D(0.329412, 0.223529, 0.027451), new Vector3D(0.780392, 0.568627, 0.113725), new Vector3D(0.992157, 0.941176, 0.807843), 0.21794872, 0.05);
+    public static final Material gold         = new Material(new Vector3D(0.24725, 0.1995, 0.0745), new Vector3D(0.75164, 0.60648, 0.22648), new Vector3D(0.628281, 0.555802, 0.366065), 0.4, 0.05);
+    public static final Material silver       = new Material(new Vector3D(0.19225, 0.19225, 0.19225), new Vector3D(0.50754, 0.50754, 0.50754), new Vector3D(0.508273, 0.508273, 0.508273), 0.4, 0.05);
+    public static final Material copper       = new Material(new Vector3D(0.19125, 0.0735, 0.0225), new Vector3D(0.7038, 0.27048, 0.0828), new Vector3D(0.256777, 0.137622, 0.086014), 0.1, 0.05);
 
     public static final Material blackPlastic = new Material(new Vector3D(0.0, 0.0, 0.0), new Vector3D(0.01, 0.01, 0.01), new Vector3D(0.5, 0.5, 0.5), 0.25, 0.05);
     public static final Material redPlastic   = new Material(new Vector3D(0.0, 0.0, 0.0), new Vector3D(0.5, 0.0, 0.0), new Vector3D(0.7, 0.6, 0.6), 0.25, 0.05);
