@@ -10,6 +10,7 @@ import utility.Vector3D;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -43,7 +44,19 @@ public class Camera {
     private final double screenPlaneWidthToHeightRatio;
     private final int screenPlaneHeightInPixels;
 
+    /// limit for tracing reflected rays
     private final int reflectionTracingLimit;
+    /* antialiasing by jittered super-sampling,
+       i.e. split each pixel into a regular grid
+       of 'samplesPerPixelSide' X 'samplesPerPixelSide'
+       sub-pixels, then sample one random point from
+       each sub-pixel.
+
+       If samplesPerPixelSide = 1, then only a single
+       ray is cast exactly through the center of every
+       pixel.
+    * */
+    private final int samplesPerPixelSide;
 
     /**
      * Constructors
@@ -64,17 +77,19 @@ public class Camera {
         this.screenPlaneHeightInPixels = 1200;
 
         this.reflectionTracingLimit = 4;
+        this.samplesPerPixelSide = 3;
     }
     /*
        Constructor to customise screen plane parameters.
      */
-    public Camera(double height, double depth, double widthToHeightRatio, int heightInPixels, int reflectionTracingLimit) {
+    public Camera(double height, double depth, double widthToHeightRatio, int heightInPixels, int reflectionTracingLimit, int samplesPerPixelSide) {
         this.screenPlaneHeight = height;
         this.screenPlaneDepth = depth;
         this.screenPlaneWidthToHeightRatio = widthToHeightRatio;
         this.screenPlaneHeightInPixels = heightInPixels;
 
         this.reflectionTracingLimit = reflectionTracingLimit;
+        this.samplesPerPixelSide = samplesPerPixelSide;
     }
 
     /**
@@ -87,6 +102,12 @@ public class Camera {
        Takes the path to the .xml file that describes the scene (e.g. in the
        '/src/main/resources' directory) as an argument
        , and creates a 'result.png' file in the project root directory.
+
+       If samplesPerPixelSide = 1, then only a single
+       ray is cast exactly through the center of every
+       pixel, otherwise jittered super-sampling is performed
+       on a 'samplesPerPixelSide' X 'samplesPerPixelSide' regular
+       grid of sub-pixels.
      */
     public BufferedImage render(String sceneDescriptionPath) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Scene scene = new Scene(sceneDescriptionPath);
@@ -95,30 +116,61 @@ public class Camera {
         BufferedImage digitalImage = new BufferedImage(this.getScreenPlaneWidthInPixels(), this.screenPlaneHeightInPixels, BufferedImage.TYPE_INT_RGB);
         double pixelWidth = this.getPixelWidth();
         double pixelHeight = this.getPixelHeight();
+        double subPixelWidth = pixelWidth / this.samplesPerPixelSide;
+        double subPixelHeight = pixelHeight / this.samplesPerPixelSide;
         for(int y = 0; y < this.screenPlaneHeightInPixels; y++) {
             for (int x = 0; x < this.getScreenPlaneWidthInPixels(); x++) {
-                /*Color col = new Color(227, 4, 49, 255);
-                digitalImage.setRGB(x,y, col.getRGB());*/
 
-                /*RTColor col = RTColor.cyan;
-                digitalImage.setRGB(x,y, col.getRGB());*/
+                /// if we want just one sample per pixel side, just cast one ray through pixel center
+                if(this.samplesPerPixelSide == 1) {
+                    /// x,y coordinates of pixel center from image origin (top left)
+                    double pixelCenterX = x * pixelWidth + 0.5 * pixelWidth;
+                    double pixelCenterY = y * pixelHeight + 0.5 * pixelHeight;
+                    /// transform to x,y coordinates where both x,y axes are in
+                    /// opposite directions from the standard image axes
+                    pixelCenterX = this.getScreenPlaneWidth() / 2 - pixelCenterX;
+                    pixelCenterY = this.screenPlaneHeight / 2 - pixelCenterY;
 
-                /// x,y coordinates of pixel from image origin (top left)
-                double pixelCenterX = x * pixelWidth + 0.5 * pixelWidth;
-                double pixelCenterY = y * pixelHeight + 0.5 * pixelHeight;
-                /// transform to x,y coordinates where both x,y axes are in
-                /// opposite directions from the standard image axes
-                pixelCenterX = this.getScreenPlaneWidth() / 2 - pixelCenterX;
-                pixelCenterY = this.screenPlaneHeight / 2 - pixelCenterY;
+                    /// create a ray to be cast from the camera through the center of the current pixel
+                    Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
+                    //RTColor rayColorValue = r.trace(scene, shader);  <- tracing without reflections
+                    RTColor rayColorValue = r.traceWithReflections(scene, shader, this.reflectionTracingLimit);
 
-                /// create a ray to be cast from the camera through the center of the current pixel
-                Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, this.screenPlaneDepth));
-                //RTColor rayColorValue = r.trace(scene, shader);  <- tracing without reflections
-                RTColor rayColorValue = r.traceWithReflections(scene, shader, this.reflectionTracingLimit);
+                    /// clip the color values to 0.0 to 1.0 range, and store them
+                    RTColor rayColorValueNormed = rayColorValue.normalised();
+                    digitalImage.setRGB(x, y, rayColorValueNormed.getRGB());
+                }
+                else { /// otherwise perform antialiasing by jittered super-sampling
+                    Random rnd = new Random();
+                    RTColor finalColorValue = RTColor.blank;
+                    for(int i = 0; i < this.samplesPerPixelSide; i++) {
+                        for(int j = 0; j < this.samplesPerPixelSide; j++) {
+                            /// x,y coordinates of the point in this sub-pixel
+                            // which we'll shoot the ray through, from image origin (top left)
+                            double subpixelSampleX = x * pixelWidth + j * subPixelWidth + rnd.nextDouble() * subPixelWidth;
+                            double subpixelSampleY = y * pixelHeight + i * subPixelHeight + rnd.nextDouble() * subPixelHeight;
 
-                /// clip the color values to 0.0 to 1.0 range, and store it
-                RTColor rayColorValueNormed = rayColorValue.normalised();
-                digitalImage.setRGB(x, y, rayColorValueNormed.getRGB());
+                            /// transform to x,y coordinates where both x,y axes are in
+                            /// opposite directions from the standard image axes
+                            subpixelSampleX = this.getScreenPlaneWidth() / 2 - subpixelSampleX;
+                            subpixelSampleY = this.screenPlaneHeight / 2 - subpixelSampleY;
+
+                            /// create a ray to be cast from the camera through the selected sample point
+                            Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(subpixelSampleX, subpixelSampleY, this.screenPlaneDepth));
+                            RTColor rayColorValue = r.traceWithReflections(scene, shader, this.reflectionTracingLimit);
+
+                            /// add this ray's contribution
+                            finalColorValue = finalColorValue.added(rayColorValue);
+                        }
+                    }
+
+                    /// take the average of samples' contributions
+                    finalColorValue = finalColorValue.scaled(1 / (double) (this.samplesPerPixelSide * this.samplesPerPixelSide));
+
+                    /// clip the color values to 0.0 to 1.0 range, and store them
+                    RTColor finalColorValueNormed = finalColorValue.normalised();
+                    digitalImage.setRGB(x, y, finalColorValueNormed.getRGB());
+                }
             }
         }
 
