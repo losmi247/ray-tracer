@@ -3,6 +3,7 @@ package utility;
 import shapes.Plane;
 import shapes.RTShape;
 import shapes.Sphere;
+import shapes.Triangle;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,10 @@ public class ShapeMapper {
        the shapeID argument is not a shapeID of an existing primitive.
      */
     public static RTShape mapParseShapeMethod(Map<String,String> attributes, String shapeID) throws IncorrectSceneDescriptionXMLStructureException {
-        if(shapeID.equals("sphere")) {
+        if(shapeID.equals("triangle")) {
+            return Triangle.parseShape(attributes);
+        }
+        else if(shapeID.equals("sphere")) {
             return Sphere.parseShape(attributes);
         }
         else if(shapeID.equals("plane")) {

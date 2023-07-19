@@ -103,7 +103,7 @@ public class Sphere implements RTShape {
     /*
        Method that returns the material (shading
        coefficients) at a given point on the surface of
-       the RTShape.
+       the sphere.
 
        If the precondition (point must be on the surface of
        the shape) is violated, behaviour is undefined.

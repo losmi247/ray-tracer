@@ -74,9 +74,9 @@ public class Camera {
         this.screenPlaneHeight = 4;
         this.screenPlaneDepth = 2;
         this.screenPlaneWidthToHeightRatio = 1;
-        this.screenPlaneHeightInPixels = 1200;
+        this.screenPlaneHeightInPixels = 800;
 
-        this.reflectionTracingLimit = 4;
+        this.reflectionTracingLimit = 5;
         this.samplesPerPixelSide = 3;
     }
     /*

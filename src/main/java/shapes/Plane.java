@@ -104,7 +104,7 @@ public class Plane implements RTShape {
     /*
        Method that returns the material (shading
        coefficients) at a given point on the surface of
-       the RTShape.
+       the plane.
 
        If the precondition (point must be on the surface of
        the shape) is violated, behaviour is undefined.
@@ -175,9 +175,6 @@ public class Plane implements RTShape {
     }
     public Vector3D getPointInPlane() {
         return this.pointInPlane;
-    }
-    public RTColor getDiffuseColor() {
-        return this.diffuseColor;
     }
     public String getShapeID() {
         return Plane.shapeID;

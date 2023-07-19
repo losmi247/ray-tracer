@@ -62,7 +62,7 @@ public class Material {
     public static final Material redRubber    = new Material(new Vector3D(0.05, 0.0, 0.0), new Vector3D(0.5, 0.4, 0.4), new Vector3D(0.7, 0.04, 0.04), 0.078125, 0.01);
     public static final Material yellowRubber = new Material(new Vector3D(0.05, 0.05, 0.0), new Vector3D(0.5, 0.5, 0.4), new Vector3D(0.7, 0.7, 0.04), 0.078125, 0.01);
 
-    public static final Material concrete = new Material(new Vector3D(0.05, 0.05, 0.05), new Vector3D(0.9, 0.9, 0.9), new Vector3D(0.01,0.01,0.01), 0.0000001, 0.001);
+    public static final Material concrete = new Material(new Vector3D(0.07, 0.07, 0.07), new Vector3D(0.95, 0.95, 0.95), new Vector3D(0.01,0.01,0.01), 0.0000001, 0.001);
 
     /**
      * Constructors

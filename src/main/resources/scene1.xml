@@ -20,9 +20,15 @@
     </sphere>
     <sphere>
         <center>(0,-1.5,3)</center>
-        <radius>0.7</radius>
+        <radius>0.4</radius>
         <color>(212,175,55)</color>
         <material>gold</material>
+    </sphere>
+    <sphere>
+        <center>(-11,-14,21)</center>
+        <radius>1.4</radius>
+        <color>(184,115,51)</color>
+        <material>copper</material>
     </sphere>
 
     <plane>
@@ -61,6 +67,27 @@
         <color>(255,141,0)</color>
         <material>concrete</material>
     </plane>
+
+    <triangle>
+        <vertexA>(-8,3,40)</vertexA>
+        <vertexB>(-6,-13,21)</vertexB>
+        <vertexC>(-11,-13,21)</vertexC>
+        <normalA>(0,0,1)</normalA>
+        <normalB>(0,0,1)</normalB>
+        <normalC>(0,0,1)</normalC>
+        <color>(0,165,80)</color>
+        <material>green-rubber</material>
+    </triangle>
+    <triangle>
+        <vertexA>(-4,-13,22)</vertexA>
+        <vertexB>(-12,-13,22)</vertexB>
+        <vertexC>(-8,-6,26)</vertexC>
+        <normalA>(0,0,1)</normalA>
+        <normalB>(0,0,1)</normalB>
+        <normalC>(0,0,1)</normalC>
+        <color>(236,30,47)</color>
+        <material>red-rubber</material>
+    </triangle>
 </shapes>
 <lights>
     <light>

@@ -65,6 +65,12 @@ public class Vector3D {
         Vector3D unitNormal = normal.normalised();
         return unitNormal.scaled(2 * this.scalarProduct(unitNormal)).added(this.negated()).normalised();
     }
+    /*
+       Returns the vector cross product (this X v).
+     */
+    public Vector3D crossProduct(Vector3D v) {
+        return new Vector3D(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
+    }
     public double magnitude(){
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
