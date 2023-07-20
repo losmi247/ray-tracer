@@ -10,6 +10,7 @@ import utility.Vector3D;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
+import java.sql.SQLOutput;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
@@ -114,12 +115,17 @@ public class Camera {
         Shader shader = new PhongShader(scene);
 
         BufferedImage digitalImage = new BufferedImage(this.getScreenPlaneWidthInPixels(), this.screenPlaneHeightInPixels, BufferedImage.TYPE_INT_RGB);
+        int screenPlaneWidthInPixels = this.getScreenPlaneWidthInPixels();
         double pixelWidth = this.getPixelWidth();
         double pixelHeight = this.getPixelHeight();
         double subPixelWidth = pixelWidth / this.samplesPerPixelSide;
         double subPixelHeight = pixelHeight / this.samplesPerPixelSide;
+
+        long startTime = System.currentTimeMillis();
+        int milestone = (this.screenPlaneHeightInPixels * screenPlaneWidthInPixels) / 20;
+
         for(int y = 0; y < this.screenPlaneHeightInPixels; y++) {
-            for (int x = 0; x < this.getScreenPlaneWidthInPixels(); x++) {
+            for (int x = 0; x < screenPlaneWidthInPixels; x++) {
 
                 /// if we want just one sample per pixel side, just cast one ray through pixel center
                 if(this.samplesPerPixelSide == 1) {
@@ -171,8 +177,18 @@ public class Camera {
                     RTColor finalColorValueNormed = finalColorValue.normalised();
                     digitalImage.setRGB(x, y, finalColorValueNormed.getRGB());
                 }
+
+                /// progress status
+                if((x+y != 0) && (y*screenPlaneWidthInPixels + x) % milestone == 0) {
+                    double done = (double) (y*screenPlaneWidthInPixels + x) / (double) (this.screenPlaneHeightInPixels * screenPlaneWidthInPixels);
+                    double eta = (double) (System.currentTimeMillis() - startTime) * ((1 - done) / done);
+                    System.out.println(done * 100 + "% done. ETA: " + Double.toString(Math.round(eta/ 1000)) + " seconds");
+                }
             }
         }
+
+        /// 16.207 seconds for scene1
+        System.out.println("100% done. Total time: " + (double) (System.currentTimeMillis() - startTime) / 1000 + " seconds");
 
         return digitalImage;
     }
