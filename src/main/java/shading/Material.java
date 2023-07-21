@@ -43,7 +43,7 @@ public class Material {
 
     public static final Material metal        = new Material(new Vector3D(0.35), new Vector3D(0.3), new Vector3D(0.8), 0.05, 0.1);
     public static final Material glass        = new Material(new Vector3D(0), new Vector3D(0), new Vector3D(0.7), 0.01, 0.2);
-    public static final Material mirror       = new Material(new Vector3D(0), new Vector3D(0), new Vector3D(0), 0.01, 0.9);
+    public static final Material mirror       = new Material(new Vector3D(0), new Vector3D(0), new Vector3D(0.01), 0.01, 0.9);
     public static final Material plastic      = new Material(new Vector3D(0.1), new Vector3D(0.25), new Vector3D(0.25), 0.1, 0.05);
 
     public static final Material obsidian     = new Material(new Vector3D(0.05375, 0.05, 0.06625), new Vector3D(0.18275, 0.17, 0.22525), new Vector3D(0.332741, 0.328634, 0.346435), 0.3, 0.01);

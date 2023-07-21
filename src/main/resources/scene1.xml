@@ -88,12 +88,37 @@
         <color>(236,30,47)</color>
         <material>red-rubber</material>
     </triangle>
+    <triangle>
+        <vertexA>(0,2,25)</vertexA>
+        <vertexB>(-18,0,18)</vertexB>
+        <vertexC>(-5,12,17)</vertexC>
+        <normalA>(0,0,1)</normalA>
+        <normalB>(0,0,1)</normalB>
+        <normalC>(0,0,1)</normalC>
+        <color>(255,255,255)</color>
+        <material>mirror</material>
+    </triangle>
+    <triangle>
+        <vertexA>(-15,-2,22)</vertexA>
+        <vertexB>(-15,-2,16)</vertexB>
+        <vertexC>(-15,8,18)</vertexC>
+        <normalA>(0,0,1)</normalA>
+        <normalB>(0,0,1)</normalB>
+        <normalC>(0,0,1)</normalC>
+        <color>(225,193,110)</color>
+        <material>brass</material>
+    </triangle>
 </shapes>
 <lights>
     <light>
         <position>(-12,15,0)</position>
         <color>(255,255,255)</color>
         <intensity>1</intensity>
+    </light>
+    <light>
+        <position>(12,15,0)</position>
+        <color>(255,255,255)</color>
+        <intensity>0.5</intensity>
     </light>
 </lights>
 </elements>
