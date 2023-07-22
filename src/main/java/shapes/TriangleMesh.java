@@ -2,6 +2,7 @@ package shapes;
 
 import de.javagl.obj.ObjData;
 import shading.Material;
+import tracing.Intersection;
 import tracing.Ray;
 import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.RTColor;
@@ -19,7 +20,12 @@ import de.javagl.obj.Obj;
 import de.javagl.obj.ObjReader;
 
 /**
- * Class for a mesh of triangles.
+ * Class for a mesh of triangles, defined by the vertices it contains,
+ * normals to surface at each vertex, color and material.
+ *
+ * To create meshes, use Blender, then export it as an .obj file, then
+ * place it into project folder, and insert the path to it into the
+ * XML node of the triangle mesh in the scene description file.
  *
  * TODO - implement a bounding box for the TriangleMesh, and first check
  *        if ray hits the bounding box to optimise tracing
@@ -94,25 +100,32 @@ public class TriangleMesh implements RTShape {
        if an intersection exists, or 'null' if no intersection
        exists (don't want to use exceptions for control
        flow when rendering).
+
+       The point of intersection is bundled together with the
+       intersected shape, into an Intersection object.
+
+       Unlike most other primitives, a triangle mesh here returns
+       the intersected triangle in the returned Intersection object,
+       not the mesh itself (we need to know which exact triangle is
+       intersected later, so that was the motivation for making
+       the 'intersect' method return an Intersection object rather
+       than a simple Vector3D in the first place).
      */
-    public Vector3D intersect(Ray ray) {
-        Vector3D closestIntersectionPoint = null;
+    public Intersection intersect(Ray ray) {
+        Intersection closestIntersection = null;
         double minDistanceSoFar = -1;
-        Triangle intersectedTriangle = null;
 
         for(Triangle triangle : this.triangleFaces) {
-            Vector3D intersectionPoint = triangle.intersect(ray);
-            if(intersectionPoint != null) {
-                if(closestIntersectionPoint == null || ray.distance(intersectionPoint) < minDistanceSoFar) {
-                    closestIntersectionPoint = intersectionPoint;
-                    minDistanceSoFar = ray.distance(intersectionPoint);
-                    intersectedTriangle = triangle;
+            Intersection intersection = triangle.intersect(ray);
+            if(intersection != null) {
+                if(closestIntersection == null || ray.distance(intersection.getIntersectionPoint()) < minDistanceSoFar) {
+                    closestIntersection = intersection;
+                    minDistanceSoFar = ray.distance(intersection.getIntersectionPoint());
                 }
             }
         }
 
-        /// TODO - finish intersection
-        return null;
+        return closestIntersection;
     }
     /*
        Method that returns the unit normal at a given point on

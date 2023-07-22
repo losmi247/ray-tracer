@@ -83,12 +83,12 @@ public class ShadowRay extends Ray {
         /// check intersections of this ray with each shape
         for (RTShape shape : shapes) {
             /// find the first intersection of this ray and this shape
-            Vector3D intersectionPoint = shape.intersect(this);
+            Intersection intersectionPoint = shape.intersect(this);
 
             /// if the intersection point is closer to ray origin than
             /// target, the light source is occluded
             if(intersectionPoint != null) {
-                double distanceHit = super.distance(intersectionPoint);
+                double distanceHit = super.distance(intersectionPoint.getIntersectionPoint());
                 double distanceTarget = super.distance(target);
                 /// also say the light source is occluded if the intersection
                 /// point is sufficiently (1e-12) close to the target, to avoid

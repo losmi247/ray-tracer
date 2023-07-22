@@ -1,6 +1,7 @@
 package shapes;
 
 import shading.Material;
+import tracing.Intersection;
 import tracing.Ray;
 import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.RTColor;
@@ -50,8 +51,11 @@ public class Plane implements RTShape {
        if an intersection exists, or 'null' if no intersection
        exists (don't want to use exceptions for control
        flow when rendering).
+
+       The point of intersection is bundled together with the
+       intersected shape, into an Intersection object.
      */
-    public Vector3D intersect(Ray ray) {
+    public Intersection intersect(Ray ray) {
         /*
         (O+s*D - A) dot N = 0
 
@@ -69,7 +73,7 @@ public class Plane implements RTShape {
             double s = -numerator / denominator;
 
             if(s > 0) {
-                return ray.pointAt(s);
+                return new Intersection(this, ray.pointAt(s));
             }
             else {
                 return null;

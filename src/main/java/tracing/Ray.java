@@ -97,22 +97,20 @@ public class Ray {
         ArrayList<Light> lights = scene.getLights();
 
         /// find the first intersection of this ray with a shape
-        Vector3D intersectionPoint = null;
+        Intersection closestIntersection = null;
         double minDistanceSoFar = -1;
-        RTShape intersectedShape = null;
         for (RTShape shape : shapes) {
             /// find the first intersection of this ray and this shape
-            Vector3D intersection = shape.intersect(this);
+            Intersection intersection = shape.intersect(this);
             if(intersection != null) {
-                if(intersectionPoint == null || this.distance(intersection) < minDistanceSoFar) {
-                    intersectionPoint = intersection;
-                    minDistanceSoFar = this.distance(intersection);
-                    intersectedShape = shape;
+                if(closestIntersection == null || this.distance(intersection.getIntersectionPoint()) < minDistanceSoFar) {
+                    closestIntersection = intersection;
+                    minDistanceSoFar = this.distance(intersection.getIntersectionPoint());
                 }
             }
         }
 
-        return new Intersection(intersectedShape, intersectionPoint);
+        return closestIntersection;
     }
     /*
        Method to return the point on this ray P = O + s * D for
@@ -140,9 +138,6 @@ public class Ray {
         return point.added(this.origin.negated()).magnitude();
     }
 
-    /**
-     * Static Utility Methods
-     */
     /**
      * Static Utility Methods
      */

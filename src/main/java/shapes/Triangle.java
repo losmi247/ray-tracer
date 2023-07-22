@@ -1,6 +1,7 @@
 package shapes;
 
 import shading.Material;
+import tracing.Intersection;
 import tracing.Ray;
 import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.RTColor;
@@ -112,24 +113,27 @@ public class Triangle implements RTShape {
        if an intersection exists, or 'null' if no intersection
        exists (don't want to use exceptions for control
        flow when rendering).
+
+       The point of intersection is bundled together with the
+       intersected shape, into an Intersection object.
      */
-    public Vector3D intersect(Ray ray) {
+    public Intersection intersect(Ray ray) {
         Plane plane = new Plane(this.surfaceUnitNormal, this.vertexA, null, null);
-        Vector3D planeIntersectionPoint = plane.intersect(ray);
+        Intersection planeIntersection = plane.intersect(ray);
 
         /// if ray does not intersect triangle's plane, no intersection exists
-        if(planeIntersectionPoint == null) {
+        if(planeIntersection == null) {
             return null;
         }
 
-        Vector3D barycentricCoordinates = this.getBarycentricCoordinates(planeIntersectionPoint);
+        Vector3D barycentricCoordinates = this.getBarycentricCoordinates(planeIntersection.getIntersectionPoint());
 
         /// if not all barycentric coordinates are non-negative, intersection point with plane is outside of triangle
         if(barycentricCoordinates.getX() < 0 || barycentricCoordinates.getY() < 0 || barycentricCoordinates.getZ() < 0) {
             return null;
         }
 
-        return planeIntersectionPoint;
+        return new Intersection(this, planeIntersection.getIntersectionPoint());
     }
     /*
        Method that returns the unit normal at a given point on

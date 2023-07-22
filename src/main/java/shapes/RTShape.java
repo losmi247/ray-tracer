@@ -1,5 +1,6 @@
 package shapes;
 import shading.Material;
+import tracing.Intersection;
 import utility.RTColor;
 import utility.Vector3D;
 import tracing.Ray;
@@ -38,10 +39,11 @@ public interface RTShape {
     /*
        Method that returns the point (as a Vector3D)
        of intersection of the Ray r with the RTShape,
-       or throws the checked exception NoIntersection
-       if there is no intersection.
+       bundled with the intersected shape into an
+       Intersection object, or returns null if there
+       is no intersection.
      */
-    Vector3D intersect(Ray ray);
+    Intersection intersect(Ray ray);
 
     /**
      * Methods For Shading

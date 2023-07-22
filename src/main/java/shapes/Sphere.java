@@ -1,6 +1,7 @@
 package shapes;
 
 import shading.Material;
+import tracing.Intersection;
 import tracing.Ray;
 import utility.IncorrectSceneDescriptionXMLStructureException;
 import utility.RTColor;
@@ -39,8 +40,11 @@ public class Sphere implements RTShape {
        if an intersection exists, or 'null' if no intersection
        exists (don't want to use exceptions for control
        flow when rendering).
+
+       The point of intersection is bundled together with the
+       intersected shape, into an Intersection object.
      */
-    public Vector3D intersect(Ray ray) {
+    public Intersection intersect(Ray ray) {
         /// quadratic equation a*s^2 + b*s + c = 0
         Vector3D D = ray.getDirection();
         Vector3D O = ray.getOrigin();
@@ -66,14 +70,14 @@ public class Sphere implements RTShape {
             }
 
             if(s1 < 0) {
-                return ray.pointAt(s2);
+                return new Intersection(this, ray.pointAt(s2));
             }
 
             if(s2 < 0) {
-                return ray.pointAt(s1);
+                return new Intersection(this, ray.pointAt(s1));
             }
 
-            return ray.pointAt(Math.min(s1,s2));
+            return new Intersection(this, ray.pointAt(Math.min(s1,s2)));
         }
     }
     /*
