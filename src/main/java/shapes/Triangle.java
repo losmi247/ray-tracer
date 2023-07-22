@@ -129,7 +129,8 @@ public class Triangle implements RTShape {
         Vector3D barycentricCoordinates = this.getBarycentricCoordinates(planeIntersection.getIntersectionPoint());
 
         /// if not all barycentric coordinates are non-negative, intersection point with plane is outside of triangle
-        if(barycentricCoordinates.getX() < 0 || barycentricCoordinates.getY() < 0 || barycentricCoordinates.getZ() < 0) {
+        /// allow barycentric coordinates to be slightly negative (-1e12) so that edges and vertices of triangle are allowed
+        if(barycentricCoordinates.getX() < -1e-12 || barycentricCoordinates.getY() < -1e-12 || barycentricCoordinates.getZ() < -1e-12) {
             return null;
         }
 

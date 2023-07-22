@@ -31,7 +31,7 @@ replay_pid*
 src/test/
 
 # test scene
-src/main/resources/testScene.xml
+src/main/resources/scene descriptions/testScene.xml
 
 # folder info
 .DS_Store

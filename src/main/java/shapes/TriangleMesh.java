@@ -27,7 +27,8 @@ import de.javagl.obj.ObjReader;
  * place it into project folder, and insert the path to it into the
  * XML node of the triangle mesh in the scene description file.
  *
- * TODO - test triangle methods, add a triangle mesh to the scene to test
+ * TODO - scaling, rotation, translation for each triangle mesh to be
+ *          positioned in the scene, test by rendering
  *
  * TODO - implement a bounding box for the TriangleMesh, and first check
  *        if ray hits the bounding box to optimise tracing
@@ -67,19 +68,19 @@ public class TriangleMesh implements RTShape {
 
         /// initialise list of vertices by grouping coordinates three by three
         this.vertices = new ArrayList<>();
-        for(int i = 0; i < vertexCoordinates.length; i += 3) {
+        for(int i = 0; i < vertexCoordinates.length / 3; i++) {
             this.vertices.add(new Vector3D(vertexCoordinates[3*i], vertexCoordinates[3*i+1], vertexCoordinates[3*i+2]));
         }
 
         /// initialise list of vertex normals by grouping coordinates three by three
         this.vertexNormals = new ArrayList<>();
-        for(int i = 0; i < vertexNormalsCoordinates.length; i += 3) {
+        for(int i = 0; i < vertexNormalsCoordinates.length / 3; i++) {
             this.vertexNormals.add(new Vector3D(vertexNormalsCoordinates[3*i], vertexNormalsCoordinates[3*i+1], vertexNormalsCoordinates[3*i+2]));
         }
 
         /// initialise list of triangles
         this.triangleFaces = new ArrayList<>();
-        for(int i = 0; i < faceVertexIndices.length; i++) {
+        for(int i = 0; i < faceVertexIndices.length / 3; i++) {
             this.triangleFaces.add(
                     new Triangle(
                             this.vertices.get(faceVertexIndices[3*i]), this.vertices.get(faceVertexIndices[3*i+1]), this.vertices.get(faceVertexIndices[3*i+2]),
@@ -234,5 +235,14 @@ public class TriangleMesh implements RTShape {
      */
     public String getShapeID() {
         return TriangleMesh.shapeID;
+    }
+    public ArrayList<Vector3D> getVertices() {
+        return this.vertices;
+    }
+    public ArrayList<Vector3D> getNormals() {
+        return this.vertexNormals;
+    }
+    public ArrayList<Triangle> getTriangles() {
+        return this.triangleFaces;
     }
 }

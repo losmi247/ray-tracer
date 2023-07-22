@@ -368,7 +368,7 @@ public class Camera {
 
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
-        BufferedImage b = c.renderWithCoreParallelization("src/main/resources/scene1.xml");
+        BufferedImage b = c.renderWithCoreParallelization("src/main/resources/scene descriptions/scene1.xml");
         Camera.saveImage(b);
     }
 }
