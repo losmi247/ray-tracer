@@ -35,17 +35,17 @@ import de.javagl.obj.ObjReader;
  */
 
 public class TriangleMesh implements RTShape {
-    public static String shapeID = "triangle-mesh";
+    public static final String shapeID = "triangle-mesh";
 
     /// the vertices of the mesh, in object coordinates
-    private ArrayList<Vector3D> vertices;
+    private final ArrayList<Vector3D> vertices;
     /// the normals to the mesh at each vertex, found by averaging adjacent face (triangle) normals
-    private ArrayList<Vector3D> vertexNormals;
+    private final ArrayList<Vector3D> vertexNormals;
     /// the triangles that the vertices form
-    private ArrayList<Triangle> triangleFaces;
+    private final ArrayList<Triangle> triangleFaces;
 
-    private RTColor diffuseColor;
-    private Material material;
+    private final RTColor diffuseColor;
+    private final Material material;
 
     /**
      * Constructors
