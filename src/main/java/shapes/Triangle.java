@@ -56,6 +56,8 @@ public class Triangle implements RTShape {
        and the material. The unit normal to surface of the triangle is
        computed immediately.
 
+       This constructor allows customisation of vertex normals, so it
+       allows SMOOTH SHADING of triangles (surface normal interpolation).
        The vertex normals need not necessarily be normalised when given
        to the constructor.
      */
@@ -72,6 +74,30 @@ public class Triangle implements RTShape {
         this.material = material;
 
         this.surfaceUnitNormal = this.vertexB.added(this.vertexA.negated()).crossProduct(this.vertexC.added(this.vertexA.negated())).normalised();
+    }
+    /*
+       Constructor from three vertices, diffuse color,
+       and the material. The unit normal to surface of the triangle is
+       computed immediately.
+
+       This constructor does not allow customisation of vertex normals,
+       so it is used for FLAT SHADING (unit normal to triangle surface
+       used for shading), i.e. the vertex normals are not given, but
+       are set to be equal to the unit normal to triangle surface.
+     */
+    public Triangle(Vector3D verA, Vector3D verB, Vector3D verC, RTColor color, Material material) {
+        this.vertexA = verA;
+        this.vertexB = verB;
+        this.vertexC = verC;
+
+        this.diffuseColor = color;
+        this.material = material;
+
+        this.surfaceUnitNormal = this.vertexB.added(this.vertexA.negated()).crossProduct(this.vertexC.added(this.vertexA.negated())).normalised();
+
+        this.unitNormalA = surfaceUnitNormal;
+        this.unitNormalB = surfaceUnitNormal;
+        this.unitNormalC = surfaceUnitNormal;
     }
 
     /**
@@ -118,7 +144,20 @@ public class Triangle implements RTShape {
        the shape) is violated, behaviour is undefined.
      */
     public Vector3D getUnitNormalAt(Vector3D point) {
-        return this.surfaceUnitNormal;
+        /// if all three vertex normals are set to be equal to the surface unit normal, omit interpolation, and use flat shading (no normal interpolation)
+        if(this.unitNormalA == this.surfaceUnitNormal && this.unitNormalB == this.surfaceUnitNormal && this.unitNormalC == this.surfaceUnitNormal) {
+            return this.surfaceUnitNormal;
+        }
+        /// otherwise, interpolate surface normal at given point between triangle vertices, to perform smooth shading
+        else {
+            /// use barycentric coordinates of given point to interpolate unit normal at given point
+            Vector3D barycentricCoordinates = this.getBarycentricCoordinates(point);
+            return this.unitNormalA.scaled(barycentricCoordinates.getX()).added(
+                    this.unitNormalB.scaled(barycentricCoordinates.getY()).added(
+                            this.unitNormalC.scaled(barycentricCoordinates.getZ())
+                    )
+            ).normalised();
+        }
     }
     /*
        Method that returns the diffuse color of the triangle at
@@ -199,6 +238,11 @@ public class Triangle implements RTShape {
        If the material attribute is missing from the XML
        description of the RTShape, Material.defaultNonReflectiveMaterial
        is set.
+
+       If at least one of vertex normal attributes "normalA", "normalB",
+       or "normalC" is missing, the vertex normals are set to be equal
+       to the surface unit normal to triangle, i.e. flat shading is
+       used (through the appropriate constructor).
      */
     public static Triangle parseShape(Map<String,String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D vertexA = null, vertexB = null, vertexC = null;
@@ -234,13 +278,18 @@ public class Triangle implements RTShape {
             }
         }
 
-        if(vertexA == null || vertexB == null || vertexC == null || normalA == null || normalB == null || normalC == null || color == null) {
+        if(vertexA == null || vertexB == null || vertexC == null || color == null) {
             throw new IncorrectSceneDescriptionXMLStructureException();
         }
 
         /// if missing material in XML, set default
         if(material == null) {
             material = Material.defaultNonReflectiveMaterial;
+        }
+
+        /// if one of vertex normals is missing in XML, perform flat shading for this triangle
+        if(normalA == null || normalB == null || normalC == null) {
+            return new Triangle(vertexA, vertexB, vertexC, color, material);
         }
 
         return new Triangle(vertexA, vertexB, vertexC, normalA, normalB, normalC, color, material);

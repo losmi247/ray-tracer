@@ -72,9 +72,6 @@
         <vertexA>(-8,3,40)</vertexA>
         <vertexB>(-6,-13,21)</vertexB>
         <vertexC>(-11,-13,21)</vertexC>
-        <normalA>(0,0,1)</normalA>
-        <normalB>(0,0,1)</normalB>
-        <normalC>(0,0,1)</normalC>
         <color>(0,165,80)</color>
         <material>green-rubber</material>
     </triangle>
@@ -82,9 +79,7 @@
         <vertexA>(-4,-13,22)</vertexA>
         <vertexB>(-12,-13,22)</vertexB>
         <vertexC>(-8,-6,26)</vertexC>
-        <normalA>(0,0,1)</normalA>
         <normalB>(0,0,1)</normalB>
-        <normalC>(0,0,1)</normalC>
         <color>(236,30,47)</color>
         <material>red-rubber</material>
     </triangle>
@@ -93,7 +88,6 @@
         <vertexB>(-18,0,18)</vertexB>
         <vertexC>(-5,12,17)</vertexC>
         <normalA>(0,0,1)</normalA>
-        <normalB>(0,0,1)</normalB>
         <normalC>(0,0,1)</normalC>
         <color>(255,255,255)</color>
         <material>mirror</material>
@@ -103,8 +97,6 @@
         <vertexB>(-15,-2,16)</vertexB>
         <vertexC>(-15,8,18)</vertexC>
         <normalA>(0,0,1)</normalA>
-        <normalB>(0,0,1)</normalB>
-        <normalC>(0,0,1)</normalC>
         <color>(225,193,110)</color>
         <material>brass</material>
     </triangle>

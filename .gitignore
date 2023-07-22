@@ -32,3 +32,6 @@ src/test/
 
 # test scene
 src/main/resources/testScene.xml
+
+# folder info
+.DS_Store
