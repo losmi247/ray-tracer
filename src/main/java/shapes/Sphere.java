@@ -15,8 +15,10 @@ import java.util.Map;
  */
 public class Sphere implements RTShape {
     public static final String shapeID = "sphere";
+
     private Vector3D center;
     private double radius;
+
     private RTColor diffuseColor;
     private Material material;
 

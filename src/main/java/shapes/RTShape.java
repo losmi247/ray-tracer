@@ -21,10 +21,6 @@ import tracing.Ray;
  *
  * Each shape defines the unit normal, color, and material (shading
  * coefficients) at every point on its surface.
- *
- * TODO - each shape should have an instance variable that controls the
- *        material properties (coefficients for Phong shading, i.e.
- *        ambient, diffuse, specular, reflectivity)
  */
 public interface RTShape {
     /*

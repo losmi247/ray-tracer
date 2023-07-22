@@ -1,10 +1,8 @@
 package utility;
 
-import shapes.Plane;
-import shapes.RTShape;
-import shapes.Sphere;
-import shapes.Triangle;
+import shapes.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +27,11 @@ public class ShapeMapper {
        Throws IncorrectSceneDescriptionXMLStructureException in case
        the shapeID argument is not a shapeID of an existing primitive.
      */
-    public static RTShape mapParseShapeMethod(Map<String,String> attributes, String shapeID) throws IncorrectSceneDescriptionXMLStructureException {
-        if(shapeID.equals("triangle")) {
+    public static RTShape mapParseShapeMethod(Map<String,String> attributes, String shapeID) throws IncorrectSceneDescriptionXMLStructureException, IOException {
+        if(shapeID.equals("triangle-mesh")) {
+            return TriangleMesh.parseShape(attributes);
+        }
+        else if(shapeID.equals("triangle")) {
             return Triangle.parseShape(attributes);
         }
         else if(shapeID.equals("sphere")) {

@@ -101,7 +101,7 @@ public class SceneDescriptionParser {
     /*
        Method to parse the XML node containing shape descriptions.
      */
-    public ArrayList<RTShape> parseShapes() throws IncorrectSceneDescriptionXMLStructureException {
+    public ArrayList<RTShape> parseShapes() throws IncorrectSceneDescriptionXMLStructureException, IOException {
         NodeList shapesNodeList = this.getShapesNode().getChildNodes();
 
         /// iterate through shapes
@@ -144,7 +144,7 @@ public class SceneDescriptionParser {
        Method to parse a given XML node for a shape, and create
        an appropriate RTShape object.
      */
-    private static RTShape parseShape(Node shapeNode) throws IncorrectSceneDescriptionXMLStructureException {
+    private static RTShape parseShape(Node shapeNode) throws IncorrectSceneDescriptionXMLStructureException, IOException {
         NodeList attributeNodes = shapeNode.getChildNodes();
         int n = attributeNodes.getLength();
         Node current;

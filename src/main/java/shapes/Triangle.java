@@ -57,7 +57,9 @@ public class Triangle implements RTShape {
        computed immediately.
 
        This constructor allows customisation of vertex normals, so it
-       allows SMOOTH SHADING of triangles (surface normal interpolation).
+       allows SMOOTH SHADING of triangles (surface normal interpolation
+       between vertices of triangle).
+
        The vertex normals need not necessarily be normalised when given
        to the constructor.
      */

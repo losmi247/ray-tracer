@@ -18,8 +18,10 @@ import java.util.Map;
 
 public class Plane implements RTShape {
     public static final String shapeID = "plane";
+
     private Vector3D unitNormal;
     private Vector3D pointInPlane;
+
     private RTColor diffuseColor;
     private Material material;
 
