@@ -137,7 +137,7 @@ public class Triangle implements RTShape {
     }
     /*
        Method that returns the unit normal at a given point on
-       the surface of the triangle.
+       the surface of the triangle, given as an Intersection object.
 
        The unit normal must point outwards by convention, which
        for a triangle is the direction given by the right-hand rule,
@@ -149,7 +149,7 @@ public class Triangle implements RTShape {
        If the precondition (point must be on the surface of
        the shape) is violated, behaviour is undefined.
      */
-    public Vector3D getUnitNormalAt(Vector3D point) {
+    public Vector3D getUnitNormalAt(Intersection intersection) {
         /// if all three vertex normals are set to be equal to the surface unit normal, omit interpolation, and use flat shading (no normal interpolation)
         if(this.unitNormalA == this.surfaceUnitNormal && this.unitNormalB == this.surfaceUnitNormal && this.unitNormalC == this.surfaceUnitNormal) {
             return this.surfaceUnitNormal;
@@ -157,7 +157,7 @@ public class Triangle implements RTShape {
         /// otherwise, interpolate surface normal at given point between triangle vertices, to perform smooth shading
         else {
             /// use barycentric coordinates of given point to interpolate unit normal at given point
-            Vector3D barycentricCoordinates = this.getBarycentricCoordinates(point);
+            Vector3D barycentricCoordinates = this.getBarycentricCoordinates(intersection.getIntersectionPoint());
             return this.unitNormalA.scaled(barycentricCoordinates.getX()).added(
                     this.unitNormalB.scaled(barycentricCoordinates.getY()).added(
                             this.unitNormalC.scaled(barycentricCoordinates.getZ())

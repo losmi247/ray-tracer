@@ -102,7 +102,7 @@ public class PhongShader implements Shader {
         /// unit vector from the given point to this light
         Vector3D lightDirection = light.getPosition().added(intersectionPoint.negated()).normalised();
         /// unit normal to surface of the shape at the given point
-        Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersectionPoint);
+        Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersection);
 
         /// take max with 0, so that only the side of the surface facing the light is illuminated
         double diffuseMultiplier = light.getIntensity() * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
@@ -130,7 +130,7 @@ public class PhongShader implements Shader {
         /// unit vector from the given point to this light
         Vector3D lightDirection = light.getPosition().added(intersectionPoint.negated()).normalised();
         /// unit normal to surface of the shape at the given point
-        Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersectionPoint);
+        Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersection);
         /// unit vector from the given point to the camera
         Vector3D viewDirection = (new Vector3D(0,0,0)).added(intersectionPoint.negated()).normalised();
         /// perfect specular reflection direction of the light at this point

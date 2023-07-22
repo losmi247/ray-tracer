@@ -27,6 +27,8 @@ import de.javagl.obj.ObjReader;
  * place it into project folder, and insert the path to it into the
  * XML node of the triangle mesh in the scene description file.
  *
+ * TODO - test triangle methods, add a triangle mesh to the scene to test
+ *
  * TODO - implement a bounding box for the TriangleMesh, and first check
  *        if ray hits the bounding box to optimise tracing
  */
@@ -129,7 +131,15 @@ public class TriangleMesh implements RTShape {
     }
     /*
        Method that returns the unit normal at a given point on
-       the surface of the mesh.
+       the surface of the mesh, given as an Intersection object,
+       rather than just a Vector3D, so that we have information
+       which exact triangle is intersected (computed in an earlier
+       call to 'intersect' which returns an Intersection for the
+       same reason), so that we can pass the method invocation
+       to the appropriate triangle.
+
+       Hence, this method must be used only with an Intersection
+       object that contains a Triangle as an intersected shape.
 
        The unit normal must point outwards by convention, which
        for a mesh is the direction in which the unit normal is
@@ -139,8 +149,9 @@ public class TriangleMesh implements RTShape {
        If the precondition (point must be on the surface of
        the shape) is violated, behaviour is undefined.
      */
-    public Vector3D getUnitNormalAt(Vector3D point) {
-        return null;
+    public Vector3D getUnitNormalAt(Intersection intersection) {
+        /// find the unit normal to intersected triangle
+        return intersection.getIntersectedShape().getUnitNormalAt(intersection);
     }
     /*
        Method that returns the diffuse color of the mesh at

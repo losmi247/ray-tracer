@@ -75,11 +75,12 @@ public class Ray {
             return RTColor.backgroundColor;
         }
 
+        /// now firstIntersection != null
         /// calculate contribution of this intersection point
         RTColor intersectionContribution = shader.evaluateShadingModel(firstIntersection);
 
         /// reflect the ray
-        Vector3D normal = firstIntersection.getIntersectedShape().getUnitNormalAt(firstIntersection.getIntersectionPoint());
+        Vector3D normal = firstIntersection.getIntersectedShape().getUnitNormalAt(firstIntersection);
         Ray reflectedRay = this.reflectedRay(firstIntersection);
         /// calculate contribution of the reflected ray
         RTColor reflectionContribution = reflectedRay.traceWithReflections(scene, shader, tracingLimit - 1);
@@ -126,7 +127,7 @@ public class Ray {
     */
     public Ray reflectedRay(Intersection intersection){
         Vector3D point = intersection.getIntersectionPoint();
-        Vector3D normal = intersection.getIntersectedShape().getUnitNormalAt(point);
+        Vector3D normal = intersection.getIntersectedShape().getUnitNormalAt(intersection);
         Vector3D perfectReflectionDirection = this.direction.negated().reflected(normal.normalised());
         return new Ray(Ray.liftOrigin(intersection), perfectReflectionDirection);
     }
@@ -154,7 +155,7 @@ public class Ray {
     public static Vector3D liftOrigin(Intersection intersection) {
         RTShape intersectedShape = intersection.getIntersectedShape();
         Vector3D intersectionPoint = intersection.getIntersectionPoint();
-        return intersectionPoint.added(intersectedShape.getUnitNormalAt(intersectionPoint).scaled(Ray.liftingCoefficient));
+        return intersectionPoint.added(intersectedShape.getUnitNormalAt(intersection).scaled(Ray.liftingCoefficient));
     }
 
     /**

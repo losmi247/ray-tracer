@@ -41,7 +41,8 @@ public interface RTShape {
        of intersection of the Ray r with the RTShape,
        bundled with the intersected shape into an
        Intersection object, or returns null if there
-       is no intersection.
+       is no intersection (so that a triangle mesh can
+       return the exact intersected triangle).
      */
     Intersection intersect(Ray ray);
 
@@ -50,15 +51,19 @@ public interface RTShape {
      */
     /*
        Method that returns the unit normal to the surface
-       of the RTshape at the given point on the surface
-       the RTshape.
+       of the RTShape at the given point on the surface
+       the RTShape given as an Intersection object, so that
+       we can reuse the result of the 'intersect' method as
+       an argument to 'getUnitNormalAt', especially for
+       triangle meshes, to help identifying intersected
+       triangle.
 
        The unit normal must point outwards by convention.
 
        If the precondition (point must be on the surface of
        the shape) is violated, behaviour is undefined.
      */
-    Vector3D getUnitNormalAt(Vector3D point);
+    Vector3D getUnitNormalAt(Intersection intersection);
     /*
        Method that returns the (diffuse) color of the shape
        at a given point on RTShape's surface.

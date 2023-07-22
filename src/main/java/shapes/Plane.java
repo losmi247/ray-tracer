@@ -82,7 +82,7 @@ public class Plane implements RTShape {
     }
     /*
        Method that returns the unit normal at a given point on
-       the surface of the plane.
+       the surface of the plane, given as an Intersection object.
 
        The unit normal must point outwards by convention, which
        for a plane is the direction in which the unit normal is
@@ -92,7 +92,7 @@ public class Plane implements RTShape {
        If the precondition (point must be on the surface of
        the shape) is violated, behaviour is undefined.
      */
-    public Vector3D getUnitNormalAt(Vector3D point) {
+    public Vector3D getUnitNormalAt(Intersection intersection) {
         return this.unitNormal;
     }
     /*
