@@ -27,21 +27,26 @@ public class ShapeMapper {
        Throws IncorrectSceneDescriptionXMLStructureException in case
        the shapeID argument is not a shapeID of an existing primitive.
      */
-    public static RTShape mapParseShapeMethod(Map<String,String> attributes, String shapeID) throws IncorrectSceneDescriptionXMLStructureException, IOException {
+    public static RTShape mapParseShapeMethod(Map<String,String> leafAttributes, Matrix4D modelTransformation, String shapeID) throws IncorrectSceneDescriptionXMLStructureException, IOException {
+        /// polygonal meshes are the only RTShape's that can have a "model-transform" attributes in their XML nodes
         if(shapeID.equals("triangle-mesh")) {
-            return TriangleMesh.parseShape(attributes);
+            return TriangleMesh.parseShape(leafAttributes, modelTransformation);
         }
+
+        /// other RTShape implementations are not allowed to have a "model-transform" attribute
         else if(shapeID.equals("triangle")) {
-            return Triangle.parseShape(attributes);
+            return Triangle.parseShape(leafAttributes);
         }
         else if(shapeID.equals("sphere")) {
-            return Sphere.parseShape(attributes);
+            return Sphere.parseShape(leafAttributes);
         }
         else if(shapeID.equals("plane")) {
-            return Plane.parseShape(attributes);
+            return Plane.parseShape(leafAttributes);
         }
+
+        /// nonexistent shapeID
         else {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+            throw new IncorrectSceneDescriptionXMLStructureException("Undefined RTShape referenced in scene description.");
         }
     }
 }

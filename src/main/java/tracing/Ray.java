@@ -49,7 +49,7 @@ public class Ray {
         Intersection firstIntersection = this.findFirstIntersection(scene);
 
         /// the ray does not intersect any RTShape
-        if(!firstIntersection.intersectionExists()) {
+        if(firstIntersection == null) {
             /// TODO - decide what background to return if no intersection
             return RTColor.backgroundColor;
         }
@@ -70,7 +70,7 @@ public class Ray {
         Intersection firstIntersection = this.findFirstIntersection(scene);
 
         /// the ray does not intersect any RTShape
-        if(!firstIntersection.intersectionExists()) {
+        if(firstIntersection == null) {
             /// TODO - decide what background to return if no intersection
             return RTColor.backgroundColor;
         }

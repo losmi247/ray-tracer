@@ -8,8 +8,9 @@ import utility.Vector3D;
  * shape that is hit, and a point on its surface
  * where it is hit.
  *
- * When the intersection does not exist, both
- * fields are null.
+ * When the intersection does not exist, the
+ * variable that's supposed to be the Intersection
+ * object is null.
  */
 
 public class Intersection {
@@ -22,17 +23,6 @@ public class Intersection {
     public Intersection(RTShape shape, Vector3D point) {
         this.intersectedShape = shape;
         this.intersectionPoint = point;
-    }
-
-    /**
-     * Methods
-     */
-    /*
-       Method to check whether the intersection exists, i.e.
-       whether the fields are null.
-     */
-    public boolean intersectionExists() {
-        return this.intersectedShape != null && this.intersectionPoint != null;
     }
 
     /**

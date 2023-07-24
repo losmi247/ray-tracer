@@ -358,7 +358,7 @@ public class Camera {
      */
     public static void saveImage(BufferedImage image) {
         try{
-            File f = new File("./result.png");
+            File f = new File("./rendered images/result.png");
             ImageIO.write(image, "png", f);
         }
         catch(IOException e) {

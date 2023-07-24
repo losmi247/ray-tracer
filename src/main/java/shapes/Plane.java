@@ -133,13 +133,13 @@ public class Plane implements RTShape {
        description of the RTShape, Material.defaultNonReflectiveMaterial
        is set.
      */
-    public static Plane parseShape(Map<String,String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
+    public static Plane parseShape(Map<String,String> leafAttributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D normal = null;
         Vector3D point = null;
         RTColor color = null;
         Material material = null;
 
-        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+        for (Map.Entry<String, String> entry : leafAttributes.entrySet()) {
             String attributeName = entry.getKey();
             String attributeValue = entry.getValue();
 
@@ -157,12 +157,18 @@ public class Plane implements RTShape {
                             material = Material.parseMaterial(attributeValue);
                         }
                     }
-                default -> throw new IncorrectSceneDescriptionXMLStructureException();
+                default -> throw new IncorrectSceneDescriptionXMLStructureException("Undefined attribute in Plane description.");
             }
         }
 
-        if(normal == null || point == null || color == null) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+        if(normal == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'normal' attribute in TriangleMesh description.");
+        }
+        else if(point == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'point' attribute in TriangleMesh description.");
+        }
+        else if(color == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'color' attribute in TriangleMesh description.");
         }
 
         /// if missing material in XML, set default

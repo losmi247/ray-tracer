@@ -13,12 +13,18 @@ import tracing.Ray;
  * should have a unique String identifier that is the
  * same as its corresponding XML element name.
  *
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * EACH SHAPE MUST ALSO HAVE A
  *      public static RTShape parseShape(Map<String,String> attributes){}
- * TO PARSE THE SHAPE FROM A MAP MAPPING ITS ATTRIBUTES NAMES
+ * TO PARSE THE SHAPE FROM A MAP MAPPING ITS LEAF ATTRIBUTES NAMES
  * TO THEIR VALUES. If the "material" attribute is missing from the XML
  * description, this method should set the material to the default
- * Material.defaultNonReflectiveMaterial class varible.
+ * Material.defaultNonReflectiveMaterial class variable. This method
+ * can have an additional argument 'Matrix4D modelTransformation' in case
+ * that RTShape has a "model-transform" attribute (only allowed if it is
+ * a polygonal mesh). The SceneDescriptionParser uses this method to pass
+ * the parsing to the appropriate RTShape.
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *
  * Each shape defines the unit normal, color, and material (shading
  * coefficients) at every point on its surface.

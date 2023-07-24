@@ -133,12 +133,12 @@ public class Sphere implements RTShape {
        description of the RTShape, Material.defaultNonReflectiveMaterial
        is set.
      */
-    public static Sphere parseShape(Map<String, String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
+    public static Sphere parseShape(Map<String, String> leafAttributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D center = null;
         double radius = -1;
         RTColor color = null;
         Material material = null;
-        for(Map.Entry<String, String> entry : attributes.entrySet()) {
+        for(Map.Entry<String, String> entry : leafAttributes.entrySet()) {
             String attributeName = entry.getKey();
             String attributeValue = entry.getValue();
 
@@ -156,12 +156,18 @@ public class Sphere implements RTShape {
                             material = Material.parseMaterial(attributeValue);
                         }
                     }
-                default -> throw new IncorrectSceneDescriptionXMLStructureException();
+                default -> throw new IncorrectSceneDescriptionXMLStructureException("Undefined attribute in Sphere description.");
             }
         }
 
-        if(center == null || radius < 0 || color == null) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+        if(center == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'center' attribute in Sphere description.");
+        }
+        else if(radius < 0) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing or invalid 'radius' attribute in Sphere description.");
+        }
+        else if(color == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'color' attribute in Sphere description.");
         }
 
         /// if missing material in XML, set default

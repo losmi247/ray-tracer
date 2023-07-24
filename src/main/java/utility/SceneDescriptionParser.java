@@ -68,7 +68,7 @@ public class SceneDescriptionParser {
         }
 
         if(shapesNode == null) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing XML node for shapes.");
         }
 
         return shapesNode;
@@ -93,7 +93,7 @@ public class SceneDescriptionParser {
         }
 
         if(lightsNode == null) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing XML node for lights.");
         }
 
         return lightsNode;
@@ -143,20 +143,60 @@ public class SceneDescriptionParser {
     /*
        Method to parse a given XML node for a shape, and create
        an appropriate RTShape object.
+
+       Every RTShape's XML node will have a couple of sub-nodes
+       that do not have any children but only a value (e.g. center
+       of sphere, color etc.). Only polygonal meshes (such as
+       TriangleMesh) are allowed to have an additional attribute
+       "model-transform" that has many XML child nodes which make
+       up a list of transformations to be performed to obtain the
+       mesh in world coordinates. If the "model-transform" attribute
+       is missing in a polygonal mesh, the modelling transformation
+       will be set to the identity matrix.
      */
     private static RTShape parseShape(Node shapeNode) throws IncorrectSceneDescriptionXMLStructureException, IOException {
         NodeList attributeNodes = shapeNode.getChildNodes();
+
+        /// extract the XML node name, same as class variable shapeID in this RTShape's class
+        String shapeID = shapeNode.getNodeName();
+        /// check if this RTShape is a polygonal mesh
+        boolean isMesh = shapeID.endsWith("mesh");
+        /// if this RTShape is a mesh, variable below will contain the parsed modelling transform
+        /// in case the "model-transform" attribute is missing for a polygonal mesh, the modelling
+        /// transformation is set to identity.
+        Matrix4D modelTransformation = Matrix4D.identity;
+
         int n = attributeNodes.getLength();
-        Node current;
-        Map<String,String> attributes = new HashMap<>();
+        Node currentNode;
+        /// attributes (and values) of this RTShape's node that only contain a String value, no XML child nodes
+        Map<String,String> leafAttributes = new HashMap<>();
         for(int i = 0; i < n; i++) {
-            current = attributeNodes.item(i);
-            if(current.getNodeType() == Node.ELEMENT_NODE) {
-                attributes.put(current.getNodeName(),current.getTextContent());
+            currentNode = attributeNodes.item(i);
+            if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                /// if this attribute is not a leaf node (i.e. has XML child nodes), it must be the "model-transform"
+                if(!SceneDescriptionParser.isLeafNode(currentNode)) {
+                    /// the non-leaf node must be the "model-transform"
+                    if(!currentNode.getNodeName().equals("model-transform")) {
+                        throw new IncorrectSceneDescriptionXMLStructureException("There is non-leaf node in an RTShape description, that is not a 'model-transform'.");
+                    }
+
+                    /// only polygonal meshes are allowed to have a "model-transform" attribute
+                    if(!isMesh) {
+                        throw new IncorrectSceneDescriptionXMLStructureException("Non-polygonal-mesh RTShape has a 'model-transform' attribute.");
+                    }
+                    /// otherwise parse the modelling transformations
+                    else {
+                        modelTransformation = SceneDescriptionParser.parseTransformations(currentNode);
+                    }
+                }
+                /// otherwise, just parse the value of the leaf attribute
+                else {
+                    leafAttributes.put(currentNode.getNodeName(), currentNode.getTextContent());
+                }
             }
         }
 
-        return ShapeMapper.mapParseShapeMethod(attributes, shapeNode.getNodeName());
+        return ShapeMapper.mapParseShapeMethod(leafAttributes, modelTransformation, shapeID);
     }
     /*
        Method to parse a given XML node for a light, and create
@@ -182,8 +222,14 @@ public class SceneDescriptionParser {
             }
         }
 
-        if(positionNode == null || colorNode == null || intensityNode == null) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+        if(positionNode == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing light 'position' attribute.");
+        }
+        else if(colorNode == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing light 'color' attribute.");
+        }
+        else if(intensityNode == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing light 'intensity' attribute.");
         }
 
         /// parse light position
@@ -207,7 +253,7 @@ public class SceneDescriptionParser {
     public static Vector3D parseVector3D(String s) throws IncorrectSceneDescriptionXMLStructureException {
         String[] components = s.substring(1, s.length()-1).split(",");
         if(components.length != 3) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+            throw new IncorrectSceneDescriptionXMLStructureException("Vector3D does not have exactly three components.");
         }
         return new Vector3D(Double.parseDouble(components[0]), Double.parseDouble(components[1]), Double.parseDouble(components[2]));
     }
@@ -218,8 +264,70 @@ public class SceneDescriptionParser {
     public static RTColor parseColor(String s) throws IncorrectSceneDescriptionXMLStructureException {
         String[] components = s.substring(1, s.length()-1).split(",");
         if(components.length != 3) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+            throw new IncorrectSceneDescriptionXMLStructureException("RTColor does not have exactly three components.");
         }
         return new RTColor(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]));
+    }
+    /*
+       Method to parse modelling transformations from the XML node named "model-transform" which
+       contains child XML nodes that represent modelling transformations (scale, rotateX, rotateY,
+       rotateZ, translate). This method represents all the given transformations as matrices,
+       and multiplies them in correct order to give the final modelling transformation.
+     */
+    private static Matrix4D  parseTransformations(Node modelTransformationNode) throws IncorrectSceneDescriptionXMLStructureException {
+        /// if "model-transform" node contains no transformations, return 4x4 identity matrix
+        Matrix4D modelTransformation = Matrix4D.identity;
+
+        NodeList modelChildrenList = modelTransformationNode.getChildNodes();
+        int modelChildrenListLength = modelChildrenList.getLength();
+        Node current;
+        for(int i = 0; i < modelChildrenListLength; i++) {
+            current = modelChildrenList.item(i);
+            if(current.getNodeType() == Node.ELEMENT_NODE) {
+                /// parse the current transformation in the list
+                String nodeName = current.getNodeName();
+                String nodeValue = current.getTextContent();
+
+                Matrix4D matrixRepresentation = Matrix4D.identity;
+                switch (nodeName) {
+                    /// scale attribute has a Vector3D value as a String
+                    case "scale" -> matrixRepresentation = Matrix4D.getScalingMatrix(SceneDescriptionParser.parseVector3D(nodeValue));
+
+                    /// rotate attributes have a real value as a String
+                    /// rotation about x-axis
+                    case "rotateX" -> matrixRepresentation = Matrix4D.getRotationMatrixAboutX(Double.parseDouble(nodeValue));
+                    /// rotation about y-axis
+                    case "rotateY" -> matrixRepresentation = Matrix4D.getRotationMatrixAboutY(Double.parseDouble(nodeValue));
+                    /// rotation about z-axis
+                    case "rotateZ" -> matrixRepresentation = Matrix4D.getRotationMatrixAboutZ(Double.parseDouble(nodeValue));
+
+                    /// translate attributes have a Vector3D value as a String
+                    case "translate" -> matrixRepresentation = Matrix4D.getTranslationMatrix(SceneDescriptionParser.parseVector3D(nodeValue));
+                }
+
+                modelTransformation = modelTransformation.multiply(matrixRepresentation);
+            }
+        }
+
+        return modelTransformation;
+    }
+    /*
+       Method to check if a given XML node is a leaf node, i.e.
+       contains only a String value, and has no XML child nodes.
+     */
+    private static boolean isLeafNode(Node node) {
+        NodeList childNodesList = node.getChildNodes();
+        int childNodesListLength = childNodesList.getLength();
+
+        Node currentNode;
+        for(int i = 0; i < childNodesListLength; i++) {
+            currentNode = childNodesList.item(i);
+            /// if node has at least one child XML node, it's not a leaf node
+            if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -27,6 +27,12 @@ public class Matrix4D {
     private final double m32;
     private final double m33;
 
+    /// identity matrix
+    public static final Matrix4D identity = new Matrix4D(1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1);
+
     /**
      * Constructors
      */
@@ -102,7 +108,7 @@ public class Matrix4D {
     /*
        Method that returns a matrix that represents the
        scaling transformation by 3 given real numbers,
-       one for each direction x,y,z.
+       one for each direction x,y,z, about the origin (0,0,0).
      */
     public static Matrix4D getScalingMatrix(Vector3D scalingCoefficients) {
         return new Matrix4D(

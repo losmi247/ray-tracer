@@ -4,13 +4,9 @@ import de.javagl.obj.ObjData;
 import shading.Material;
 import tracing.Intersection;
 import tracing.Ray;
-import utility.IncorrectSceneDescriptionXMLStructureException;
-import utility.RTColor;
-import utility.SceneDescriptionParser;
-import utility.Vector3D;
+import utility.*;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,8 +23,25 @@ import de.javagl.obj.ObjReader;
  * place it into project folder, and insert the path to it into the
  * XML node of the triangle mesh in the scene description file.
  *
- * TODO - scaling, rotation, translation for each triangle mesh to be
- *          positioned in the scene, test by rendering
+ * The vertex coordinates of every mesh are given in object coordinates.
+ * To position the triangle mesh in the scene, we define scaling,
+ * rotation, and translation transformations in the XML description of
+ * the mesh (to get world coordinates).
+ *
+ * Every triangle mesh has a modelling transformation (Matrix4D) defined
+ * in its XML node, as a "model-transform" attribute. This XML sub-node
+ * can contain various "scale" (give Vector3D for coefficients),
+ * "rotateX" (give a real number for angle in degrees),
+ * "rotateY" (give a real number for angle in degrees),
+ * "rotateZ" (give a real number for angle in degrees), and
+ * "translate" (give a Vector3D by which to translate) attributes. The
+ * XML parser combines all these transformations into a single Matrix4D,
+ * which is passed to the TriangleMesh constructor as the final modelling
+ * transformation. Basic transformations (translate, rotate, ...) are
+ * performed in the order in which they are listed in the XML sub-node
+ * (of the mesh's XML node) named "model-transform".
+ *
+ * Every polygonal mesh's class variable shapeID must end in "mesh".
  *
  * TODO - implement a bounding box for the TriangleMesh, and first check
  *        if ray hits the bounding box to optimise tracing
@@ -51,13 +64,18 @@ public class TriangleMesh implements RTShape {
      * Constructors
      */
     /*
-       Constructor from mesh description as a Wavefront OBJ file, its color, and
+       Constructor from mesh description as a Wavefront OBJ file, modelling transform
+       to be performed to obtain triangle mesh in world coordinates, its color, and
        its material.
+
+       The transformations ("scale", "rotateX", "rotateY", "rotateZ", "translate")
+       are performed in the order in which they are listed in the XML description
+       of the mesh, in the "model-transform" attribute.
 
        An open source Wavefront OBJ parser (https://github.com/javagl/Obj/tree/master)
        is used to extract mesh info.
      */
-    public TriangleMesh(String pathToObjFile, RTColor color, Material material) throws IOException {
+    public TriangleMesh(String pathToObjFile, Matrix4D modelTransformation, RTColor color, Material material) throws IOException {
         InputStream objInputStream = new FileInputStream(pathToObjFile);
         Obj obj = ObjReader.read(objInputStream);
 
@@ -66,19 +84,22 @@ public class TriangleMesh implements RTShape {
         int[] faceVertexIndices = ObjData.getFaceVertexIndicesArray(obj);
         int[] faceVertexNormalsIndices = ObjData.getFaceNormalIndicesArray(obj);
 
-        /// initialise list of vertices by grouping coordinates three by three
+        /// extract list of vertices by grouping coordinates three by three
         this.vertices = new ArrayList<>();
         for(int i = 0; i < vertexCoordinates.length / 3; i++) {
-            this.vertices.add(new Vector3D(vertexCoordinates[3*i], vertexCoordinates[3*i+1], vertexCoordinates[3*i+2]));
+            /// extract vertex in object coordinates from .obj file
+            Vector3D v = new Vector3D(vertexCoordinates[3*i], vertexCoordinates[3*i+1], vertexCoordinates[3*i+2]);
+            /// apply modelling transformation to transform it to world coordinates (in scene), and add it to list
+            this.vertices.add(modelTransformation.multiply(v));
         }
 
-        /// initialise list of vertex normals by grouping coordinates three by three
+        /// extract list of vertex normals by grouping coordinates three by three
         this.vertexNormals = new ArrayList<>();
         for(int i = 0; i < vertexNormalsCoordinates.length / 3; i++) {
             this.vertexNormals.add(new Vector3D(vertexNormalsCoordinates[3*i], vertexNormalsCoordinates[3*i+1], vertexNormalsCoordinates[3*i+2]));
         }
 
-        /// initialise list of triangles
+        /// extract list of triangles
         this.triangleFaces = new ArrayList<>();
         for(int i = 0; i < faceVertexIndices.length / 3; i++) {
             this.triangleFaces.add(
@@ -185,24 +206,54 @@ public class TriangleMesh implements RTShape {
        Method that parses a triangle mesh from a Map<String,String>
        mapping attribute names to their values.
 
-       Each triangle mesh is defined by a "path-to-obj-file", "color",
-       and a "material" attribute.
+       Each triangle mesh is defined by a "path-to-obj-file",
+       "model-transform", "color", and a "material" attribute.
+       "path-to-obj-file", "color", and "material" are leaf
+       attributes (only contain a String value).
+
+       The "model-transform" attribute is an XML sub-node that
+       contains a list of transformations in arbitrary order
+       (when creating XML description file, you should do scaling, then rotation,
+       then translation):
+
+            "scale" - scale by 3 given coefficients for 3 axis (as Vector3D)
+            "rotateX" - rotate about x-axis by given angle in degrees
+            "rotateY" - rotate about y-axis by given angle in degrees
+            "rotateZ" - rotate about z-axis by given angle in degrees
+            "translate" - translate by given Vector3D
+
+       In the SceneDescriptionParser, each of these transformations is
+       parsed into a Matrix4D, they are multiplied in correct order
+       (so that they are performed in the order in which they are written
+       in the XML), and the final Matrix4D is passed as the value of the
+       "model-transform" attribute. This final matrix is passed as an
+       argument to the parseShape method below. Only polygonal meshes
+       are allowed to include the 'Matrix4D modelTransformation' argument in
+       the signature of their parseShape method, because they are the
+       only RTShape's that are allowed to have a "model-transform" attribute.
+       If the "model-transform" attribute is missing from the XML description
+       of the triangle mesh, the modelling transformation is set to identity
+       when passed to the method below.
 
        If the material attribute is missing from the XML
        description of the RTShape, Material.defaultNonReflectiveMaterial
        is set.
      */
-    public static TriangleMesh parseShape(Map<String, String> attributes) throws IncorrectSceneDescriptionXMLStructureException, IOException {
+    public static TriangleMesh parseShape(Map<String, String> leafAttributes, Matrix4D modelTransformation) throws IncorrectSceneDescriptionXMLStructureException, IOException {
         String path = null;
+        /// model transformation has already been parsed by SceneDescriptionParser
         RTColor color = null;
         Material material = null;
 
-        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+        for (Map.Entry<String, String> entry : leafAttributes.entrySet()) {
             String attributeName = entry.getKey();
             String attributeValue = entry.getValue();
 
             switch (attributeName) {
                 case "path-to-obj-file" -> path = attributeValue;
+
+                /// model transformation has already been parsed by SceneDescriptionParser
+
                 case "color" -> color = SceneDescriptionParser.parseColor(attributeValue);
                 case "material" ->
                 {
@@ -214,12 +265,15 @@ public class TriangleMesh implements RTShape {
                         material = Material.parseMaterial(attributeValue);
                     }
                 }
-                default -> throw new IncorrectSceneDescriptionXMLStructureException();
+                default -> throw new IncorrectSceneDescriptionXMLStructureException("Undefined attribute in TriangleMesh description.");
             }
         }
 
-        if(path == null || color == null) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+        if(path == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'path-to-obj-file' attribute in TriangleMesh description.");
+        }
+        else if(color == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'color' attribute in TriangleMesh description.");
         }
 
         /// if missing material in XML, set default
@@ -227,7 +281,7 @@ public class TriangleMesh implements RTShape {
             material = Material.defaultNonReflectiveMaterial;
         }
 
-        return new TriangleMesh(path, color, material);
+        return new TriangleMesh(path, modelTransformation, color, material);
     }
 
     /**

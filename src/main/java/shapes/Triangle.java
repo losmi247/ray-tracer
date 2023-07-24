@@ -251,13 +251,13 @@ public class Triangle implements RTShape {
        to the surface unit normal to triangle, i.e. flat shading is
        used (through the appropriate constructor).
      */
-    public static Triangle parseShape(Map<String,String> attributes) throws IncorrectSceneDescriptionXMLStructureException {
+    public static Triangle parseShape(Map<String,String> leafAttributes) throws IncorrectSceneDescriptionXMLStructureException {
         Vector3D vertexA = null, vertexB = null, vertexC = null;
         Vector3D normalA = null, normalB = null, normalC = null;
         RTColor color = null;
         Material material = null;
 
-        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+        for (Map.Entry<String, String> entry : leafAttributes.entrySet()) {
             String attributeName = entry.getKey();
             String attributeValue = entry.getValue();
 
@@ -281,12 +281,21 @@ public class Triangle implements RTShape {
                         material = Material.parseMaterial(attributeValue);
                     }
                 }
-                default -> throw new IncorrectSceneDescriptionXMLStructureException();
+                default -> throw new IncorrectSceneDescriptionXMLStructureException("Undefined attribute in Triangle description.");
             }
         }
 
-        if(vertexA == null || vertexB == null || vertexC == null || color == null) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+        if(vertexA == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'vertexA' attribute in Triangle description.");
+        }
+        else if(vertexB == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'vertexB' attribute in Triangle description.");
+        }
+        else if(vertexC == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'vertexC' attribute in Triangle description.");
+        }
+        else if(color == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing 'color' attribute in Triangle description.");
         }
 
         /// if missing material in XML, set default
@@ -299,6 +308,7 @@ public class Triangle implements RTShape {
             return new Triangle(vertexA, vertexB, vertexC, color, material);
         }
 
+        /// otherwise use the given vertex normals for smooth shading i.e. normal interpolation
         return new Triangle(vertexA, vertexB, vertexC, normalA, normalB, normalC, color, material);
     }
 
