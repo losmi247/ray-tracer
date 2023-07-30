@@ -28,28 +28,21 @@ public class ShapeMapper {
        the shapeID argument is not a shapeID of an existing primitive.
      */
     public static RTShape mapParseShapeMethod(Map<String,String> leafAttributes, Matrix4D modelTransformation, String shapeID) throws IncorrectSceneDescriptionXMLStructureException, IOException {
-        /// polygonal meshes are the only RTShape's that can have a "model-transform" attributes in their XML nodes
-        if(shapeID.equals("triangle-mesh")) {
-            return TriangleMesh.parseShape(leafAttributes, modelTransformation);
-        }
-        else if(shapeID.equals("box-mesh")) {
-            return Box.parseShape(leafAttributes, modelTransformation);
-        }
+        return switch (shapeID) {
+            /// polygonal meshes are the only RTShape's that can have a "model-transform" attributes in their XML nodes
+            case "triangle-mesh" -> TriangleMesh.parseShape(leafAttributes, modelTransformation);
+            case "box-mesh" -> Box.parseShape(leafAttributes, modelTransformation);
 
-        /// other RTShape implementations are not allowed to have a "model-transform" attribute
-        else if(shapeID.equals("triangle")) {
-            return Triangle.parseShape(leafAttributes);
-        }
-        else if(shapeID.equals("sphere")) {
-            return Sphere.parseShape(leafAttributes);
-        }
-        else if(shapeID.equals("plane")) {
-            return Plane.parseShape(leafAttributes);
-        }
 
-        /// nonexistent shapeID
-        else {
-            throw new IncorrectSceneDescriptionXMLStructureException("Undefined RTShape referenced in scene description.");
-        }
+            /// other RTShape implementations are not allowed to have a "model-transform" attribute
+            case "triangle" -> Triangle.parseShape(leafAttributes);
+            case "sphere" -> Sphere.parseShape(leafAttributes);
+            case "plane" -> Plane.parseShape(leafAttributes);
+
+
+            /// nonexistent shapeID
+            default ->
+                    throw new IncorrectSceneDescriptionXMLStructureException("Undefined RTShape referenced in scene description.");
+        };
     }
 }

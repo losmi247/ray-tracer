@@ -49,15 +49,15 @@
     </shapes>
 
     <lights>
-        <light>
+        <point-light>
             <position>(-10,10,-5)</position>
             <color>(255,255,0)</color>
             <intensity>0.6</intensity>
-        </light>
-        <light>
+        </point-light>
+        <point-light>
             <position>(10,-10,-5)</position>
             <color>(0,255,255)</color>
             <intensity>0.6</intensity>
-        </light>
+        </point-light>
     </lights>
 </elements>

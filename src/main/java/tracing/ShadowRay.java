@@ -35,8 +35,9 @@ public class ShadowRay extends Ray {
        the original RTShape (light source would be occluded
        immediately).
 
-       Used for basic shadow rendering - the target
-       point is the position of the light source.
+       Used for basic shadow rendering using point light
+       sources - the target point is the position of the
+       point light source.
      */
     public ShadowRay(Intersection intersection, Light light) {
         super(Ray.liftOrigin(intersection), light.getPosition().added(Ray.liftOrigin(intersection).negated()).normalised());
@@ -45,8 +46,7 @@ public class ShadowRay extends Ray {
     /*
        Constructor from a point on the surface of a
        RTShape (i.e. a given Intersection object),
-       and a light to which the shadow ray
-       is to be cast.
+       and a target point given explicitly.
 
        It uses the intersected shape so that it
        can lift the intersection point up, away from
@@ -61,9 +61,11 @@ public class ShadowRay extends Ray {
        a shadow ray to it, and set the shadow intensity
        to the proportion of occluded shadow rays, to
        render soft shadows.
+       In other words, the target point is a random
+       point on the surface of the sphere light source.
      */
     public ShadowRay(Intersection intersection, Vector3D target) {
-        super(Ray.liftOrigin(intersection), target.added(Ray.liftOrigin(intersection).negated().normalised()));
+        super(Ray.liftOrigin(intersection), target.added(Ray.liftOrigin(intersection).negated()).normalised());
         this.target = target;
     }
 
@@ -71,13 +73,24 @@ public class ShadowRay extends Ray {
      * Methods
      */
     /*
-       Method that casts this ray from its origin and
-       checks if it intersects any other shape in the
-       scene before reaching the 'target' point.
+       Method that casts this shadow ray from its
+       origin and checks if it intersects any of the RTShape's
+       in the given scene before reaching the 'target' point.
 
-       Returns 'true' iff the light source is occluded.
+       Returns 'true' iff the target of this shadow ray is occluded at the
+       intersection point which is the origin of this shadow ray.
+
+       The target point is either the position of the point light
+       source or a random point on the surface of the sphere light source.
+       In either case, this method says whether the shadow ray reaches the
+       target point before hitting another RTShape or not, regardless of
+       what the target point represents - it is universal for both point
+       and sphere light sources.
+
+       This method is used by light sources (PointLight and SpherePointLight) to check
+       if a light source is occluded by some RTShape at some intersection point.
      */
-    public boolean lightSourceOccluded(Scene scene) {
+     boolean targetPointOccluded(Scene scene) {
         ArrayList<RTShape> shapes = scene.getShapes();
 
         /// check intersections of this ray with each shape

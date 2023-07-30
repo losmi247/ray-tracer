@@ -4,29 +4,30 @@ import utility.RTColor;
 import utility.Vector3D;
 
 /**
- * Class for a light source.
+ * Interface for a light source.
+ *
+ * Point light sources have XML
+ * description nodes named "point-light",
+ * and sphere light sources have XML
+ * description nodes named "sphere-light".
  */
-public class Light {
-    private Vector3D position;
-    private RTColor lightSpecularColor;
-    private double intensity;
 
-    public Light(Vector3D position, RTColor lightSpecularColor, double intensity){
-        this.position = position;
-        this.lightSpecularColor = lightSpecularColor;
-        this.intensity = intensity;
-    }
+public interface Light {
+    /*
+       Method that takes an intersection point and a scene and checks how much this
+       light source is occluded at the given intersection point by RTShape's of this
+       scene.
 
-    /**
-     * Getters
+       Point light sources return either 0 or 1 and cast one shadow ray for this.
+       Sphere light source return any occlusion coefficient in [0,1] by casting
+       random shadow rays.
      */
-    public Vector3D getPosition() {
-        return this.position;
-    }
-    public RTColor getColor() {
-        return this.lightSpecularColor;
-    }
-    public double getIntensity() {
-        return this.intensity;
-    }
+    double getOcclusionCoefficient(Intersection intersection, Scene scene);
+
+    /*
+       Getters to get the position, specular color, and intensity of the light source.
+     */
+    Vector3D getPosition();
+    RTColor getColor();
+    double getIntensity();
 }

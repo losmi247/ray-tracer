@@ -38,20 +38,21 @@
         </plane>
 
         <triangle-mesh>
-            <path-to-obj-file>src/main/resources/meshes/pawnAutoSmoothShadedWithNormals.obj</path-to-obj-file>
+            <path-to-obj-file>src/main/resources/meshes/pawnFlatShadedWithNormals.obj</path-to-obj-file>
             <model-transform>
-                <scale>(2,2,2)</scale>
-                <translate>(1.5,-3,10)</translate>
+                <scale>(2.5,2.5,2.5)</scale>
+                <translate>(1.5,-3,15)</translate>
             </model-transform>
             <color>(218,165,32)</color>
             <material>gold</material>
         </triangle-mesh>
     </shapes>
     <lights>
-        <light>
+        <sphere-light>
             <position>(-12,15,0)</position>
             <color>(255,255,255)</color>
             <intensity>1</intensity>
-        </light>
+            <radius>0.5</radius>
+        </sphere-light>
     </lights>
 </elements>

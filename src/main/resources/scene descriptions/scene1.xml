@@ -120,15 +120,16 @@
     </box-mesh>
 </shapes>
 <lights>
-    <light>
+    <sphere-light>
         <position>(-12,15,0)</position>
         <color>(255,255,255)</color>
         <intensity>1</intensity>
-    </light>
-    <light>
+        <radius>0.5</radius>
+    </sphere-light>
+    <point-light>
         <position>(12,15,0)</position>
         <color>(255,255,255)</color>
         <intensity>0.5</intensity>
-    </light>
+    </point-light>
 </lights>
 </elements>

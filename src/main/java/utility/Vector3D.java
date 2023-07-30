@@ -71,6 +71,13 @@ public class Vector3D {
     public Vector3D crossProduct(Vector3D v) {
         return new Vector3D(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
     }
+    /*
+       Method that translates this Vector3D (viewed as a point in 3D) by
+       a given Vector3D (viewed as a vector).
+     */
+    public Vector3D translate(Vector3D v) {
+        return new Vector3D(this.x + v.x, this.y + v.y, this.z + v.z);
+    }
     public double magnitude(){
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }

@@ -6,6 +6,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import shapes.RTShape;
 import tracing.Light;
+import tracing.PointLight;
+import tracing.SphereLight;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -200,11 +202,19 @@ public class SceneDescriptionParser {
     }
     /*
        Method to parse a given XML node for a light, and create
-       an appropriate Light object.
+       an appropriate PointLight object.
+
+       Point light sources have XML
+       description nodes named "point-light",
+       and sphere light sources have XML
+       description nodes named "sphere-light".
      */
     private static Light parseLight(Node lightNode) throws IncorrectSceneDescriptionXMLStructureException {
         NodeList lightChildren = lightNode.getChildNodes();
-        Node positionNode = null, colorNode = null, intensityNode = null;
+
+        /// attributed to be parsed
+        Node positionNode = null, colorNode = null, intensityNode = null, radiusNode = null;
+
         int lightChildrenLength = lightChildren.getLength();
         Node currentNode;
         for(int i = 0; i < lightChildrenLength; i++) {
@@ -218,6 +228,9 @@ public class SceneDescriptionParser {
                 }
                 if(currentNode.getNodeName().equals("intensity")) {
                     intensityNode = currentNode;
+                }
+                if(currentNode.getNodeName().equals("radius")) {
+                    radiusNode = currentNode;
                 }
             }
         }
@@ -244,7 +257,34 @@ public class SceneDescriptionParser {
         String intensityStr = intensityNode.getTextContent();
         double intensity = Double.parseDouble(intensityStr);
 
-        return new Light(position, color, intensity);
+
+        /// check if it's a point or sphere light source, i.e. if
+        /// there is a 'radius' attribute'
+        if(lightNode.getNodeName().equals("point-light")) {
+            /// only sphere light sources can have a radius
+            if(radiusNode != null) {
+                throw new IncorrectSceneDescriptionXMLStructureException("Attribute 'radius' in point light source.");
+            }
+            /// create a point light source, no radius attribute
+            return new PointLight(position, color, intensity);
+        }
+        else if(lightNode.getNodeName().equals("sphere-light")) {
+            /// sphere light sources must have a radius
+            if(radiusNode == null) {
+                throw new IncorrectSceneDescriptionXMLStructureException("Missing 'radius' attribute in sphere light source.");
+            }
+
+            /// parse the radius
+            String radiusStr = radiusNode.getTextContent();
+            double radius = Double.parseDouble(radiusStr);
+
+            /// create a sphere light source, yes radius attribute
+            return new SphereLight(position, color, intensity, radius);
+        }
+        else {
+            /// nonexistent type of light source
+            throw new IncorrectSceneDescriptionXMLStructureException("Undefined Light source referenced in scene description.");
+        }
     }
     /*
        Method to parse a Vector3D object represented as a string

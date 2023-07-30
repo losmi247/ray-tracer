@@ -3,8 +3,8 @@ package shading;
 import shapes.RTShape;
 import tracing.Intersection;
 import tracing.Light;
+import tracing.PointLight;
 import tracing.Scene;
-import tracing.ShadowRay;
 import utility.RTColor;
 import utility.Vector3D;
 
@@ -64,14 +64,32 @@ public class PhongShader implements Shader {
         /// specular illumination
         RTColor specularComponent = RTColor.blank;
         for (Light light : lights) {
-            ShadowRay shadowRay = new ShadowRay(intersection, light);
-            if(!shadowRay.lightSourceOccluded(this.scene)) {
-                /// diffuse illumination
+            /* Check if this light source is occluded at this intersection point, and
+               get the coefficient by which to scale down the color value at this
+               intersection point.
+               This light source can be a point or a sphere light source, but thanks
+               to dynamic polymorphism we can invoke 'lightSourceOccluded' method that
+               they both implement. If it is a point light source, this method will
+               return either 0 or 1 (so we can avoid evaluating diffuse and specular
+               illumination components if it's 0), and if it is a sphere light, this
+               method returns a coefficient in [0,1] which is the proportion of
+               randomly generated shadow rays that are occluded (for soft shadows).
+             */
+            /// do not calculate other components if light source is completely occluded
+            double lightOcclusionCoefficient = light.getOcclusionCoefficient(intersection, this.scene);
+            if(lightOcclusionCoefficient > 0) {
+                /// get diffuse illumination from this light source
                 RTColor lightDiffuseContribution = this.getDiffuseComponent(intersection, light);
+                /// scale down the diffuse illumination from this light source by its occlusion coefficient
+                lightDiffuseContribution = lightDiffuseContribution.scaled(lightOcclusionCoefficient);
+                /// add to diffuse component
                 diffuseComponent = diffuseComponent.added(lightDiffuseContribution);
 
-                /// specular illumination
+                /// get specular illumination from this light source
                 RTColor lightSpecularContribution = this.getSpecularComponent(intersection, light);
+                /// scale down the specular illumination from this light source by its occlusion coefficient
+                lightSpecularContribution = lightSpecularContribution.scaled(lightOcclusionCoefficient);
+                /// add to specular component
                 specularComponent = specularComponent.added(lightSpecularContribution);
             }
         }
