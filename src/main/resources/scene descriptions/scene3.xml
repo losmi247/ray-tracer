@@ -41,10 +41,10 @@
             <path-to-obj-file>src/main/resources/meshes/pawnAutoSmoothShadedWithNormals.obj</path-to-obj-file>
             <model-transform>
                 <scale>(2,2,2)</scale>
-                <translate>(0,0,5)</translate>
+                <translate>(1.5,-3,10)</translate>
             </model-transform>
-            <color>(255,255,255)</color>
-            <material>default-nonreflective</material>
+            <color>(218,165,32)</color>
+            <material>gold</material>
         </triangle-mesh>
     </shapes>
     <lights>

@@ -37,7 +37,10 @@ public class Box extends TriangleMesh implements RTShape {
     public Box(double minX, double maxX, double minY, double maxY, double minZ, double maxZ, Matrix4D modelTransformation, RTColor color, Material material) {
         super(Box.createVertices(minX, maxX, minY, maxY, minZ, maxZ), Box.createVertexNormals(),
                 new int[]{0,1,3, 0,3,2, 6,4,5, 6,5,7, 1,7,5, 1,5,3, 0,2,4, 0,4,6, 2,3,5, 2,5,4, 0,6,7, 0,7,1},
-                //new int[]{1,1,1, 1,1,1, 0,0,0, 0,0,0, 4,4,4, 4,4,4, 5,5,5, 5,5,5, 2,2,2, 2,2,2, 3,3,3, 3,3,3},
+                /*
+                No need for vertex normals indices, boxes are always flat shaded.
+                new int[]{1,1,1, 1,1,1, 0,0,0, 0,0,0, 4,4,4, 4,4,4, 5,5,5, 5,5,5, 2,2,2, 2,2,2, 3,3,3, 3,3,3},
+                 */
                 modelTransformation,
                 color, material);
     }

@@ -358,7 +358,7 @@ public class Camera {
      */
     public static void saveImage(BufferedImage image) {
         try{
-            File f = new File("./rendered images/result.png");
+            File f = new File("./rendered images/pawnFlatShaded.png");
             ImageIO.write(image, "png", f);
         }
         catch(IOException e) {
@@ -368,7 +368,7 @@ public class Camera {
 
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
-        BufferedImage b = c.renderWithCoreParallelization("src/main/resources/scene descriptions/scene1.xml");
+        BufferedImage b = c.renderWithCoreParallelization("src/main/resources/scene descriptions/scene3.xml");
         Camera.saveImage(b);
     }
 }
