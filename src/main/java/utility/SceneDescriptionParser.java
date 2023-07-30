@@ -273,6 +273,9 @@ public class SceneDescriptionParser {
        contains child XML nodes that represent modelling transformations (scale, rotateX, rotateY,
        rotateZ, translate). This method represents all the given transformations as matrices,
        and multiplies them in correct order to give the final modelling transformation.
+
+       The transformations are performed in the order they are listed in the "model-transform"
+       attribute XML node.
      */
     private static Matrix4D  parseTransformations(Node modelTransformationNode) throws IncorrectSceneDescriptionXMLStructureException {
         /// if "model-transform" node contains no transformations, return 4x4 identity matrix
@@ -281,7 +284,8 @@ public class SceneDescriptionParser {
         NodeList modelChildrenList = modelTransformationNode.getChildNodes();
         int modelChildrenListLength = modelChildrenList.getLength();
         Node current;
-        for(int i = 0; i < modelChildrenListLength; i++) {
+        /// start from the back and multiply matrices from the right side, so the first transform is performed first
+        for(int i = modelChildrenListLength-1; i >= 0; i--) {
             current = modelChildrenList.item(i);
             if(current.getNodeType() == Node.ELEMENT_NODE) {
                 /// parse the current transformation in the list
@@ -305,7 +309,7 @@ public class SceneDescriptionParser {
                     case "translate" -> matrixRepresentation = Matrix4D.getTranslationMatrix(SceneDescriptionParser.parseVector3D(nodeValue));
                 }
 
-                modelTransformation = modelTransformation.multiply(matrixRepresentation);
+                modelTransformation = modelTransformation.multiplyFromRight(matrixRepresentation);
             }
         }
 

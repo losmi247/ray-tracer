@@ -100,6 +100,24 @@
         <color>(225,193,110)</color>
         <material>brass</material>
     </triangle>
+
+    <box-mesh>
+        <minX>0</minX>
+        <maxX>1</maxX>
+        <minY>0</minY>
+        <maxY>1</maxY>
+        <minZ>0</minZ>
+        <maxZ>1</maxZ>
+        <model-transform>
+            <scale>(1,1,1)</scale>
+            <translate>(1.5,-1.5,4.8)</translate>
+            <rotateX>-20</rotateX>
+            <rotateZ>45</rotateZ>
+            <rotateY>10</rotateY>
+            <translate>(0,0,0.2)</translate>
+        </model-transform>
+        <color>(255,255,0)</color>
+    </box-mesh>
 </shapes>
 <lights>
     <light>

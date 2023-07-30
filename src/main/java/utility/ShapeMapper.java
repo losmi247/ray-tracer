@@ -32,6 +32,9 @@ public class ShapeMapper {
         if(shapeID.equals("triangle-mesh")) {
             return TriangleMesh.parseShape(leafAttributes, modelTransformation);
         }
+        else if(shapeID.equals("box-mesh")) {
+            return Box.parseShape(leafAttributes, modelTransformation);
+        }
 
         /// other RTShape implementations are not allowed to have a "model-transform" attribute
         else if(shapeID.equals("triangle")) {

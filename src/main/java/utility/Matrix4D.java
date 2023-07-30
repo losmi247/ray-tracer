@@ -62,9 +62,9 @@ public class Matrix4D {
      * Methods
      */
     /*
-       Method to multiply this matrix by another 4x4 matrix m.
+       Method to multiply this matrix by another 4x4 matrix m from the right side.
      */
-    public Matrix4D multiply(Matrix4D m) {
+    public Matrix4D multiplyFromRight(Matrix4D m) {
         return new Matrix4D(
                 m00*m.m00 + m01*m.m10 + m02*m.m20 + m03*m.m30,
                 m00*m.m01 + m01*m.m11 + m02*m.m21 + m03*m.m31,
@@ -93,7 +93,7 @@ public class Matrix4D {
        at the end which is equal to 1. The result is a new 4x1 matrix,
        which is returned without its last element, i.e. a Vector3D.
      */
-    public Vector3D multiply(Vector3D v) {
+    public Vector3D multiplyFromRight(Vector3D v) {
         return new Vector3D(
                 m00*v.getX() + m01*v.getY() + m02*v.getZ() + m03,
                 m10*v.getX() + m11*v.getY() + m12*v.getZ() + m13,

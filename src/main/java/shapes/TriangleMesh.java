@@ -52,7 +52,8 @@ public class TriangleMesh implements RTShape {
 
     /// the vertices of the mesh, in object coordinates
     private final ArrayList<Vector3D> vertices;
-    /// the normals to the mesh at each vertex, found by averaging adjacent face (triangle) normals
+    /// the normals to the mesh at each vertex, found by averaging adjacent face (triangle) normals, triangleFaces
+    /// arraylist references objects from this vertexNormals arraylist (for triangle vertex normals)
     private final ArrayList<Vector3D> vertexNormals;
     /// the triangles that the vertices form
     private final ArrayList<Triangle> triangleFaces;
@@ -74,6 +75,10 @@ public class TriangleMesh implements RTShape {
 
        An open source Wavefront OBJ parser (https://github.com/javagl/Obj/tree/master)
        is used to extract mesh info.
+
+       This constructor creates triangles which do not necessarily have to be flat
+       shaded - if vertex normals indices use different normals for different vertices
+       in the same triangle, normals will be linearly interpolated.
      */
     public TriangleMesh(String pathToObjFile, Matrix4D modelTransformation, RTColor color, Material material) throws IOException {
         InputStream objInputStream = new FileInputStream(pathToObjFile);
@@ -89,11 +94,12 @@ public class TriangleMesh implements RTShape {
         for(int i = 0; i < vertexCoordinates.length / 3; i++) {
             /// extract vertex in object coordinates from .obj file
             Vector3D v = new Vector3D(vertexCoordinates[3*i], vertexCoordinates[3*i+1], vertexCoordinates[3*i+2]);
-            /// apply modelling transformation to transform it to world coordinates (in scene), and add it to list
-            this.vertices.add(modelTransformation.multiply(v));
+            /// apply modelling transformation to transform the vertex to world coordinates (in scene), and add it to list
+            this.vertices.add(modelTransformation.multiplyFromRight(v));
         }
 
         /// extract list of vertex normals by grouping coordinates three by three
+        /// TODO - transform normals using (M^inverse)^transpose (for non-orthogonal matrices)
         this.vertexNormals = new ArrayList<>();
         for(int i = 0; i < vertexNormalsCoordinates.length / 3; i++) {
             this.vertexNormals.add(new Vector3D(vertexNormalsCoordinates[3*i], vertexNormalsCoordinates[3*i+1], vertexNormalsCoordinates[3*i+2]));
@@ -106,6 +112,38 @@ public class TriangleMesh implements RTShape {
                     new Triangle(
                             this.vertices.get(faceVertexIndices[3*i]), this.vertices.get(faceVertexIndices[3*i+1]), this.vertices.get(faceVertexIndices[3*i+2]),
                             this.vertexNormals.get(faceVertexNormalsIndices[3*i]), this.vertexNormals.get(faceVertexNormalsIndices[3*i+1]), this.vertexNormals.get(faceVertexNormalsIndices[3*i+2]),
+                            color, material)
+            );
+        }
+
+        this.diffuseColor = color;
+        this.material = material;
+    }
+    /*
+       Constructor from all attributes (and modelling transform to be performed to obtain triangle
+       mesh in world coordinates) except triangleFaces, which is here extracted from the given
+       indices of vertices and normals.
+
+       The constructor takes the vertex indices as an argument, but not vertex normals indices
+       because this constructor creates flat shaded triangles, i.e. vertex normals are all set
+       to be equal to the unit normal to the surface of the triangle.
+     */
+    public TriangleMesh(ArrayList<Vector3D> vertices, ArrayList<Vector3D> vertexNormals, int[] faceVertexIndices, Matrix4D modelTransformation, RTColor color, Material material) {
+        this.vertices = new ArrayList<>();
+        for(Vector3D vertex : vertices) {
+            /// apply modelling transformation to transform the vertex to world coordinates (in scene), and add it to list
+            this.vertices.add(modelTransformation.multiplyFromRight(vertex));
+        }
+
+        /// TODO - transform normals using (M^inverse)^transpose (for non-orthogonal matrices)
+        this.vertexNormals = vertexNormals;
+
+        /// extract list of triangles
+        this.triangleFaces = new ArrayList<>();
+        for(int i = 0; i < faceVertexIndices.length / 3; i++) {
+            this.triangleFaces.add(
+                    new Triangle(
+                            this.vertices.get(faceVertexIndices[3*i]), this.vertices.get(faceVertexIndices[3*i+1]), this.vertices.get(faceVertexIndices[3*i+2]),
                             color, material)
             );
         }
