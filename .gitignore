@@ -23,7 +23,7 @@
 hs_err_pid*
 replay_pid*
 
-# idea project files
+# idea IDE project files
 .idea/
 /target
 
@@ -35,3 +35,6 @@ src/main/resources/scene descriptions/testScene.xml
 
 # folder info
 .DS_Store
+
+# vscode IDE project files
+.vscode/
