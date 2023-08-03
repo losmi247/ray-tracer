@@ -1,6 +1,6 @@
-package utility;
+package rendering.utility;
 
-import shapes.*;
+import rendering.shapes.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Map;
  * version of its class name.
  */
 public class ShapeMapper {
-    private static final List<String> allExistingShapeIDs = List.of("sphere", "plane");
+    private static final List<String> allExistingShapeIDs = List.of("sphere", "plane", "triangle", "triangle-mesh", "box-mesh");
 
     /**
      * Methods

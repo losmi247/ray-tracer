@@ -1,12 +1,12 @@
-package shapes;
+package rendering.shapes;
 
-import shading.Material;
-import tracing.Intersection;
-import tracing.Ray;
-import utility.IncorrectSceneDescriptionXMLStructureException;
-import utility.RTColor;
-import utility.SceneDescriptionParser;
-import utility.Vector3D;
+import rendering.shading.Material;
+import rendering.tracing.Intersection;
+import rendering.tracing.Ray;
+import rendering.utility.IncorrectSceneDescriptionXMLStructureException;
+import rendering.utility.RTColor;
+import rendering.utility.SceneDescriptionParser;
+import rendering.utility.Vector3D;
 
 import java.util.Map;
 
@@ -24,9 +24,6 @@ import java.util.Map;
  * vector cross product (B-A) X (C-A) of the vertices
  * as the outwards unit normal to the triangle (i.e.
  * following counterclockwise direction A-B-C).
- *
- * TODO - create a Triangle Mesh class and render
- *        more complicated triangle meshes
  */
 
 public class Triangle implements RTShape {

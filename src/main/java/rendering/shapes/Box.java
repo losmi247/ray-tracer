@@ -1,7 +1,7 @@
-package shapes;
+package rendering.shapes;
 
-import shading.Material;
-import utility.*;
+import rendering.shading.Material;
+import rendering.utility.*;
 
 import java.util.ArrayList;
 import java.util.Map;

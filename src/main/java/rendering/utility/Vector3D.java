@@ -1,4 +1,4 @@
-package utility;
+package rendering.utility;
 
 /**
  * Class to encapsulate an immutable 3D vector

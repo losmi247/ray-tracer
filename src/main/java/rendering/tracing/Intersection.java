@@ -1,7 +1,7 @@
-package tracing;
+package rendering.tracing;
 
-import shapes.RTShape;
-import utility.Vector3D;
+import rendering.shapes.RTShape;
+import rendering.utility.Vector3D;
 
 /**
  * Class for an intersection, consisting of the

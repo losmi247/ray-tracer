@@ -1,4 +1,4 @@
-package utility;
+package rendering.utility;
 
 /**
  * A class for a color in RGB format.

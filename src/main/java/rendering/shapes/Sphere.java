@@ -1,12 +1,13 @@
-package shapes;
+package rendering.shapes;
 
-import shading.Material;
-import tracing.Intersection;
-import tracing.Ray;
-import utility.IncorrectSceneDescriptionXMLStructureException;
-import utility.RTColor;
-import utility.SceneDescriptionParser;
-import utility.Vector3D;
+import rendering.shading.Material;
+import rendering.tracing.Intersection;
+import rendering.tracing.Ray;
+import rendering.utility.IncorrectSceneDescriptionXMLStructureException;
+import rendering.utility.RTColor;
+import rendering.utility.SceneDescriptionParser;
+import rendering.utility.Vector3D;
+
 import java.util.Map;
 
 /**

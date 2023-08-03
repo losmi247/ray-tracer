@@ -1,10 +1,10 @@
-package tracing;
+package rendering.tracing;
 
-import shading.Material;
-import shading.Shader;
-import shapes.RTShape;
-import utility.RTColor;
-import utility.Vector3D;
+import rendering.shading.Material;
+import rendering.shading.Shader;
+import rendering.shapes.RTShape;
+import rendering.utility.RTColor;
+import rendering.utility.Vector3D;
 
 import java.util.ArrayList;
 

@@ -1,13 +1,13 @@
-package utility;
+package rendering.utility;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import shapes.RTShape;
-import tracing.Light;
-import tracing.PointLight;
-import tracing.SphereLight;
+import rendering.shapes.RTShape;
+import rendering.tracing.Light;
+import rendering.tracing.PointLight;
+import rendering.tracing.SphereLight;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

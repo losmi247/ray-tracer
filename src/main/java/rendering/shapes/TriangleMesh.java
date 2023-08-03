@@ -1,10 +1,9 @@
-package shapes;
+package rendering.shapes;
 
-import de.javagl.obj.ObjData;
-import shading.Material;
-import tracing.Intersection;
-import tracing.Ray;
-import utility.*;
+import rendering.shading.Material;
+import rendering.tracing.Intersection;
+import rendering.tracing.Ray;
+import rendering.utility.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import java.util.Map;
 
 import de.javagl.obj.Obj;
 import de.javagl.obj.ObjReader;
+import de.javagl.obj.ObjData;
 
 /**
  * Class for a mesh of triangles, defined by the vertices it contains,

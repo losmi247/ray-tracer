@@ -1,9 +1,9 @@
-package tracing;
+package rendering.tracing;
 
 import org.xml.sax.SAXException;
-import shapes.RTShape;
-import utility.IncorrectSceneDescriptionXMLStructureException;
-import utility.SceneDescriptionParser;
+import rendering.shapes.RTShape;
+import rendering.utility.IncorrectSceneDescriptionXMLStructureException;
+import rendering.utility.SceneDescriptionParser;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;

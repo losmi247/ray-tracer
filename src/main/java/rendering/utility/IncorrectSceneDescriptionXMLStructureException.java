@@ -1,4 +1,4 @@
-package utility;
+package rendering.utility;
 
 public class IncorrectSceneDescriptionXMLStructureException extends Exception {
     /// default constructor

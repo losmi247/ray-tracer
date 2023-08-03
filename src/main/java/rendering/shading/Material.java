@@ -1,8 +1,8 @@
-package shading;
+package rendering.shading;
 
-import utility.IncorrectSceneDescriptionXMLStructureException;
-import utility.SceneDescriptionParser;
-import utility.Vector3D;
+import rendering.utility.IncorrectSceneDescriptionXMLStructureException;
+import rendering.utility.SceneDescriptionParser;
+import rendering.utility.Vector3D;
 
 /**
  * A class to encapsulate material properties

@@ -1,7 +1,7 @@
-package shading;
+package rendering.shading;
 
-import tracing.Intersection;
-import utility.RTColor;
+import rendering.tracing.Intersection;
+import rendering.utility.RTColor;
 
 /**
  * An interface for a shader - any class that encapsulates

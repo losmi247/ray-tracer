@@ -1,16 +1,18 @@
+package rendering;
+
 import org.xml.sax.SAXException;
-import shading.PhongShader;
-import shading.Shader;
-import tracing.Ray;
-import tracing.Scene;
-import utility.IncorrectSceneDescriptionXMLStructureException;
-import utility.RTColor;
-import utility.Vector3D;
+
+import rendering.shading.PhongShader;
+import rendering.shading.Shader;
+import rendering.tracing.Ray;
+import rendering.tracing.Scene;
+import rendering.utility.IncorrectSceneDescriptionXMLStructureException;
+import rendering.utility.RTColor;
+import rendering.utility.Vector3D;
 
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -366,6 +368,7 @@ public class Camera {
         }
     }
 
+    /// run this to render the .xml description
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
         BufferedImage b = c.renderWithCoreParallelization("src/main/resources/scene descriptions/scene1.xml");

@@ -1,7 +1,7 @@
-package tracing;
+package rendering.tracing;
 
-import utility.RTColor;
-import utility.Vector3D;
+import rendering.utility.RTColor;
+import rendering.utility.Vector3D;
 
 /**
  * Class for a point light source.

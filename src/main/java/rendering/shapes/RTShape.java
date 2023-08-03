@@ -1,9 +1,9 @@
-package shapes;
-import shading.Material;
-import tracing.Intersection;
-import utility.RTColor;
-import utility.Vector3D;
-import tracing.Ray;
+package rendering.shapes;
+import rendering.shading.Material;
+import rendering.tracing.Intersection;
+import rendering.utility.RTColor;
+import rendering.utility.Vector3D;
+import rendering.tracing.Ray;
 
 /**
  * Interface for a shape that can be included in

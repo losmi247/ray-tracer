@@ -1,12 +1,11 @@
-package shading;
+package rendering.shading;
 
-import shapes.RTShape;
-import tracing.Intersection;
-import tracing.Light;
-import tracing.PointLight;
-import tracing.Scene;
-import utility.RTColor;
-import utility.Vector3D;
+import rendering.shapes.RTShape;
+import rendering.tracing.Intersection;
+import rendering.tracing.Light;
+import rendering.tracing.Scene;
+import rendering.utility.RTColor;
+import rendering.utility.Vector3D;
 
 import java.util.ArrayList;
 

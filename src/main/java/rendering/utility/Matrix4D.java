@@ -1,4 +1,4 @@
-package utility;
+package rendering.utility;
 
 /**
  * Class for 4x4 matrices which are used to
