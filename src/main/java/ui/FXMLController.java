@@ -23,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.ProgressBar;
 
 /**
  * Class for a controller for the scene.fxml 
@@ -60,6 +61,13 @@ public class FXMLController {
     @FXML
     private Label renderedImageViewLabel;
 
+    /// progress bar to show rendering progress
+    @FXML
+    private ProgressBar renderingProgressBar;
+    /// label for the progress bar
+    @FXML
+    private Label renderingProgressBarLabel;
+
     /**
      * Methods
      */
@@ -67,11 +75,18 @@ public class FXMLController {
        Method that initialises the state of the controller
        on creation.
      */
-    public void initialize() {
+    public void initialize() throws FileNotFoundException {
         /// initialise label of the button for choosing and loading scene description
         this.openFileChooserButtonLabel.setText("No file selected");
+
+        /// initialise the progress bar
+        this.renderingProgressBar.setProgress(0);
+
         /// set path to scene description to null initially
         this.absolutePathToSceneDescription = null;
+
+        /// show the starting image ("Please load a scene description")
+        this.showStartingImageInImageView();
 
         /// TODO - set a blank image in the ImageView while we are waiting for the rendered image
     }
@@ -90,6 +105,9 @@ public class FXMLController {
         /// if the file is null, or is not XML
         if(chosenSceneDescription == null || !chosenSceneDescription.getName().endsWith(".xml") ) {
             this.openFileChooserButtonLabel.setText("Invalid file chosen");
+            /// reset path to null
+            this.absolutePathToSceneDescription = null;
+            return;
         }
         else {
             this.openFileChooserButtonLabel.setText("'" + chosenSceneDescription.getName() + "' loaded");
@@ -97,6 +115,9 @@ public class FXMLController {
 
         /// update the selected absolute path to the scene description XML
         this.absolutePathToSceneDescription = chosenSceneDescription.getAbsolutePath();
+
+        /// reset the progress bar to beginning
+        this.renderingProgressBar.setProgress(0);
     }
     /*
        Method that is called when the button to render the
@@ -114,24 +135,56 @@ public class FXMLController {
             return;
         }
 
+        /// show the loading-circle in ImageView
+        this.showLoadingScreenInImageView();
+
+        /// TODO - update progress bar somehow while rendering
+
         /// otherwise create a camera
         Camera camera = new Camera();
         /// render and save the image at the default location /resources/rendered images/result.png
         Camera.saveImage(camera.renderWithCoreParallelization(this.absolutePathToSceneDescription));
 
-        /// relaod the rendered image in the image view
-        this.reloadImageView();
+        /// (re)load the rendered image in the image view
+        this.showRenderedImageInImageView();
     }
     /*
-       Method that reloads the image that is displayed
+       Method that loads the starting image ("Please load
+       a scene description") to the ImageView.
+     */
+    public void showStartingImageInImageView() throws FileNotFoundException {
+        this.loadImageFileInImageView("./src/main/resources/assets/starting_image.png");
+    }
+    /*
+       Method that (re)loads the image that is displayed
        in the ImageView. It reads the image file
        "./src/main/resources/rendered images/result.png"
-       again, and displays it in the ImageView.
+       again, and displays the last rendered image
+       in the ImageView.
      */
-    public void reloadImageView() throws FileNotFoundException {
+    public void showRenderedImageInImageView() throws FileNotFoundException {
+        /// load the last rendered image
+        this.loadImageFileInImageView("./src/main/resources/rendered images/result.png");
+    }
+    /*
+       Method that loads a loading-circle gif to the
+       ImageView, used while an image is being rendered.
+
+       The gif is from 
+       https://giphy.com/gifs/awesome-circle-loading-WiIuC6fAOoXD2
+     */
+    public void showLoadingScreenInImageView() throws FileNotFoundException {
+        /// TODO - see why GIFs are not being loaded
+        this.loadImageFileInImageView("./src/main/resources/assets/loading_circle.gif");
+    }
+    /*
+       Method that loads an arbitrary image file at the given
+       relative or absolute path to the ImageView.
+     */
+    public void loadImageFileInImageView(String pathToImageFile) throws FileNotFoundException {
         /// take the image file
-        File imageFile = new File("./src/main/resources/rendered images/result.png");
-        /// get the input stream and reset the displayed image
+        File imageFile = new File(pathToImageFile);
+        /// get the input stream and display the image
         InputStream isImage = (InputStream) new FileInputStream(imageFile);
         this.renderedImageView.setImage(new Image(isImage));
     }

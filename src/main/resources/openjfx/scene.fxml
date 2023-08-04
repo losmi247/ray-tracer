@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="anchropane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="anchorpane" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXMLController">
+<AnchorPane id="anchropane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="779.0" prefWidth="1210.0" styleClass="anchorpane" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.FXMLController">
    <children>
       <HBox id="topbar" alignment="CENTER_LEFT" layoutY="-1.0" prefHeight="50.0" prefWidth="653.0" styleClass="topbar" stylesheets="@styles.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -38,33 +38,30 @@
                         <Insets left="5.0" top="15.0" />
                      </VBox.margin>
                   </Label>
-                  <ImageView id="imageview" fx:id="renderedImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView id="imageview" fx:id="renderedImageView" fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
                      <VBox.margin>
-                        <Insets right="10.0" top="8.0" />
+                        <Insets right="20.0" top="8.0" />
                      </VBox.margin>
                      <image>
-                        <Image url="@../rendered%20images/result.png" />
+                        <Image url="@../assets/starting_image.png" />
                      </image>
                   </ImageView>
                </children>
             </VBox>
-            <VBox prefHeight="124.0" prefWidth="210.0">
+            <HBox prefHeight="105.0" prefWidth="620.0">
                <children>
-                  <ProgressBar fx:id="renderingProgressBar" prefWidth="200.0" progress="0.0">
-                     <VBox.margin>
-                        <Insets top="15.0" />
-                     </VBox.margin>
-                  </ProgressBar>
-                  <Label prefHeight="16.0" prefWidth="212.0" style="-fx-text-fill: black;" text="Rendering Progress">
-                     <VBox.margin>
-                        <Insets left="5.0" top="8.0" />
-                     </VBox.margin>
+                  <Label fx:id="renderingProgressBarLabel" prefHeight="16.0" prefWidth="153.0" style="-fx-text-fill: black;" text="Rendering Progress:">
+                     <HBox.margin>
+                        <Insets left="20.0" top="20.0" />
+                     </HBox.margin>
                   </Label>
+                  <ProgressBar fx:id="renderingProgressBar" prefWidth="200.0" progress="0.0">
+                     <HBox.margin>
+                        <Insets top="20.0" />
+                     </HBox.margin>
+                  </ProgressBar>
                </children>
-               <VBox.margin>
-                  <Insets top="5.0" />
-               </VBox.margin>
-            </VBox>
+            </HBox>
          </children>
       </VBox>
       <VBox alignment="TOP_CENTER" layoutY="50.0" prefHeight="279.0" prefWidth="220.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="60.0">
@@ -78,8 +75,11 @@
                      </VBox.margin>
                   </Label>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox prefHeight="229.0" prefWidth="220.0">
                <children>
                   <Button fx:id="renderButton" mnemonicParsing="false" onAction="#renderSceneDescription" text="Render">
                      <VBox.margin>
