@@ -356,11 +356,12 @@ public class Camera {
     /*
        Method to output a digital image.
        Given a BufferedImage, it creates a 'result.png'
-       output image in project root folder.
+       output image in the 'rendered images' folder
+       inside project 'resources' folder.
      */
     public static void saveImage(BufferedImage image) {
         try{
-            File f = new File("./rendered images/result.png");
+            File f = new File("./src/main/resources/rendered images/result.png");
             ImageIO.write(image, "png", f);
         }
         catch(IOException e) {

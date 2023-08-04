@@ -1,14 +1,28 @@
 package ui;
 
+import rendering.Camera;
+import rendering.utility.IncorrectSceneDescriptionXMLStructureException;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * Class for a controller for the scene.fxml 
@@ -19,13 +33,32 @@ public class FXMLController {
     /// the stage passed from the MainApp
     private Stage mainStage;
 
+    /// absolute path to selected scene description XML
+    private String absolutePathToSceneDescription;
+
+
     /// button to load the .fxml file
     @FXML
     private Button openFileChooserButton;
-
-    /// label for the above button
+    /// label for the file chooser button
     @FXML
     private Label openFileChooserButtonLabel;
+
+    /// button to render the chosen scene description
+    @FXML
+    private Button renderButton;
+    /// label for the render button
+    @FXML
+    private Label renderButtonLabel;
+
+    /// The image view for displaying the last rendered image.
+    /// The only image file ever displayed and being rendered
+    /// into is "./src/main/resources/rendered images/result.png".
+    @FXML
+    private ImageView renderedImageView;
+    /// label for the rendered image
+    @FXML
+    private Label renderedImageViewLabel;
 
     /**
      * Methods
@@ -35,16 +68,22 @@ public class FXMLController {
        on creation.
      */
     public void initialize() {
-        /// initialise label
+        /// initialise label of the button for choosing and loading scene description
         this.openFileChooserButtonLabel.setText("No file selected");
+        /// set path to scene description to null initially
+        this.absolutePathToSceneDescription = null;
+
+        /// TODO - set a blank image in the ImageView while we are waiting for the rendered image
     }
     /* 
-       Method that is called when the button is clicked to
+       Method that is called when the button to
        navigate the file system and choose one .xml file
-       description.
+       description is clicked.
+
+       It updates the absolute path to the XML.
     */
-    public void onClick(final ActionEvent e) {
-        /// load the scene description
+    public void loadSceneDescription(final ActionEvent e) {
+        /// choose and load the scene description
         FileChooser fileChooser = new FileChooser();
         File chosenSceneDescription = fileChooser.showOpenDialog(this.mainStage);
 
@@ -56,7 +95,45 @@ public class FXMLController {
             this.openFileChooserButtonLabel.setText("'" + chosenSceneDescription.getName() + "' loaded");
         }
 
-        /// TODO - now pass the XML file to XML scene description parser
+        /// update the selected absolute path to the scene description XML
+        this.absolutePathToSceneDescription = chosenSceneDescription.getAbsolutePath();
+    }
+    /*
+       Method that is called when the button to render the
+       chosen scene description is clicked.
+     */
+    public void renderSceneDescription(final ActionEvent e) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException{
+        /// if no valid XML description has been loaded
+        if(this.absolutePathToSceneDescription == null) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("An error has occured");
+            alert.setContentText("First load a valid XML scene description!");
+
+            alert.showAndWait();
+            return;
+        }
+
+        /// otherwise create a camera
+        Camera camera = new Camera();
+        /// render and save the image at the default location /resources/rendered images/result.png
+        Camera.saveImage(camera.renderWithCoreParallelization(this.absolutePathToSceneDescription));
+
+        /// relaod the rendered image in the image view
+        this.reloadImageView();
+    }
+    /*
+       Method that reloads the image that is displayed
+       in the ImageView. It reads the image file
+       "./src/main/resources/rendered images/result.png"
+       again, and displays it in the ImageView.
+     */
+    public void reloadImageView() throws FileNotFoundException {
+        /// take the image file
+        File imageFile = new File("./src/main/resources/rendered images/result.png");
+        /// get the input stream and reset the displayed image
+        InputStream isImage = (InputStream) new FileInputStream(imageFile);
+        this.renderedImageView.setImage(new Image(isImage));
     }
 
     /*
