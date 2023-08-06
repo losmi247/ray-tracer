@@ -25,6 +25,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.ProgressBar;
 import javafx.concurrent.Task;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
 /**
  * Class for a controller for the scene.fxml 
  * description of the GUI.
@@ -57,6 +60,8 @@ public class FXMLController {
     /// into is "./src/main/resources/rendered images/result.png".
     @FXML
     private ImageView renderedImageView;
+    /// property used to update the image shown in the ImageView
+    private ObjectProperty<javafx.scene.image.Image> renderedImageProperty; 
     /// label for the rendered image
     @FXML
     private Label renderedImageViewLabel;
@@ -84,6 +89,11 @@ public class FXMLController {
 
         /// initalise progress to 0
         this.resetRenderingProgressBar();
+
+        /// initialise the image property and bind the ImageView's image property to it
+        this.renderedImageProperty = new SimpleObjectProperty<>();
+        /// bind the ImageView's image property to this created image property
+        this.renderedImageView.imageProperty().bind(this.renderedImageProperty);
 
         /// show the starting image ("Please load a scene description")
         this.showLoadSceneDescriptionPromptInImageView();
@@ -201,12 +211,15 @@ public class FXMLController {
 
         /// TODO - display progress (e.g. 80%) progress bar label and ETA as well
 
+        /// show the loading circle gif in ImageView while rendering
+        this.showLoadingCircleGifInImageView();
+
         /// run the rendering Task asynchrously on another thread
         (new Thread(renderingTask)).start();
     }
     /*
-       Method that loads the starting image ("Please load
-       a scene description") to the ImageView.
+       Method that loads the prompt "Please load
+       a scene description" to the ImageView.
      */
     public void showLoadSceneDescriptionPromptInImageView() throws FileNotFoundException {
         this.loadImageFileInImageView("./src/main/resources/assets/load_description_prompt.png");
@@ -223,14 +236,18 @@ public class FXMLController {
         this.loadImageFileInImageView("./src/main/resources/rendered images/result.png");
     }
     /*
-       Method that loads a loading-circle gif to the
-       ImageView, used while an image is being rendered.
-
-       The gif is from 
-       https://giphy.com/gifs/awesome-circle-loading-WiIuC6fAOoXD2
+       Method that loads the prompt "Click Render button"
+       to the ImageView.
      */
     public void showRenderPromptScreenInImageView() throws FileNotFoundException {
         this.loadImageFileInImageView("./src/main/resources/assets/render_description_prompt.png");
+    }
+    /*
+       Method that loads the loading circle gif. The loading GIF
+       is from https://loading.io/.
+     */
+    public void showLoadingCircleGifInImageView() throws FileNotFoundException {
+        this.loadImageFileInImageView("./src/main/resources/assets/loading.gif");
     }
     /*
        Method that loads an arbitrary image file at the given
@@ -243,7 +260,8 @@ public class FXMLController {
         File imageFile = new File(pathToImageFile);
         /// get the input stream and display the image
         InputStream isImage = (InputStream) new FileInputStream(imageFile);
-        this.renderedImageView.setImage(new Image(isImage));
+        //this.renderedImageView.setImage(new Image(isImage));
+        this.renderedImageProperty.set(new Image(isImage));
     }
     /*
        Method that resets the rendering ProgressBar to 0.
