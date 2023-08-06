@@ -14,7 +14,6 @@ import org.xml.sax.SAXException;
 
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
-
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import javafx.scene.control.Alert;
@@ -24,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.ProgressBar;
+import javafx.concurrent.Task;
 
 /**
  * Class for a controller for the scene.fxml 
@@ -79,16 +79,14 @@ public class FXMLController {
         /// initialise label of the button for choosing and loading scene description
         this.openFileChooserButtonLabel.setText("No file selected");
 
-        /// initialise the progress bar
-        this.renderingProgressBar.setProgress(0);
-
         /// set path to scene description to null initially
         this.absolutePathToSceneDescription = null;
 
-        /// show the starting image ("Please load a scene description")
-        this.showStartingImageInImageView();
+        /// initalise progress to 0
+        this.resetRenderingProgressBar();
 
-        /// TODO - set a blank image in the ImageView while we are waiting for the rendered image
+        /// show the starting image ("Please load a scene description")
+        this.showLoadSceneDescriptionPromptInImageView();
     }
     /* 
        Method that is called when the button to
@@ -97,7 +95,7 @@ public class FXMLController {
 
        It updates the absolute path to the XML.
     */
-    public void loadSceneDescription(final ActionEvent e) {
+    public void loadSceneDescription(final ActionEvent e) throws FileNotFoundException {
         /// choose and load the scene description
         FileChooser fileChooser = new FileChooser();
         File chosenSceneDescription = fileChooser.showOpenDialog(this.mainStage);
@@ -105,8 +103,16 @@ public class FXMLController {
         /// if the file is null, or is not XML
         if(chosenSceneDescription == null || !chosenSceneDescription.getName().endsWith(".xml") ) {
             this.openFileChooserButtonLabel.setText("Invalid file chosen");
+
             /// reset path to null
             this.absolutePathToSceneDescription = null;
+
+            /// reset ImageView to starting screen
+            this.showLoadSceneDescriptionPromptInImageView();
+
+            /// reset the progress bar to beginning
+            this.resetRenderingProgressBar();
+
             return;
         }
         else {
@@ -117,7 +123,10 @@ public class FXMLController {
         this.absolutePathToSceneDescription = chosenSceneDescription.getAbsolutePath();
 
         /// reset the progress bar to beginning
-        this.renderingProgressBar.setProgress(0);
+        this.resetRenderingProgressBar();
+
+        /// show the prompt to click the render button in ImageView
+        this.showRenderPromptScreenInImageView();
     }
     /*
        Method that is called when the button to render the
@@ -128,32 +137,76 @@ public class FXMLController {
         if(this.absolutePathToSceneDescription == null) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("An error has occured");
-            alert.setContentText("First load a valid XML scene description!");
+            alert.setContentText("First load an XML scene description!");
 
             alert.showAndWait();
+
+            /// show prompt to load scene description
+            this.showLoadSceneDescriptionPromptInImageView();
+
+            /// reset the progress bar to beginning
+            this.resetRenderingProgressBar();
+
             return;
         }
 
-        /// show the loading-circle in ImageView
-        this.showLoadingScreenInImageView();
-
-        /// TODO - update progress bar somehow while rendering
-
-        /// otherwise create a camera
+        /// create a camera
         Camera camera = new Camera();
-        /// render and save the image at the default location /resources/rendered images/result.png
-        Camera.saveImage(camera.renderWithCoreParallelization(this.absolutePathToSceneDescription));
+        /// Get the Task for rendering the scene, reporting progress, and saving rendered image at
+        /// the default location '/resources/rendered images/result.png', from the created camera
+        Task<Void> renderingTask = camera.getRenderWithCPUCoreParallelizationTask(this.absolutePathToSceneDescription);
+        /// bind the rendering Task's progress to the ProgressBar's progress, we will unbind it later when needed
+        this.renderingProgressBar.progressProperty().bind(renderingTask.progressProperty());
 
-        /// (re)load the rendered image in the image view
-        this.showRenderedImageInImageView();
+        /// if the Task failes, check if the XML scene description is invalid, and show an alert if it is really invalid
+        renderingTask.setOnFailed(eventHandler -> {
+            Throwable exc = renderingTask.getException();
+
+            /// if the XML scene description syntax is incorrect, show an alert and reset to XML scene description loading
+            if(exc instanceof IncorrectSceneDescriptionXMLStructureException) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Incorrect XML scene description syntax!");
+
+                alert.showAndWait();
+
+                /// show prompt to load scene description
+                try{
+                    this.showLoadSceneDescriptionPromptInImageView();
+                }
+                /// if prompt image file is not found, rethrow an unchecked exception because there is no handling mechanism
+                catch(FileNotFoundException fnfe) {
+                    throw new RuntimeException("Scene-description-prompt image not found in 'assets' directory.");
+                }
+
+                /// reset the progress bar to beginning
+                this.resetRenderingProgressBar();
+            }
+            /// otherwise there is no handling mechanism
+            else {
+                throw new RuntimeException("Non scene-description-related exception thrown from the rendering Task.");
+            }
+        });
+        /// when the Task executes, (re)load the rendered image in the ImageView
+        renderingTask.setOnSucceeded(eventHandler -> {
+            try{
+                this.showRenderedImageInImageView();
+            }
+            /// if rendered image file is not found, rethrow an unchecked exception because there is no handling mechanism
+            catch(FileNotFoundException fnfe) {
+                throw new RuntimeException("Rendered image not found at default location.");
+            }
+        });
+
+        /// run the rendering Task asynchrously on another thread
+        (new Thread(renderingTask)).start();
     }
     /*
        Method that loads the starting image ("Please load
        a scene description") to the ImageView.
      */
-    public void showStartingImageInImageView() throws FileNotFoundException {
-        this.loadImageFileInImageView("./src/main/resources/assets/starting_image.png");
+    public void showLoadSceneDescriptionPromptInImageView() throws FileNotFoundException {
+        this.loadImageFileInImageView("./src/main/resources/assets/load_description_prompt.png");
     }
     /*
        Method that (re)loads the image that is displayed
@@ -173,9 +226,8 @@ public class FXMLController {
        The gif is from 
        https://giphy.com/gifs/awesome-circle-loading-WiIuC6fAOoXD2
      */
-    public void showLoadingScreenInImageView() throws FileNotFoundException {
-        /// TODO - see why GIFs are not being loaded
-        this.loadImageFileInImageView("./src/main/resources/assets/loading_circle.gif");
+    public void showRenderPromptScreenInImageView() throws FileNotFoundException {
+        this.loadImageFileInImageView("./src/main/resources/assets/render_description_prompt.png");
     }
     /*
        Method that loads an arbitrary image file at the given
@@ -187,6 +239,15 @@ public class FXMLController {
         /// get the input stream and display the image
         InputStream isImage = (InputStream) new FileInputStream(imageFile);
         this.renderedImageView.setImage(new Image(isImage));
+    }
+    /*
+       Method that resets the rendering ProgressBar to 0.
+     */
+    public void resetRenderingProgressBar() {
+        /// unbind the progress property of the ProgressBar if it s bound to some property
+        this.renderingProgressBar.progressProperty().unbind();
+        /// reset the progress
+        this.renderingProgressBar.setProgress(0);
     }
 
     /*

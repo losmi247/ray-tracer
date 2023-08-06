@@ -16,8 +16,12 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
+
+import javafx.concurrent.Task;
 
 /**
  * Class to encapsulate a camera at the origin (0,0,0),
@@ -51,8 +55,9 @@ public class Camera {
 
     /// limit for tracing reflected rays
     private final int reflectionTracingLimit;
-    /* antialiasing by jittered super-sampling,
-       i.e. split each pixel into a regular grid
+    /* 
+       Antialiasing by jittered super-sampling,
+       i.e. we split each pixel into a regular grid
        of 'samplesPerPixelSide' X 'samplesPerPixelSide'
        sub-pixels, then sample one random point from
        each sub-pixel.
@@ -60,7 +65,7 @@ public class Camera {
        If samplesPerPixelSide = 1, then only a single
        ray is cast exactly through the center of every
        pixel.
-    * */
+     */
     private final int samplesPerPixelSide;
 
     /**
@@ -116,8 +121,14 @@ public class Camera {
        on a 'samplesPerPixelSide' X 'samplesPerPixelSide' regular
        grid of sub-pixels.
 
-       This method renders the image using a single-thread, i.e. on
-       a single core of the CPU (16.2 seconds for scene1).
+       This method renders the image using a single thread, i.e. on
+       a single core of the CPU.
+
+       This method can be only used for pure rendering without the
+       JavaFX UI, it does not connect to it, i.e. does not have an
+       optional Consumer<Double> argument that allows the user to
+       update the rendering progress in the UI like the 
+       'renderWithCPUCoreParallelization' does.
      */
     public BufferedImage render(String sceneDescriptionPath) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Scene scene = new Scene(sceneDescriptionPath);
@@ -130,6 +141,7 @@ public class Camera {
         double subPixelWidth = pixelWidth / this.samplesPerPixelSide;
         double subPixelHeight = pixelHeight / this.samplesPerPixelSide;
 
+        /// setup timing and progress
         long startTime = System.currentTimeMillis();
         int milestone = (this.screenPlaneHeightInPixels * screenPlaneWidthInPixels) / 20;
 
@@ -187,7 +199,7 @@ public class Camera {
                     digitalImage.setRGB(x, y, finalColorValueNormed.getRGB());
                 }
 
-                /// progress status
+                /// update progress
                 if((x+y != 0) && (y*screenPlaneWidthInPixels + x) % milestone == 0) {
                     double done = (double) (y*screenPlaneWidthInPixels + x) / (double) (this.screenPlaneHeightInPixels * screenPlaneWidthInPixels);
                     double eta = (double) (System.currentTimeMillis() - startTime) * ((1 - done) / done);
@@ -196,7 +208,6 @@ public class Camera {
             }
         }
 
-        /// 16.207 seconds for scene1
         System.out.println("100% done. Total time: " + (double) (System.currentTimeMillis() - startTime) / 1000 + " seconds");
 
         return digitalImage;
@@ -217,9 +228,18 @@ public class Camera {
 
        This method uses Java Stream API to distribute rays to be traced
        among the cores of the CPU, i.e. rays through different pixels
-       are traced in parallel in different threads (4 seconds for scene1).
+       are traced in parallel in different threads.
+
+       This method has an additional optional Consumer<Double> argument
+       'progressUpdaterConsumer' that can be passed to this method and
+       used to update the rendering progress in any chosen way in which
+       its 'accept' method is implemented (this method gives the
+       Consumer the progress as a real value between 0 and 1). For instance,
+       the 'getRenderWithCPUCoreParallelization' method creates a JavaFX Task
+       for rendering and uses the Consumer argument to update the progress
+       property of the Task from this method.
      */
-    public BufferedImage renderWithCoreParallelization(String sceneDescriptionPath) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
+    public BufferedImage renderWithCPUCoreParallelization(String sceneDescriptionPath, Consumer<Double> progressUpdaterConsumer) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Scene scene = new Scene(sceneDescriptionPath);
         Shader shader = new PhongShader(scene);
 
@@ -230,8 +250,13 @@ public class Camera {
         double subPixelWidth = pixelWidth / this.samplesPerPixelSide;
         double subPixelHeight = pixelHeight / this.samplesPerPixelSide;
 
+        /// setup timing and progress
         long startTime = System.currentTimeMillis();
         AtomicInteger progress = new AtomicInteger();
+        /// if a progress updater is given, set progress to 0
+        if(progressUpdaterConsumer != null) {
+            progressUpdaterConsumer.accept(.0);
+        }
 
         /// create a list of pixel positions, pixel (i,j) is coded as i*screenPlaneWidthInPixels + j
         ArrayList<Integer> pixelPositions = new ArrayList<>();
@@ -305,13 +330,46 @@ public class Camera {
             if(Math.abs((int)(done*100) - (done*100)) < 1e-9 && (int)(done*100) % 5 == 0) {
                 double eta = (double) (System.currentTimeMillis() - startTime) * ((1 - done) / done);
                 System.out.println((int)(done * 100) + "% done. ETA: " + Double.toString(Math.round(eta/ 1000)) + " seconds");
+
+                /// if a progress updater is given, update progress
+                if(progressUpdaterConsumer != null) {
+                    progressUpdaterConsumer.accept(done);
+                }
             }
         });
 
-        /// 4 seconds for scene1
         System.out.println("Total time: " + (double) (System.currentTimeMillis() - startTime) / 1000 + " seconds");
 
         return digitalImage;
+    }
+    /*
+       Method that returns a JavaFX Task that renders a scene description into a
+       digital image, from the point of view of this particular camera. It uses
+       the 'renderWithCPUCoreParallelization' method to do so, and gives it a 
+       Consumer lambda that updates the progress property of the task within the
+       'renderWithCPUCoreParalleliation' method.
+    
+       The JavaFX Task created by this method first renders the given scene description
+       into a BufferedImage which it then saves at the default location
+       "./src/main/resources/rendered images/result.png".
+     */
+    public Task<Void> getRenderWithCPUCoreParallelizationTask(String sceneDescriptionPath) {
+        return new Task<Void>() {
+            @Override 
+            public Void call() throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
+                /// render the scene description, and give the method a consumer to update the progress property of the task
+                BufferedImage digitalImage = renderWithCPUCoreParallelization(sceneDescriptionPath, new Consumer<Double>() {
+                    @Override
+                    public void accept(Double progress) {
+                        updateProgress(progress, 1);
+                    }
+                });
+
+                Camera.saveImage(digitalImage);
+
+                return null;
+            }
+        }; 
     }
 
     /**
@@ -369,10 +427,11 @@ public class Camera {
         }
     }
 
-    /// run this to render the .xml description
+    /// run this to render a .xml description
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
-        BufferedImage b = c.renderWithCoreParallelization("src/main/resources/scene descriptions/scene1.xml");
+        /// don't need a progress bar here, so set progress updater to null
+        BufferedImage b = c.renderWithCPUCoreParallelization("src/main/resources/scene descriptions/scene1.xml", null);
         Camera.saveImage(b);
     }
 }

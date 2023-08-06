@@ -56,6 +56,9 @@ public class SceneDescriptionParser {
      */
     private Node getShapesNode() throws IncorrectSceneDescriptionXMLStructureException {
         Node rootNode = this.document.getElementsByTagName("elements").item(0);
+        if(rootNode == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing root XML node 'elements'.");
+        }
         NodeList rootChildrenList = rootNode.getChildNodes();
 
         Node shapesNode = null;
@@ -81,6 +84,9 @@ public class SceneDescriptionParser {
      */
     private Node getLightsNode() throws IncorrectSceneDescriptionXMLStructureException {
         Node rootNode = this.document.getElementsByTagName("elements").item(0);
+        if(rootNode == null) {
+            throw new IncorrectSceneDescriptionXMLStructureException("Missing root XML node 'elements'.");
+        }
         NodeList rootChildrenList = rootNode.getChildNodes();
 
         Node lightsNode = null;
@@ -107,7 +113,7 @@ public class SceneDescriptionParser {
         NodeList shapesNodeList = this.getShapesNode().getChildNodes();
 
         /// iterate through shapes
-        int shapesNodeListLength = shapesNodeList.getLength();
+        int shapesNodeListLength = (shapesNodeList == null ? 0 : shapesNodeList.getLength());
         ArrayList<RTShape> shapes = new ArrayList<>();
         Node currentNode;
         for (int i = 0; i < shapesNodeListLength; i++) {
@@ -126,7 +132,7 @@ public class SceneDescriptionParser {
         NodeList lightsNodeList = this.getLightsNode().getChildNodes();
 
         /// iterate through lights
-        int lightsNodeListLength = lightsNodeList.getLength();
+        int lightsNodeListLength = (lightsNodeList == null ? 0 : lightsNodeList.getLength());
         ArrayList<Light> lights = new ArrayList<>();
         Node currentNode;
         for (int i = 0; i < lightsNodeListLength; i++) {

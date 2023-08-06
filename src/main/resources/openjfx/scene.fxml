@@ -43,7 +43,7 @@
                         <Insets right="20.0" top="8.0" />
                      </VBox.margin>
                      <image>
-                        <Image url="@../assets/starting_image.png" />
+                        <Image url="@../assets/load_description_prompt.png" />
                      </image>
                   </ImageView>
                </children>
