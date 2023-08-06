@@ -98,6 +98,7 @@ public class FXMLController {
     public void loadSceneDescription(final ActionEvent e) throws FileNotFoundException {
         /// choose and load the scene description
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose XML Scene Description");
         File chosenSceneDescription = fileChooser.showOpenDialog(this.mainStage);
 
         /// if the file is null, or is not XML
@@ -198,6 +199,8 @@ public class FXMLController {
             }
         });
 
+        /// TODO - display progress (e.g. 80%) progress bar label and ETA as well
+
         /// run the rendering Task asynchrously on another thread
         (new Thread(renderingTask)).start();
     }
@@ -232,6 +235,8 @@ public class FXMLController {
     /*
        Method that loads an arbitrary image file at the given
        relative or absolute path to the ImageView.
+
+       TODO - try to do images (and gifs possibly) using properties too
      */
     public void loadImageFileInImageView(String pathToImageFile) throws FileNotFoundException {
         /// take the image file

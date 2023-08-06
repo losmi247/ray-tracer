@@ -330,11 +330,10 @@ public class Camera {
             if(Math.abs((int)(done*100) - (done*100)) < 1e-9 && (int)(done*100) % 5 == 0) {
                 double eta = (double) (System.currentTimeMillis() - startTime) * ((1 - done) / done);
                 System.out.println((int)(done * 100) + "% done. ETA: " + Double.toString(Math.round(eta/ 1000)) + " seconds");
-
-                /// if a progress updater is given, update progress
-                if(progressUpdaterConsumer != null) {
-                    progressUpdaterConsumer.accept(done);
-                }
+            }
+            /// if a progress updater is given, update progress
+            if(progressUpdaterConsumer != null) {
+                progressUpdaterConsumer.accept(done);
             }
         });
 
