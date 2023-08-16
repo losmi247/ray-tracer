@@ -11,7 +11,7 @@ import javafx.stage.Stage;
  * 
  * Use
  *      mvn javafx:run -f "/home/milos/Desktop/Nesto/VSCode/ray-tracer/pom.xml"
- * to run the GUI app (replace with absolute path to pom.xml).
+ * to run the GUI app (replace with absolute or relative path to pom.xml).
  */
 
 public class MainApp extends Application {

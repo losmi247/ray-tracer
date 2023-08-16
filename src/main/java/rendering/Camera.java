@@ -229,7 +229,7 @@ public class Camera {
        on a 'samplesPerPixelSide' X 'samplesPerPixelSide' regular
        grid of sub-pixels.
 
-       This method uses Java Stream API to distribute rays to be traced
+       This method uses Java Streams API to distribute rays to be traced
        among the cores of the CPU, i.e. rays through different pixels
        are traced in parallel in different threads.
 
@@ -238,9 +238,11 @@ public class Camera {
        used to update the rendering progress in any chosen way in which
        its 'accept' method is implemented (this method gives the
        Consumer the progress as a real value between 0 and 1). For instance,
-       the 'getRenderWithCPUCoreParallelization' method creates a JavaFX Task
-       for rendering and uses the Consumer argument to update the progress
-       property of the Task from this method.
+       the 'getRenderWithGPUCoreParallelization' method creates a JavaFX Task
+       for rendering on GPU cores and uses the Consumer argument to update
+       the progress property of the Task from
+       'getRenderWithGPUCoreParallelizationTask', i.e. the
+       'renderWithGPUCoreParallelization' method.
      */
     public BufferedImage renderWithCPUCoreParallelization(String sceneDescriptionPath, Consumer<Double> progressUpdaterConsumer) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Scene scene = new Scene(sceneDescriptionPath);
@@ -347,20 +349,20 @@ public class Camera {
     /*
        Method that returns a JavaFX Task that renders a scene description into a
        digital image, from the point of view of this particular camera. It uses
-       the 'renderWithCPUCoreParallelization' method to do so, and gives it a 
-       Consumer lambda that updates the progress property of the task within the
-       'renderWithCPUCoreParalleliation' method.
+       the 'renderWithGPUCoreParallelization' method to do so, and gives it a
+       Consumer lambda that updates the progress property of the task created
+       from the 'renderWithGPUCoreParallelization' method.
     
        The JavaFX Task created by this method first renders the given scene description
        into a BufferedImage which it then saves at the default location
        "./src/main/resources/rendered images/result.png".
      */
-    public Task<Void> getRenderWithCPUCoreParallelizationTask(String sceneDescriptionPath) {
+    public Task<Void> getRenderWithGPUCoreParallelizationTask(String sceneDescriptionPath) {
         return new Task<Void>() {
             @Override 
             public Void call() throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
                 /// render the scene description, and give the method a consumer to update the progress property of the task
-                BufferedImage digitalImage = Camera.this.renderWithCPUCoreParallelization(sceneDescriptionPath, new Consumer<Double>() {
+                BufferedImage digitalImage = Camera.this.renderWithGPUCoreParallelization(sceneDescriptionPath, new Consumer<Double>() {
                     @Override
                     public void accept(Double progress) {
                         updateProgress(progress, 1);

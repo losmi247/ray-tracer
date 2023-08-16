@@ -165,7 +165,7 @@ public class FXMLController {
         Camera camera = new Camera();
         /// Get the Task for rendering the scene, reporting progress, and saving rendered image at
         /// the default location '/resources/rendered images/result.png', from the created camera
-        Task<Void> renderingTask = camera.getRenderWithCPUCoreParallelizationTask(this.absolutePathToSceneDescription);
+        Task<Void> renderingTask = camera.getRenderWithGPUCoreParallelizationTask(this.absolutePathToSceneDescription);
         /// bind the rendering Task's progress to the ProgressBar's progress, we will unbind it later when needed
         this.renderingProgressBar.progressProperty().bind(renderingTask.progressProperty());
 
@@ -214,7 +214,7 @@ public class FXMLController {
         /// show the loading circle gif in ImageView while rendering
         this.showLoadingCircleGifInImageView();
 
-        /// run the rendering Task asynchrously on another thread
+        /// run the rendering Task asynchronously on another thread
         (new Thread(renderingTask)).start();
     }
     /*
