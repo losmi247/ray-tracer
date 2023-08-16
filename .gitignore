@@ -27,8 +27,8 @@ replay_pid*
 .idea/
 /target
 
-# unit tests
-src/test/
+# unit tests - need for now
+# src/test/
 
 # test scene
 src/main/resources/scene descriptions/testScene.xml
