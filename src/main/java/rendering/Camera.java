@@ -23,6 +23,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import javafx.concurrent.Task;
 
+import com.aparapi.Kernel;
+import com.aparapi.Range;
+
 /**
  * Class to encapsulate a camera at the origin (0,0,0),
  * pointing in the positive direction of z-axis.
@@ -113,7 +116,7 @@ public class Camera {
 
        Takes the path to the .xml file that describes the scene (e.g. in the
        '/src/main/resources' directory) as an argument
-       , and creates a 'result.png' file in the project root directory.
+       , and returns the rendered BufferedImage.
 
        If samplesPerPixelSide = 1, then only a single
        ray is cast exactly through the center of every
@@ -218,7 +221,7 @@ public class Camera {
 
        Takes the path to the .xml file that describes the scene (e.g. in the
        '/src/main/resources' directory) as an argument
-       , and creates a 'result.png' file in the project root directory.
+       , and returns the rendered BufferedImage.
 
        If samplesPerPixelSide = 1, then only a single
        ray is cast exactly through the center of every
@@ -357,7 +360,7 @@ public class Camera {
             @Override 
             public Void call() throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
                 /// render the scene description, and give the method a consumer to update the progress property of the task
-                BufferedImage digitalImage = renderWithCPUCoreParallelization(sceneDescriptionPath, new Consumer<Double>() {
+                BufferedImage digitalImage = Camera.this.renderWithCPUCoreParallelization(sceneDescriptionPath, new Consumer<Double>() {
                     @Override
                     public void accept(Double progress) {
                         updateProgress(progress, 1);
@@ -370,7 +373,166 @@ public class Camera {
             }
         }; 
     }
+    /*
+       Method to render a scene description into a
+       digital image, from the point of view of this particular camera.
 
+       Takes the path to the .xml file that describes the scene (e.g. in the
+       '/src/main/resources' directory) as an argument
+       , and returns the rendered BufferedImage.
+
+       If samplesPerPixelSide = 1, then only a single
+       ray is cast exactly through the center of every
+       pixel, otherwise jittered super-sampling is performed
+       on a 'samplesPerPixelSide' X 'samplesPerPixelSide' regular
+       grid of sub-pixels.
+
+       This method uses Aparapi to distribute rays to be traced
+       among the cores of the GPU, i.e. rays through different pixels
+       are traced in parallel in different threads.
+
+       This method has an additional optional Consumer<Double> argument
+       'progressUpdaterConsumer' that can be passed to this method and
+       used to update the rendering progress in any chosen way in which
+       its 'accept' method is implemented (this method gives the
+       Consumer the progress as a real value between 0 and 1). For instance,
+       the 'getRenderWithCPUCoreParallelization' method creates a JavaFX Task
+       for rendering and uses the Consumer argument to update the progress
+       property of the Task from this method.
+     */
+    public BufferedImage renderWithGPUCoreParallelization(String sceneDescriptionPath, Consumer<Double> progressUpdaterConsumer) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
+        Scene scene = new Scene(sceneDescriptionPath);
+        Shader shader = new PhongShader(scene);
+
+        BufferedImage digitalImage = new BufferedImage(this.getScreenPlaneWidthInPixels(), this.screenPlaneHeightInPixels, BufferedImage.TYPE_INT_RGB);
+        int screenPlaneWidthInPixels = this.getScreenPlaneWidthInPixels();
+        double pixelWidth = this.getPixelWidth();
+        double pixelHeight = this.getPixelHeight();
+        double subPixelWidth = pixelWidth / this.samplesPerPixelSide;
+        double subPixelHeight = pixelHeight / this.samplesPerPixelSide;
+
+        /// setup timing and progress
+        long startTime = System.currentTimeMillis();
+        AtomicInteger progress = new AtomicInteger();
+        /// if a progress updater is given, set progress to 0
+        if(progressUpdaterConsumer != null) {
+            progressUpdaterConsumer.accept(.0);
+        }
+
+        /// Pixel (i,j) is coded as i*screenPlaneWidthInPixels + j (i is horizontal, j is vertical component, from top left origin pixel (0,0)).
+        /// There are this.screenPlaneHeightInPixels * screenPlaneWidthInPixels pixels.
+
+        /// Create a (this.screenPlaneHeightInPixels X screenPlaneWidthInPixels) matrix of integers where we will store 32 bit RGB values computed
+        /// in the data parallel ray tracing algorithm below, so that we can write them to the previously created BufferedImage later. We can't 
+        /// write the color values in the BufferedImage inside the Kernel because then the algorithm would not be data parallel as many threads
+        /// would have to access same BufferedImage object.
+        int[][] computedRGBValues = new int[this.screenPlaneHeightInPixels][screenPlaneWidthInPixels];
+
+        /// Extend Kernel class to create a data parallel algorithm to run on GPU.
+        /// We have to specify 'Camera.this' because inside the inner class (that extends
+        /// Kernel), 'this' refers to this Kernel object, while 'Camera.this' refers to
+        /// this outer Camera object.
+        Kernel kernel = new Kernel() {
+            @Override
+            public void run() {
+                int codedPixelPosition = getGlobalId();
+
+                /// decode pixel position
+                int y = codedPixelPosition / screenPlaneWidthInPixels;
+                int x = codedPixelPosition - y*screenPlaneWidthInPixels;
+
+                /// now for each pixel, trace all rays through it
+
+                /// if we want just one sample per pixel side, just cast one ray through pixel center
+                if(Camera.this.samplesPerPixelSide == 1) {
+                    /// x,y coordinates of pixel center from image origin (top left)
+                    double pixelCenterX = x * pixelWidth + 0.5 * pixelWidth;
+                    double pixelCenterY = y * pixelHeight + 0.5 * pixelHeight;
+                    /// transform to x,y coordinates where both x,y axes are in
+                    /// opposite directions from the standard image axes
+                    pixelCenterX = Camera.this.getScreenPlaneWidth() / 2 - pixelCenterX;
+                    pixelCenterY = Camera.this.screenPlaneHeight / 2 - pixelCenterY;
+
+                    /// create a ray to be cast from the camera through the center of the current pixel
+                    Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(pixelCenterX, pixelCenterY, Camera.this.screenPlaneDepth));
+                    //RTColor rayColorValue = r.trace(scene, shader);  <- tracing without reflections
+                    RTColor rayColorValue = r.traceWithReflections(scene, shader, Camera.this.reflectionTracingLimit);
+
+                    /// clip the color values to 0.0 to 1.0 range
+                    RTColor rayColorValueNormed = rayColorValue.normalised();
+
+                    /// now store the computed 32 bit RGB value for later instead of writing to BufferedImage immediately
+                    //digitalImage.setRGB(x, y, rayColorValueNormed.getRGB());
+                    computedRGBValues[x][y] = rayColorValueNormed.getRGB();
+                }
+                else { /// otherwise perform antialiasing by jittered super-sampling
+                    Random rnd = new Random();
+                    RTColor finalColorValue = RTColor.blank;
+                    for(int i = 0; i < Camera.this.samplesPerPixelSide; i++) {
+                        for(int j = 0; j < Camera.this.samplesPerPixelSide; j++) {
+                            /// x,y coordinates of the point in this sub-pixel
+                            // which we'll shoot the ray through, from image origin (top left)
+                            double subpixelSampleX = x * pixelWidth + j * subPixelWidth + rnd.nextDouble() * subPixelWidth;
+                            double subpixelSampleY = y * pixelHeight + i * subPixelHeight + rnd.nextDouble() * subPixelHeight;
+
+                            /// transform to x,y coordinates where both x,y axes are in
+                            /// opposite directions from the standard image axes
+                            subpixelSampleX = Camera.this.getScreenPlaneWidth() / 2 - subpixelSampleX;
+                            subpixelSampleY = Camera.this.screenPlaneHeight / 2 - subpixelSampleY;
+
+                            /// create a ray to be cast from the camera through the selected sample point
+                            Ray r = new Ray(new Vector3D(0, 0, 0), new Vector3D(subpixelSampleX, subpixelSampleY, Camera.this.screenPlaneDepth));
+                            RTColor rayColorValue = r.traceWithReflections(scene, shader, Camera.this.reflectionTracingLimit);
+
+                            /// add this ray's contribution
+                            finalColorValue = finalColorValue.added(rayColorValue);
+                        }
+                    }
+
+                    /// take the average of samples' contributions
+                    finalColorValue = finalColorValue.scaled(1 / (double) (Camera.this.samplesPerPixelSide * Camera.this.samplesPerPixelSide));
+
+                    /// clip the color values to 0.0 to 1.0 range
+                    RTColor finalColorValueNormed = finalColorValue.normalised();
+
+                     /// now store the computed 32 bit RGB value for later instead of writing to BufferedImage immediately
+                    //digitalImage.setRGB(x, y, finalColorValueNormed.getRGB());
+                    computedRGBValues[x][y] = finalColorValueNormed.getRGB();
+                }
+
+                /// update progress
+                double done = (double) progress.incrementAndGet() / (double) (Camera.this.screenPlaneHeightInPixels * screenPlaneWidthInPixels);
+                if(Math.abs((int)(done*100) - (done*100)) < 1e-9 && (int)(done*100) % 5 == 0) {
+                    double eta = (double) (System.currentTimeMillis() - startTime) * ((1 - done) / done);
+                    System.out.println((int)(done * 100) + "% done. ETA: " + Double.toString(Math.round(eta/ 1000)) + " seconds");
+                }
+                /// if a progress updater is given, update progress
+                if(progressUpdaterConsumer != null) {
+                    progressUpdaterConsumer.accept(done);
+                }
+            }
+        };
+
+        /// Execute the Kernel on the GPU by converting Java bytecode to OpenCL.
+        /// The Kernel's 'run' method will be executed once for each value of
+        /// global id (getGlobalId(), i.e. codedPixelPosition) in the given
+        /// Range, i.e. from 0 to (#pixels - 1), where the #pixels is as shown
+        /// before, this.screenPlaneHeightInPixels * screenPlaneWidthInPixels.
+        kernel.execute(Range.create(this.screenPlaneHeightInPixels * screenPlaneWidthInPixels));
+        /// dispose resources
+        kernel.dispose();
+
+        System.out.println("Total time: " + (double) (System.currentTimeMillis() - startTime) / 1000 + " seconds");
+
+        /// finally write the 32 bit RGB values to the BufferedImage
+        for(int x = 0; x < screenPlaneWidthInPixels; x++) {
+            for(int y = 0; y < this.screenPlaneHeightInPixels; y++) {
+                digitalImage.setRGB(x, y, computedRGBValues[x][y]);
+            }
+        }
+
+        return digitalImage;    
+    }
     /**
      * Getters
      */
@@ -430,7 +592,7 @@ public class Camera {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
         /// don't need a progress bar here, so set progress updater to null
-        BufferedImage b = c.renderWithCPUCoreParallelization("src/main/resources/scene descriptions/scene1.xml", null);
+        BufferedImage b = c.renderWithGPUCoreParallelization("src/main/resources/scene descriptions/scene2.xml", null);
         Camera.saveImage(b);
     }
 }
