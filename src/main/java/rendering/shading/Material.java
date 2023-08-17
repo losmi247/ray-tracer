@@ -168,7 +168,7 @@ public class Material {
                 return Material.concrete;
             }
 
-            default -> throw new IncorrectSceneDescriptionXMLStructureException();
+            default -> throw new IncorrectSceneDescriptionXMLStructureException("Undefined material name specified.");
         }
     }
 
