@@ -2,7 +2,12 @@
 
 This is an experimental ray tracing-based renderer for basic geometric primitives as well as arbitrary triangle meshes, written in Java.
 
+Examples of rendered images:
 
+<p align="center">
+     <img src="src/main/resources/rendered%20images/pawnFlatShaded.png">
+     <img src="src/main/resources/rendered%20images/result.png">
+</p>
 
 ## UI
 

@@ -1,3 +1,5 @@
+/* GENERAL */
+
 .label {
     -fx-text-fill: blue;
 }
@@ -15,10 +17,67 @@
 
 .title {
     -fx-font-family: 'System';
-    -fx-font-size: 25;
+    -fx-font-size: 30;
 }
 
 .bodytext {
     -fx-font-family: 'System';
-    -fx-font-size: 16;
+    -fx-font-size: 25;
+}
+
+
+/* BUTTONS */
+
+.button {
+    -fx-background-color: rgb(12, 76, 148); /* Dark blue background color */
+    -fx-background-radius: 0; /* Rectangular shape */
+    -fx-text-fill: black; /* Black text color */
+    -fx-cursor: hand; /* Change cursor on hover */
+    -fx-transition: all 0.3s; /* Add transition for smooth effect */
+    -fx-shape: "M 0 0 L 1 0 L 0.95 1 L -0.05 1 Z";
+}
+
+.button:hover {
+    -fx-background-color: #297CB3; /* Slightly lighter blue background color on hover */
+    -fx-scale-x: 1.05; /* Increase width on hover */
+    -fx-scale-y: 1.05; /* Increase height on hover */
+    -fx-shape: "M 0 0 L 1 0 L 0.95 1 L -0.05 1 Z";
+}
+
+.button:pressed {
+    -fx-background-color: #105476; /* Even lighter blue background color when pressed */
+    -fx-scale-x: 0.95; /* Decrease width when pressed */
+    -fx-scale-y: 0.95; /* Decrease height when pressed */
+    -fx-shape: "M 0 0 L 1 0 L 0.95 1 L -0.05 1 Z";
+}
+
+
+
+/* PROGRESS BAR */
+
+.progress-bar {
+    -fx-background-color: white; /* Set the background color */
+    -fx-background-insets: 0; /* Remove any insets/padding */
+    /* -fx-shape: "M 0 0 L 1 0 L 0.95 1 L -0.05 1 Z"; */
+}
+
+.progress-bar .track {
+    -fx-background-color: transparent; /* Set the track (background) color to transparent */
+    /* -fx-shape: "M 0 0 L 1 0 L 0.95 1 L -0.05 1 Z"; */
+}
+
+.progress-bar .bar {
+    -fx-background-color: rgb(12, 76, 148);; /* Set the progress bar color */
+    -fx-background-insets: 0; /* Remove any insets/padding */
+    -fx-background-radius: 0; /* Rectangular shape */
+    -fx-padding: 0; /* Remove padding */
+    /* -fx-shape: "M 0 0 L 1 0 L 0.95 1 L -0.05 1 Z"; */
+}
+
+
+/* IMAGE VIEW */
+
+.image-view-with-border-container {
+    -fx-border-color: rgb(12, 76, 148);
+    -fx-border-width: 2mm;
 }
