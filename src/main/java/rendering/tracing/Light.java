@@ -10,6 +10,8 @@ import rendering.utility.Vector3D;
  * description nodes named "point-light",
  * and sphere light sources have XML
  * description nodes named "sphere-light".
+ *
+ * TODO - use Intensity/4r^2pi formula for decreasing light intensity
  */
 
 public interface Light {

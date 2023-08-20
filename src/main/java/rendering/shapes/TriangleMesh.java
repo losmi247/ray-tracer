@@ -98,17 +98,23 @@ public class TriangleMesh implements RTShape {
         /// extract list of vertices by grouping coordinates three by three
         this.vertices = new ArrayList<>();
         for(int i = 0; i < vertexCoordinates.length / 3; i++) {
-            /// extract vertex in object coordinates from .obj file
+            /// extract the vertex in object coordinates from .obj file
             Vector3D v = new Vector3D(vertexCoordinates[3*i], vertexCoordinates[3*i+1], vertexCoordinates[3*i+2]);
             /// apply modelling transformation to transform the vertex to world coordinates (in scene), and add it to list
             this.vertices.add(modelTransformation.multiplyFromRight(v));
         }
 
         /// extract list of vertex normals by grouping coordinates three by three
-        /// TODO - transform normals using (M^inverse)^transpose (for non-orthogonal matrices)
         this.vertexNormals = new ArrayList<>();
+        /// Prepare (M^inverse)^transpose to transform normals (for non-orthogonal matrices, e.g. scales) by first
+        /// taking only the rotations and scales (i.e. the upper 3x3 sub-matrix of the model transform), then
+        /// inverting it, and then transposing it.
+        Matrix3D normalTransformation = (new Matrix3D(modelTransformation)).getInverse().transposed();
         for(int i = 0; i < vertexNormalsCoordinates.length / 3; i++) {
-            this.vertexNormals.add(new Vector3D(vertexNormalsCoordinates[3*i], vertexNormalsCoordinates[3*i+1], vertexNormalsCoordinates[3*i+2]));
+            /// extract the vertex normal in object coordinates from .obj file
+            Vector3D n = new Vector3D(vertexNormalsCoordinates[3*i], vertexNormalsCoordinates[3*i+1], vertexNormalsCoordinates[3*i+2]);
+            /// apply the appropriate transformation (M^inverse)^transpose to the normal
+            this.vertexNormals.add(normalTransformation.multiplyFromRight(n));
         }
 
         /// extract list of triangles

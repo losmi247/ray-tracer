@@ -2,7 +2,7 @@
     <shapes>
         <plane>
             <normal>(0,1,0)</normal>
-            <point>(0,-20,0)</point>
+            <point>(0,-12,0)</point>
             <color>(103,1,85)</color>
             <material>concrete</material>
         </plane>
@@ -38,9 +38,10 @@
         </plane>
 
         <triangle-mesh>
-            <path-to-obj-file>src/main/resources/meshes/pawnFlatShadedWithNormals.obj</path-to-obj-file>
+            <path-to-obj-file>src/main/resources/meshes/pawnAutoSmoothShadedWithNormals.obj</path-to-obj-file>
             <model-transform>
                 <scale>(2.5,2.5,2.5)</scale>
+                <rotateZ>45</rotateZ>
                 <translate>(1.5,-3,15)</translate>
             </model-transform>
             <color>(218,165,32)</color>
@@ -49,7 +50,7 @@
     </shapes>
     <lights>
         <sphere-light>
-            <position>(-12,15,0)</position>
+            <position>(1.5,12,15)</position>
             <color>(255,255,255)</color>
             <intensity>1</intensity>
             <radius>0.5</radius>

@@ -92,6 +92,8 @@ public class Matrix4D {
        created by extending the given Vector3D to have a 4th element
        at the end which is equal to 1. The result is a new 4x1 matrix,
        which is returned without its last element, i.e. a Vector3D.
+
+       This method is used for applying model transforms to vertices.
      */
     public Vector3D multiplyFromRight(Vector3D v) {
         return new Vector3D(
@@ -100,6 +102,76 @@ public class Matrix4D {
                 m20*v.getX() + m21*v.getY() + m22*v.getZ() + m23//,
                 //m30*v.getX() + m31*v.getY() + m32*v.getZ() + m33
         );
+    }
+    /*
+       Method to return a new matrix created by transposing this matrix.
+     */
+    public Matrix4D transposed() {
+        return new Matrix4D(
+                this.m00, this.m10, this.m20, this.m30,
+                this.m01, this.m11, this.m21, this.m31,
+                this.m02, this.m12, this.m22, this.m32,
+                this.m03, this.m13, this.m23, this.m33
+        );
+    }
+    /*
+       Method to return a new matrix created by multiplying all elements
+       of this matrix by the given real number.
+     */
+    public Matrix4D scaled(double x) {
+        return new Matrix4D(
+                x * m00, x * m01, x * m02, x * m03,
+                x * m10, x * m11, x * m12, x * m13,
+                x * m20, x * m21, x * m22, x * m23,
+                x * m30, x * m31, x * m32, x * m33
+        );
+    }
+    /*
+       Method to calculate the determinant of this 4x4 matrix.
+     */
+    public double getDeterminant() {
+        return m00*m11*m22*m33 + m00*m12*m23*m31 + m00*m13*m21*m32
+                - m00*m13*m22*m31 - m00*m12*m21*m33 - m00*m11*m23*m32
+                - m01*m10*m22*m33 - m02*m10*m23*m31 - m03*m10*m21*m32
+                + m03*m10*m22*m31 + m02*m10*m21*m33 + m01*m10*m23*m32
+                + m01*m12*m20*m33 + m02*m13*m20*m31 + m03*m11*m20*m32
+                - m03*m12*m20*m31 - m02*m11*m20*m33 - m01*m13*m20*m32
+                - m01*m12*m23*m30 - m02*m13*m21*m30 - m03*m11*m22*m30
+                + m03*m12*m21*m30 + m02*m11*m23*m30 + m01*m13*m22*m30;
+    }
+    /*
+       Method to calculate the inverse 4x4 matrix  of this 4x4 matrix.
+     */
+    public Matrix4D getInverse() {
+        double determinant = this.getDeterminant();
+
+        if(Math.abs(determinant) < 1e-12) {
+            throw new RuntimeException("Singular matrix has no inverse.");
+        }
+
+        Matrix4D adjugate = new Matrix4D(
+                m11*m22*m33 + m12*m23*m31 + m13*m21*m32 - m13*m22*m31 - m12*m21*m33 - m11*m23*m32,
+                -m01*m22*m33 - m02*m23*m31 - m03*m21*m32 + m03*m22*m31 + m02*m21*m33 + m01*m23*m32,
+                m01*m12*m33 + m02*m13*m31 + m03*m11*m32 - m03*m12*m31 - m02*m11*m33 - m01*m13*m32,
+                -m01*m12*m23 - m02*m13*m21 - m03*m11*m22 + m03*m12*m21 + m02*m11*m23 + m01*m13*m22,
+
+                -m10*m22*m33 - m12*m23*m30 - m13*m20*m32 + m13*m22*m30 + m12*m20*m33 + m10*m23*m32,
+                m00*m22*m33 + m02*m23*m30 + m03*m20*m32 - m03*m22*m30 - m02*m20*m33 - m00*m23*m32,
+                -m00*m12*m33 - m02*m13*m30 - m03*m10*m32 + m03*m12*m30 + m02*m10*m33 + m00*m13*m32,
+                m00*m12*m23 + m02*m13*m20 + m03*m10*m22 - m03*m12*m20 - m02*m10*m23 - m00*m13*m22,
+
+                m10*m21*m33 + m11*m23*m30 + m13*m20*m31 - m13*m21*m30 - m11*m20*m33 - m10*m23*m31,
+                -m00*m21*m33 - m01*m23*m30 - m03*m20*m31 + m03*m21*m30 + m01*m20*m33 + m00*m23*m31,
+                m00*m11*m33 + m01*m13*m30 + m03*m10*m31 - m03*m11*m30 - m01*m10*m33 - m00*m13*m31,
+                -m00*m11*m23 - m01*m13*m20 - m03*m10*m21 + m03*m11*m20 + m01*m10*m23 + m00*m13*m21,
+
+                -m10*m21*m32 - m11*m22*m30 - m12*m20*m31 + m12*m21*m30 + m11*m20*m32 + m10*m22*m31,
+                m00*m21*m32 + m01*m22*m30 + m02*m20*m31 - m02*m21*m30 - m01*m20*m32 - m00*m22*m31,
+                -m00*m11*m32 - m01*m12*m30 - m02*m10*m31 + m02*m11*m30 + m01*m10*m32 + m00*m12*m31,
+                m00*m11*m22 + m01*m12*m20 + m02*m10*m21 - m02*m11*m20 - m01*m10*m22 - m00*m12*m21
+        );
+
+        return adjugate.scaled(1 / determinant);
     }
 
     /**

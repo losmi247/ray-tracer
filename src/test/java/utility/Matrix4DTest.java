@@ -174,4 +174,103 @@ class Matrix4DTest {
         assertEquals(0, n.getM32(), 1e-9);
         assertEquals(1, n.getM33(), 1e-9);
     }
+
+    @Test
+    void getDeterminantTest() {
+        Matrix4D v = new Matrix4D(1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, 1);
+        assertEquals(-16, v.getDeterminant(), 1e-9);
+
+        v = new Matrix4D(5, -7, -1, 0, 11, 56.78, 33, 1, 2, 0.6, 0, 1, 17, 21, 1, 56);
+        assertEquals(-19144.199999999997, v.getDeterminant(), 1e-9);
+    }
+
+    @Test
+    void transposedTest() {
+        Matrix4D v = new Matrix4D(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+        Matrix4D n = v.transposed();
+
+        assertEquals(1, n.getM00(), 1e-9);
+        assertEquals(5, n.getM01(), 1e-9);
+        assertEquals(9, n.getM02(), 1e-9);
+        assertEquals(13, n.getM03(), 1e-9);
+        assertEquals(2, n.getM10(), 1e-9);
+        assertEquals(6, n.getM11(), 1e-9);
+        assertEquals(10, n.getM12(), 1e-9);
+        assertEquals(14, n.getM13(), 1e-9);
+        assertEquals(3, n.getM20(), 1e-9);
+        assertEquals(7, n.getM21(), 1e-9);
+        assertEquals(11, n.getM22(), 1e-9);
+        assertEquals(15, n.getM23(), 1e-9);
+        assertEquals(4, n.getM30(), 1e-9);
+        assertEquals(8, n.getM31(), 1e-9);
+        assertEquals(12, n.getM32(), 1e-9);
+        assertEquals(16, n.getM33(), 1e-9);
+    }
+
+    @Test
+    void scaledTest() {
+        Matrix4D v = new Matrix4D(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+        Matrix4D n = v.scaled((double) 1 / 16);
+
+        assertEquals((double) 1 / 16, n.getM00(), 1e-9);
+        assertEquals((double) 2 / 16, n.getM01(), 1e-9);
+        assertEquals((double) 3 / 16, n.getM02(), 1e-9);
+        assertEquals((double) 4 / 16, n.getM03(), 1e-9);
+        assertEquals((double) 5 / 16, n.getM10(), 1e-9);
+        assertEquals((double) 6 / 16, n.getM11(), 1e-9);
+        assertEquals((double) 7 / 16, n.getM12(), 1e-9);
+        assertEquals((double) 8 / 16, n.getM13(), 1e-9);
+        assertEquals((double) 9 / 16, n.getM20(), 1e-9);
+        assertEquals((double) 10 / 16, n.getM21(), 1e-9);
+        assertEquals((double) 11 / 16, n.getM22(), 1e-9);
+        assertEquals((double) 12 / 16, n.getM23(), 1e-9);
+        assertEquals((double) 13 / 16, n.getM30(), 1e-9);
+        assertEquals((double) 14 / 16, n.getM31(), 1e-9);
+        assertEquals((double) 15 / 16, n.getM32(), 1e-9);
+        assertEquals((double) 16 / 16, n.getM33(), 1e-9);
+    }
+
+    @Test
+    void inverseTest() {
+        Matrix4D v = new Matrix4D(1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, 1);
+        Matrix4D n = v.getInverse();
+
+        assertEquals((double) 1 / 4, n.getM00(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM01(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM02(), 1e-9);
+        assertEquals((double) -1 / 4, n.getM03(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM10(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM11(), 1e-9);
+        assertEquals((double) -1 / 4, n.getM12(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM13(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM20(), 1e-9);
+        assertEquals((double) -1 / 4, n.getM21(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM22(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM23(), 1e-9);
+        assertEquals((double) -1 / 4, n.getM30(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM31(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM32(), 1e-9);
+        assertEquals((double) 1 / 4, n.getM33(), 1e-9);
+
+
+        v = new Matrix4D(3, -2, 0, 9, 1, 5, 15, -10, 3, 11, -23,6, 13, 1, 5, 7);
+        n = v.getInverse();
+
+        assertEquals((double) -0.1475548060708263, n.getM00(), 1e-9);
+        assertEquals(-0.057124789207419896, n.getM01(), 1e-9);
+        assertEquals(-0.011593591905564924, n.getM02(), 1e-9);
+        assertEquals(0.11804384485666104, n.getM03(), 1e-9);
+        assertEquals(0.13048060708263068, n.getM10(), 1e-9);
+        assertEquals(0.11872892074198989, n.getM11(), 1e-9);
+        assertEquals(0.0656091905564924, n.getM12(), 1e-9);
+        assertEquals(-0.05438448566610455, n.getM13(), 1e-9);
+        assertEquals(0.09253794266441821, n.getM20(), 1e-9);
+        assertEquals(0.061182546374367625, n.getM21(), 1e-9);
+        assertEquals(-0.008800590219224283, n.getM22(), 1e-9);
+        assertEquals(-0.024030354131534568, n.getM23(), 1e-9);
+        assertEquals(0.18929173693086004, n.getM30(), 1e-9);
+        assertEquals(0.045425801011804386, n.getM31(), 1e-9);
+        assertEquals(0.018444350758853287, n.getM32(), 1e-9);
+        assertEquals(-0.05143338954468803, n.getM33(), 1e-9);
+    }
 }

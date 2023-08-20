@@ -165,7 +165,7 @@ public class FXMLController {
         Camera camera = new Camera();
         /// Get the Task for rendering the scene, reporting progress, and saving rendered image at
         /// the default location '/resources/rendered images/result.png', from the created camera
-        Task<Void> renderingTask = camera.getRenderWithGPUCoreParallelizationTask(this.absolutePathToSceneDescription);
+        Task<Void> renderingTask = camera.getRenderWithCPUCoreParallelizationTask(this.absolutePathToSceneDescription);
         /// bind the rendering Task's progress to the ProgressBar's progress, we will unbind it later when needed
         this.renderingProgressBar.progressProperty().bind(renderingTask.progressProperty());
 

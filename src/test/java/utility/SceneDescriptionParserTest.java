@@ -28,7 +28,7 @@ class SceneDescriptionParserTest {
     @Test
     void parseShapesTest() throws IncorrectSceneDescriptionXMLStructureException, IOException {
         ArrayList<RTShape> res = descriptionParser.parseShapes();
-        assertEquals(2,res.size());
+        assertEquals(2, res.size());
         Sphere s1 = (Sphere) res.get(0);
         Sphere s2 = (Sphere) res.get(1);
 

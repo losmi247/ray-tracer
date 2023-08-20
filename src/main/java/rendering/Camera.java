@@ -216,6 +216,35 @@ public class Camera {
         return digitalImage;
     }
     /*
+       Method that returns a JavaFX Task that renders a scene description into a
+       digital image, from the point of view of this particular camera. It uses
+       the 'renderWithCPUCoreParallelization' method to do so, and gives it a
+       Consumer lambda that updates the progress property of the task created
+       from the 'renderWithCPUCoreParallelization' method.
+
+       The JavaFX Task created by this method first renders the given scene description
+       into a BufferedImage which it then saves at the default location
+       "./src/main/resources/rendered images/result.png".
+     */
+    public Task<Void> getRenderWithCPUCoreParallelizationTask(String sceneDescriptionPath) {
+        return new Task<Void>() {
+            @Override
+            public Void call() throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
+                /// render the scene description, and give the method a consumer to update the progress property of the task
+                BufferedImage digitalImage = Camera.this.renderWithCPUCoreParallelization(sceneDescriptionPath, new Consumer<Double>() {
+                    @Override
+                    public void accept(Double progress) {
+                        updateProgress(progress, 1);
+                    }
+                });
+
+                Camera.saveImage(digitalImage);
+
+                return null;
+            }
+        };
+    }
+    /*
        Method to render a scene description into a
        digital image, from the point of view of this particular camera.
 
@@ -594,7 +623,7 @@ public class Camera {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
         /// don't need a progress bar here, so set progress updater to null
-        BufferedImage b = c.renderWithGPUCoreParallelization("src/main/resources/scene descriptions/scene2.xml", null);
+        BufferedImage b = c.renderWithCPUCoreParallelization("src/main/resources/scene descriptions/scene3.xml", null);
         Camera.saveImage(b);
     }
 }
