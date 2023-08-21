@@ -12,6 +12,7 @@ import rendering.utility.Vector3D;
 public class PointLight implements Light {
     private final Vector3D position;
     private final RTColor lightSpecularColor;
+    /// the intensity is the power of the light source at its position
     private final double intensity;
 
     public PointLight(Vector3D position, RTColor lightSpecularColor, double intensity){
@@ -44,6 +45,16 @@ public class PointLight implements Light {
             /// point light source is not occluded
             return 1;
         }
+    }
+    /*
+       Method that takes a point in 3D space, and returns the illumination intensity
+       at that given point due to this light source.
+
+       This method calculates the distance from the point light source to the given
+       point and makes the illumination intensity fall off as 1/distance^2.
+    */
+    public double getIlluminationIntensityAt(Vector3D point) {
+        return this.intensity / (4 * this.position.added(point.negated()).magnitudeSquared() * Math.PI);
     }
 
     /**

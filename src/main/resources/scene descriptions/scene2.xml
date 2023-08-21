@@ -33,31 +33,26 @@
 
         <plane>
             <normal>(0,1,0)</normal>
-            <point>(0,-20,0)</point>
+            <point>(0,-10,0)</point>
             <color>(151,235,145)</color>
         </plane>
         <plane>
             <normal>(-1,0,0)</normal>
-            <point>(40,0,0)</point>
+            <point>(10,0,0)</point>
             <color>(250,130,0)</color>
         </plane>
         <plane>
             <normal>(0,0,-1)</normal>
-            <point>(0,0,200)</point>
+            <point>(0,0,30)</point>
             <color>(167,250,0)</color>
         </plane>
     </shapes>
 
     <lights>
         <point-light>
-            <position>(-10,10,-5)</position>
+            <position>(-3,12,0)</position>
             <color>(255,255,0)</color>
-            <intensity>0.6</intensity>
-        </point-light>
-        <point-light>
-            <position>(10,-10,-5)</position>
-            <color>(0,255,255)</color>
-            <intensity>0.6</intensity>
+            <intensity>3000</intensity>
         </point-light>
     </lights>
 </elements>

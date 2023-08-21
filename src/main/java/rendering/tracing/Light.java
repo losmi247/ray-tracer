@@ -10,8 +10,6 @@ import rendering.utility.Vector3D;
  * description nodes named "point-light",
  * and sphere light sources have XML
  * description nodes named "sphere-light".
- *
- * TODO - use Intensity/4r^2pi formula for decreasing light intensity
  */
 
 public interface Light {
@@ -27,7 +25,18 @@ public interface Light {
     double getOcclusionCoefficient(Intersection intersection, Scene scene);
 
     /*
-       Getters to get the position, specular color, and intensity of the light source.
+       Method that takes a point in 3D space, and returns the illumination intensity
+       at that given point due to this light source. Each light source has a
+       defined intensity (power) at its position - depending on how this method is
+       implemented, the illumination intensity can either stay the same everywhere
+       if you return the same intensity as the one at the light's position, or it
+       can fall off in some way as distance increases.
+    */
+    double getIlluminationIntensityAt(Vector3D point);
+
+    /*
+       Getters to get the position, specular color, and intensity of the light source at
+       its position.
      */
     Vector3D getPosition();
     RTColor getColor();

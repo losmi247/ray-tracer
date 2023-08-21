@@ -121,8 +121,9 @@ public class PhongShader implements Shader {
         /// unit normal to surface of the shape at the given point
         Vector3D unitNormal = intersectedShape.getUnitNormalAt(intersection);
 
+        /// multiply by illumination intensity at the intersection point due to the given light source
         /// take max with 0, so that only the side of the surface facing the light is illuminated
-        double diffuseMultiplier = light.getIntensity() * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
+        double diffuseMultiplier = light.getIlluminationIntensityAt(intersectionPoint) * Math.max(0.0, lightDirection.scalarProduct(unitNormal));
 
         /// scale the diffuse color by the multiplier, and scale each color channel by diffuse coefficient
         return intersectedShape.getColorAt(intersectionPoint).scaled(diffuseMultiplier)
@@ -157,7 +158,8 @@ public class PhongShader implements Shader {
 
         /// take max with 0, so that only the side of the surface facing the light is illuminated
         double phongMultiplier = Math.pow(Math.max(0.0, reflectionDirection.scalarProduct(viewDirection)), material.getPhongRoughnessCoefficient());
-        double specularMultiplier = light.getIntensity() * phongMultiplier;
+        /// multiply by illumination intensity at the intersection point due to the given light source
+        double specularMultiplier = light.getIlluminationIntensityAt(intersectionPoint) * phongMultiplier;
 
         return light.getColor().scaled(specularMultiplier)
                 .scaledVector3D(material.getSpecularCoefficient());

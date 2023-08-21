@@ -2,37 +2,37 @@
     <shapes>
         <plane>
             <normal>(0,1,0)</normal>
-            <point>(0,-12,0)</point>
+            <point>(0,-10,0)</point>
             <color>(103,1,85)</color>
             <material>concrete</material>
         </plane>
         <plane>
             <normal>(-1,0,0)</normal>
-            <point>(40,0,0)</point>
+            <point>(13,0,0)</point>
             <color>(133,39,40)</color>
             <material>concrete</material>
         </plane>
         <plane>
             <normal>(0,0,1)</normal>
-            <point>(0,0,-100)</point>
+            <point>(0,0,-10)</point>
             <color>(0,0,255)</color>
             <material>concrete</material>
         </plane>
         <plane>
             <normal>(0,0,-1)</normal>
-            <point>(0,0,70)</point>
+            <point>(0,0,20)</point>
             <color>(149,148,135)</color>
             <material>concrete</material>
         </plane>
         <plane>
             <normal>(1,0,0)</normal>
-            <point>(-40,0,0)</point>
+            <point>(-13,0,0)</point>
             <color>(60,162,78)</color>
             <material>concrete</material>
         </plane>
         <plane>
             <normal>(0,-1,0)</normal>
-            <point>(0,40,0)</point>
+            <point>(0,13,0)</point>
             <color>(255,141,0)</color>
             <material>concrete</material>
         </plane>
@@ -42,7 +42,7 @@
             <model-transform>
                 <scale>(3,3,3)</scale>
                 <rotateY>50</rotateY>
-                <translate>(8,-8,20)</translate>
+                <translate>(5,-6,16)</translate>
             </model-transform>
             <color>(196,164,32)</color>
             <material>concrete</material>
@@ -53,7 +53,7 @@
             <model-transform>
                 <scale>(2,2,2)</scale>
                 <rotateY>215</rotateY>
-                <translate>(-7,-9,20)</translate>
+                <translate>(-7,-7,17)</translate>
             </model-transform>
             <color>(256,34,2)</color>
             <material>red-rubber</material>
@@ -61,9 +61,9 @@
     </shapes>
     <lights>
         <sphere-light>
-            <position>(1.5,8,0)</position>
+            <position>(0,6,0)</position>
             <color>(255,255,255)</color>
-            <intensity>1</intensity>
+            <intensity>4000</intensity>
             <radius>0.5</radius>
         </sphere-light>
     </lights>
