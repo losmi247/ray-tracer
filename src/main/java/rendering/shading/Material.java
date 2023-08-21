@@ -89,7 +89,7 @@ public class Material {
     public static Material parseMaterial(String s) throws IncorrectSceneDescriptionXMLStructureException {
         String[] components = s.substring(1, s.length()-1).split(",");
         if(components.length != 5) {
-            throw new IncorrectSceneDescriptionXMLStructureException();
+            throw new IncorrectSceneDescriptionXMLStructureException("Material coefficients incorrectly specified.");
         }
         return new Material(SceneDescriptionParser.parseVector3D(components[0]),
                 SceneDescriptionParser.parseVector3D(components[1]),

@@ -6,7 +6,8 @@ Examples of rendered images:
 
 <p align="center">
      <img src="src/main/resources/rendered%20images/pawnFlatShaded.png">
-     <img src="src/main/resources/rendered%20images/result.png">
+     <img src="src/main/resources/rendered%20images/pawnAutoSmoothShaded.png">
+     <img src="src/main/resources/rendered%20images/house_and_tower.png">
 </p>
 
 ## UI
@@ -360,15 +361,8 @@ To run the project, first clone the repository locally:
 git clone https://github.com/losmi247/ray-tracer
 ```
 
-Open the project in an IDE and make sure _Maven_ imports the dependencies from the ```pom.xml``` file - try running ```mvn clean install``` if it doesn't.
-
-Then navigate to the main UI file at relative path 
-
-```
-/src/main/java/ui/MainApp.java
-```
-
-and run the following command to start the _JavaFX_ app using _Maven_:
+Open the project in an IDE to make sure _Maven_ imports the dependencies from the ```pom.xml``` file - try running ```mvn clean install``` if it doesn't.
+Finally, run the following command from the project root directory to start the _JavaFX_ app using _Maven_:
 
 ```
 mvn javafx:run -f "./pom.xml"

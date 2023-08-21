@@ -42,10 +42,21 @@
             <model-transform>
                 <scale>(3,3,3)</scale>
                 <rotateY>50</rotateY>
-                <translate>(3,-6,18)</translate>
+                <translate>(8,-8,20)</translate>
             </model-transform>
             <color>(196,164,32)</color>
             <material>concrete</material>
+        </triangle-mesh>
+
+        <triangle-mesh>
+            <path-to-obj-file>src/main/resources/meshes/tower.obj</path-to-obj-file>
+            <model-transform>
+                <scale>(2,2,2)</scale>
+                <rotateY>215</rotateY>
+                <translate>(-7,-9,20)</translate>
+            </model-transform>
+            <color>(256,34,2)</color>
+            <material>red-rubber</material>
         </triangle-mesh>
     </shapes>
     <lights>
