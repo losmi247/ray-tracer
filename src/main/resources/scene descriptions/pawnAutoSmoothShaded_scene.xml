@@ -38,7 +38,7 @@
         </plane>
 
         <triangle-mesh>
-            <path-to-obj-file>src/main/resources/meshes/pawnFlatShadedWithNormals.obj</path-to-obj-file>
+            <path-to-obj-file>src/main/resources/meshes/pawnAutoSmoothShaded.obj</path-to-obj-file>
             <model-transform>
                 <scale>(2.5,2.5,2.5)</scale>
                 <rotateZ>45</rotateZ>

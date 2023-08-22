@@ -623,7 +623,7 @@ public class Camera {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, IncorrectSceneDescriptionXMLStructureException {
         Camera c = new Camera();
         /// don't need a progress bar here, so set progress updater to null
-        BufferedImage b = c.renderWithCPUCoreParallelization("src/main/resources/scene descriptions/scene4.xml", null);
+        BufferedImage b = c.renderWithCPUCoreParallelization("src/main/resources/scene descriptions/pawnAutoSmoothShaded_scene.xml", null);
         Camera.saveImage(b);
     }
 }

@@ -6,8 +6,8 @@ Examples of rendered images:
 
 <p align="center">
      <img src="src/main/resources/rendered%20images/pawnFlatShaded.png">
-     <img src="src/main/resources/rendered%20images/pawnAutoSmoothShaded.png">
      <img src="src/main/resources/rendered%20images/house_and_tower.png">
+     <img src="src/main/resources/rendered%20images/pawnAutoSmoothShaded.png">
 </p>
 
 ## UI
