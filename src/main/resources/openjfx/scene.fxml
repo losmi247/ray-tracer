@@ -54,7 +54,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label fx:id="renderingProgressBarLabel" prefHeight="16.0" prefWidth="138.0" style="-fx-text-fill: black;" text="Rendering Progress:">
+                  <Label fx:id="renderingProgressBarLabel" prefHeight="16.0" prefWidth="150.0" style="-fx-text-fill: black;" text="Rendering Progress:">
                      <VBox.margin>
                         <Insets top="15.0" />
                      </VBox.margin>
@@ -79,7 +79,7 @@
                      <font>
                         <Font size="16.0" />
                      </font></Button>
-                  <Label fx:id="openFileChooserButtonLabel" prefHeight="16.0" prefWidth="235.0" style="-fx-text-fill: black;" text="No File Selected">
+                  <Label fx:id="openFileChooserButtonLabel" prefHeight="16.0" prefWidth="250.0" style="-fx-text-fill: black;" text="No File Selected">
                      <VBox.margin>
                         <Insets left="5.0" top="8.0" />
                      </VBox.margin>
