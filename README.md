@@ -14,7 +14,12 @@ Examples of rendered images:
 
 Currently, the simple UI supports loading an XML scene description, and rendering it into a digital image which is then displayed.
 
-
+<p align="center">
+     <img src="src/main/resources/assets/github_readme/load.png" width=503>
+     <img src="src/main/resources/assets/github_readme/render.png" width=503>
+     <img src="src/main/resources/assets/github_readme/rendering.png" width=503>
+     <img src="src/main/resources/assets/github_readme/rendered.png" width=503>
+</p>
 
 ## Scene Description Language
 
